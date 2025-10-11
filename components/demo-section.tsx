@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "primereact/button"
 
 const screenshots = [
   {
@@ -48,6 +48,7 @@ export function DemoSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
+          style={{filter: 'drop-shadow(2px 2px 2px #11111140)'}}
         >
           <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-balance mb-6">
             Veja o Bellory <span className="text-accent">em ação</span>
@@ -77,10 +78,10 @@ export function DemoSection() {
           </div>
 
           <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 flex justify-between pointer-events-none">
-            <Button onClick={prev} size="icon" variant="secondary" className="pointer-events-auto shadow-lg">
+            <Button onClick={prev}  className="pointer-events-auto shadow-lg">
               <ChevronLeft className="w-5 h-5" />
             </Button>
-            <Button onClick={next} size="icon" variant="secondary" className="pointer-events-auto shadow-lg">
+            <Button onClick={next} className="pointer-events-auto shadow-lg">
               <ChevronRight className="w-5 h-5" />
             </Button>
           </div>

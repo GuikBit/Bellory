@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion"
 import { Calendar, Users, Briefcase, Scissors, DollarSign, BarChart3 } from "lucide-react"
-import { Card } from "@/components/ui/card"
+import { Card } from "primereact/card"
+
 
 const features = [
   {
@@ -47,6 +48,7 @@ export function FeaturesInternal() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
+          style={{filter: 'drop-shadow(2px 2px 2px #11111140)'}}
         >
           <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-balance mb-6">
             Funcionalidades que <span className="text-accent">transformam</span> seu negócio
@@ -65,9 +67,9 @@ export function FeaturesInternal() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="p-8 h-full hover:shadow-lg transition-shadow duration-300 border-border/50">
-                <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-6">
-                  <feature.icon className="w-7 h-7 text-accent" />
+              <Card className="p-6 h-full hover:shadow-lg transition-shadow duration-300 bg-card border-border/50 rounded-xl">
+                <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-6 shadow" >
+                  <feature.icon className="w-7 h-7 text-accent" style={{filter: 'drop-shadow(2px 2px 2px #11111140)'}}/>
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-balance">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed text-balance">{feature.description}</p>

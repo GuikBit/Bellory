@@ -3,7 +3,9 @@ import type { Metadata } from "next"
 import { Playfair_Display, Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
-import "./globals.css"
+import './globals.css'; // Mantenha apenas esta importação de CSS
+
+import PrimeProvider from "@/components/PrimeProvider"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -18,7 +20,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Bellory - Sistema de Gestão para Barbearias, Salões e Clínicas de Estética",
+  title: "Bellory",
   description:
     "Plataforma completa de gestão para barbearias, salões de beleza e clínicas de estética. Gerencie agendamentos, clientes, funcionários, serviços e financeiro com personalização total.",
   keywords:
@@ -28,8 +30,7 @@ export const metadata: Metadata = {
     title: "Bellory - Sistema de Gestão para Barbearias e Salões",
     description: "Transforme a gestão do seu negócio com o Bellory",
     type: "website",
-  },
-    generator: 'v0.app'
+  }
 }
 
 export default function RootLayout({
@@ -38,10 +39,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" className={`${playfair.variable} ${inter.variable}`}>
-      <body className="font-sans antialiased">
+    <html lang="pt-BR" className={`${playfair.variable} ${inter.variable} overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-accent scrollbar-track-transparent`}>
+      <body className="font-sans antialiased ">
         <Suspense fallback={<div>Loading...</div>}>
-          {children}
+          <PrimeProvider>
+            {children}
+          </PrimeProvider>          
           <Analytics />
         </Suspense>
       </body>

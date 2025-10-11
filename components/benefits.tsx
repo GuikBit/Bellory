@@ -2,8 +2,10 @@
 
 import { motion } from "framer-motion"
 import { TrendingUp, Clock, Heart, Zap } from "lucide-react"
-import { Card } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar } from "primereact/avatar"
+import { Card } from "primereact/card"
+// import { Card } from "@/components/ui/card"
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const benefits = [
   {
@@ -61,6 +63,7 @@ export function Benefits() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
+          style={{filter: 'drop-shadow(2px 2px 2px #11111140)'}}
         >
           <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-balance mb-6">
             Por que escolher o <span className="text-accent">Bellory</span>?
@@ -79,9 +82,9 @@ export function Benefits() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="p-6 h-full text-center hover:shadow-lg transition-shadow duration-300 bg-card border-border/50">
-                <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
-                  <benefit.icon className="w-7 h-7 text-accent" />
+              <Card className="p-6 h-full text-center hover:shadow-lg transition-shadow duration-300 bg-card border-border/50 rounded-xl">
+                <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4 shadow">
+                  <benefit.icon className="w-7 h-7 text-accent" style={{filter: 'drop-shadow(2px 2px 2px #11111140)'}}/>
                 </div>
                 <h3 className="text-lg font-semibold mb-2 text-balance">{benefit.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed text-balance">{benefit.description}</p>
@@ -109,16 +112,16 @@ export function Benefits() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="p-6 h-full bg-card border-border/50">
+              <Card className="p-6 h-full bg-card border-border/50 rounded-xl">
                 <div className="flex items-center gap-4 mb-4">
                   <Avatar className="w-12 h-12">
-                    <AvatarImage src={testimonial.image || "/placeholder.svg"} alt={testimonial.name} />
-                    <AvatarFallback>
+                    <img src={testimonial.image || "/placeholder.svg"} alt={testimonial.name} />
+                    {/* <AvatarFallback>
                       {testimonial.name
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
-                    </AvatarFallback>
+                    </AvatarFallback> */}
                   </Avatar>
                   <div>
                     <p className="font-semibold">{testimonial.name}</p>

@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion"
 import { Palette, Layout, ShoppingBag, Smartphone } from "lucide-react"
-import { Card } from "@/components/ui/card"
+import { Card } from "primereact/card"
+// import { Card } from "@/components/ui/card"
 
 const externalFeatures = [
   {
@@ -37,6 +38,7 @@ export function FeaturesExternal() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
+          style={{filter: 'drop-shadow(2px 2px 2px #11111140)'}}
         >
           <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-balance mb-6">
             Presença digital <span className="text-accent">personalizada</span>
@@ -55,9 +57,9 @@ export function FeaturesExternal() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="p-6 h-full hover:shadow-lg transition-shadow duration-300 bg-card border-border/50">
-                <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
-                  <feature.icon className="w-6 h-6 text-accent" />
+              <Card className="p-6 h-full hover:shadow-lg transition-shadow duration-300 bg-card border-border/50 rounded-xl">
+                <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4 shadow">
+                  <feature.icon className="w-6 h-6 text-accent" style={{filter: 'drop-shadow(2px 2px 2px #11111140)'}} />
                 </div>
                 <h3 className="text-lg font-semibold mb-2 text-balance">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed text-balance">{feature.description}</p>
@@ -73,7 +75,7 @@ export function FeaturesExternal() {
           transition={{ duration: 0.8 }}
           className="grid grid-cols-1 lg:grid-cols-2 gap-8"
         >
-          <Card className="p-8 bg-card border-border/50">
+          <Card className="p-8 bg-card border-border/50 rounded-xl">
             <h3 className="font-serif text-2xl font-bold mb-4">Tema Masculino</h3>
             <p className="text-muted-foreground mb-6 leading-relaxed">
               Design robusto e moderno, perfeito para barbearias e salões masculinos
@@ -83,7 +85,7 @@ export function FeaturesExternal() {
             </div>
           </Card>
 
-          <Card className="p-8 bg-card border-border/50">
+          <Card className="p-8 bg-card border-border/50 rounded-xl">
             <h3 className="font-serif text-2xl font-bold mb-4">Tema Feminino</h3>
             <p className="text-muted-foreground mb-6 leading-relaxed">
               Design elegante e sofisticado, ideal para salões de beleza e clínicas de estética

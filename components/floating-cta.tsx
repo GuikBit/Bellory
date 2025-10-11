@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
 import { Sparkles } from "lucide-react"
+import { Button } from "primereact/button"
 
 export function FloatingCTA() {
   const [isVisible, setIsVisible] = useState(false)
@@ -26,10 +26,11 @@ export function FloatingCTA() {
           transition={{ duration: 0.3 }}
           className="fixed bottom-6 right-6 z-40"
         >
-          <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-2xl group">
-            <Sparkles className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
-            Comece Agora
-          </Button>
+          <Button
+            label="Comece Agora"
+            icon={<Sparkles className="w-5 h-5 mr-2" />}
+            className="bg-accent text-accent-foreground border-0 hover:bg-accent/90 shadow-2xl px-6 py-3 rounded-lg"
+          />
         </motion.div>
       )}
     </AnimatePresence>
