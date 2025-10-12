@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { ArrowRight, Sparkles } from "lucide-react"
 import { Button } from "primereact/button"
 import { ImageCompareDemo } from "./imageCompareDemo"
+import Link from "next/link";
 
 export function Hero() {
   return (
@@ -58,7 +59,9 @@ export function Hero() {
               iconPos="right"
               className="bg-accent text-accent-foreground border-0 hover:bg-accent/90 text-base px-8 h-14 rounded-lg"
               style={{filter: 'drop-shadow(2px 2px 2px #11111140)'}}
+              onClick={()=> <Link href="/cadastro"/>}
             />
+            <Link href="/cadastro">Cadastro </Link>
             <Button
               label="Conheça o Bellory"
               className="bg-white text-foreground border border-border hover:bg-neutral-100 text-base px-8 h-14 rounded-lg"

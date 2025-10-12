@@ -4,6 +4,7 @@ import { Playfair_Display, Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import './globals.css'; // Mantenha apenas esta importação de CSS
+// import './theme.css'
 
 import PrimeProvider from "@/components/PrimeProvider"
 
