@@ -285,7 +285,7 @@ export default function Cadastro() {
 
   const StepperMain = () => {
     return (
-      <div className="relative overflow-hidden min-h-[500px] md:px-10 px-2 w-full">
+      <div className="relative overflow-hidden min-h-[500px] md:px-10 px-2 w-full ">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={activeStep}
@@ -1128,13 +1128,13 @@ export default function Cadastro() {
   }
 
   return (
-    <main className="relative min-h-screen flex justify-center overflow-hidden pt-24 pb-10">
+    <main className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-24 pb-10">
       <Header />
 
       <div className="absolute inset-0 bg-gradient-to-b from-secondary/30 via-background to-background" />
 
       <div className="container mx-auto px-1 sm:px-6 lg:px-8 relative z-10">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-7xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-5xl mx-auto">
           <Card className="p-2 sm:p-8 mt-4 bg-card border border-border shadow-lg rounded-2xl">
             <div className="text-center md:mb-10 mt-2 md:mt-0" style={{filter: 'drop-shadow(2px 2px 2px #11111140)'}}>
               <h1 className="text-xl md:text-4xl font-bold text-foreground">Cadastro</h1>
@@ -1154,6 +1154,7 @@ export default function Cadastro() {
           </div>
         </motion.div>
       </div>
+
     </main>
   )
 }
