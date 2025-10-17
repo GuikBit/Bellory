@@ -164,7 +164,7 @@ const CardNav: React.FC<CardNavProps> = ({
       <nav
         ref={navRef}
         className={`h-[60px] 
-          bg-white/40 
+          bg-white/60 
           backdrop-blur-sm 
           flex items-center justify-center  
           border border-white/20  
