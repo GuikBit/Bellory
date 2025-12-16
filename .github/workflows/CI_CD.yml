@@ -19,18 +19,15 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # 2. Configurar known_hosts
-      - name: Configurar Known Hosts
-        run: |
-          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      # 2. REMOVA O STEP DE KNOWN_HOSTS
 
-      # 3. Build no servidor
+      # 3. Build no servidor (com -o StrictHostKeyChecking=no)
       - name: Build do Next.js no Servidor
         run: |
           REPO_URL="git@github.com:GuikBit/Bellory.git"
           BUILD_DIR="/var/www/site"
 
-          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
             set -e
 
             if [ -d "$BUILD_DIR/.git" ]; then
@@ -55,7 +52,7 @@ jobs:
       # 4. Deploy e restart do serviço
       - name: Deploy e Restart Next.js
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             set -e
 
             PROD_DIR="/var/www/html/site"
