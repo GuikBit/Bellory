@@ -27,7 +27,7 @@ jobs:
       # 3. Build no servidor
       - name: Build do Next.js no Servidor
         run: |
-          REPO_URL="git@github.com:SEU_USUARIO/SEU_REPO.git"
+          REPO_URL="git@github.com:GuikBit/Bellory.git"
           BUILD_DIR="/var/www/site"
 
           ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
