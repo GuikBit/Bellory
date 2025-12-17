@@ -103,6 +103,7 @@ export function AIAgentSection() {
 
   return (
     <section 
+      id="ai-agent"
       ref={sectionRef}
       className="py-32 relative overflow-hidden bg-gradient-to-b from-[#faf8f6] via-[#4f6f64]/5 to-[#faf8f6]"
     >
@@ -303,7 +304,7 @@ export function AIAgentSection() {
             </div>
             <Button
               label="Testar agora"
-              icon={<ArrowRight className="ml-2 w-5 h-5" />}
+              icon={<ArrowRight className="mr-2" size={16} />}
               iconPos="right"
               className="bg-white text-[#4f6f64] border-0 hover:scale-105 transition-all duration-300 px-8 py-4 rounded-xl font-bold shadow-lg whitespace-nowrap"
             />

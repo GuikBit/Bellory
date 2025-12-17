@@ -83,7 +83,7 @@ export function Hero() {
                 <div className="w-6 h-6 rounded-full bg-[#4f6f64] border-2 border-white" />
                 <div className="w-6 h-6 rounded-full bg-[#db6f57] border-2 border-white" />
                 <div className="w-6 h-6 rounded-full bg-[#8b3d35] border-2 border-white flex items-center justify-center text-[10px] text-white font-bold">
-                  +
+                  
                 </div>
               </div>
             </div>
@@ -153,7 +153,7 @@ export function Hero() {
             <Link href="/cadastro" className="w-full sm:w-auto">
               <Button
                 label="Comece grátis por 14 dias"
-                icon={<ArrowRight className="ml-2 w-5 h-5" />}
+                icon={<ArrowRight className="mr-2" size={16} />}
                 iconPos="right"
                 className="w-full sm:w-auto group relative overflow-hidden bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 hover:shadow-xl text-base px-10 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
               />

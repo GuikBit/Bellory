@@ -258,7 +258,7 @@ export default function Cadastro() {
               <Link href="/">
                 <Button
                   label="Voltar para Home"
-                  icon={<ArrowRight className="ml-2 w-5 h-5" />}
+                  icon={<ArrowRight className="mr-2" size={16} />}
                   iconPos="right"
                   className="bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 hover:scale-105 transition-all px-10 py-4 rounded-xl font-bold shadow-lg"
                 />
@@ -271,8 +271,8 @@ export default function Cadastro() {
   }
 
   return (
-    <main className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-24 pb-16 bg-gradient-to-b from-[#faf8f6] to-white">
-      <Header />
+    <main className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-10 pb-16 bg-gradient-to-b from-[#faf8f6] to-white">
+      {/* <Header /> */}
 
       {/* Background decorativo */}
       <div className="absolute inset-0 opacity-[0.03]"
@@ -317,7 +317,7 @@ export default function Cadastro() {
               Crie sua conta no Bellory
             </h1>
             <p className="text-lg text-[#4f6f64] max-w-2xl mx-auto">
-              Preencha os dados abaixo para começar a transformar seu salão
+              Preencha os dados abaixo para começar a transformar seu negócio
             </p>
           </div>
 
@@ -1007,7 +1007,7 @@ export default function Cadastro() {
                     type="button"
                     onClick={handleNext}
                     disabled={!isCurrentStepValid()}
-                    icon={<ArrowRight className="ml-2 w-5 h-5" />}
+                    icon={<ArrowRight className="mr-2" size={16} />}
                     iconPos="right"
                     label="Próximo"
                     className="bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 hover:scale-105 transition-all px-8 py-3 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"

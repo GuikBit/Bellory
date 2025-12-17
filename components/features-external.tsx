@@ -101,20 +101,25 @@ const features = [
 // Elementos de demonstração de tema
 const themeExamples = [
   {
-    name: "Elegância Feminina",
+    name: "Elegância Bellory",
     colors: ["#e6d9d4", "#db6f57", "#8b3d35"],
     style: "Suave e sofisticado"
   },
   {
-    name: "Masculino Moderno",
-    colors: ["#2a2420", "#db6f57", "#4f6f64"],
-    style: "Forte e confiável"
+    name: "Feminino Elegante",
+    colors: ["#FAF7FA", "#B08D9A", "#4B4453"],
+    style: "Calmo e orgânico"
   },
   {
-    name: "Natural & Zen",
-    colors: ["#4f6f64", "#e6d9d4", "#6b8a7e"],
+    name: "Dark Bellory",
+    colors: ["#0A0A0A", "#FE9A00", "#FFB900"],
     style: "Calmo e orgânico"
-  }
+  },
+  {
+    name: "Masculino Clássico",
+    colors: ["#F5EFE6", "#6B4F4F", "#423838"],
+    style: "Forte e confiável"
+  },  
 ]
 
 export function FeaturesExternal() {
@@ -151,7 +156,7 @@ export function FeaturesExternal() {
           </div>
 
           <h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-[#2a2420] leading-[1.1]">
-            Seu salão{" "}
+            Seu negócio{" "}
             <span className="bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent">
               com presença digital única
             </span>
@@ -175,7 +180,7 @@ export function FeaturesExternal() {
           <h3 className="text-center text-2xl font-bold text-[#2a2420] mb-8">
             Escolha o tema perfeito para sua marca
           </h3>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {themeExamples.map((theme, index) => (
               <motion.div
                 key={theme.name}
@@ -284,7 +289,7 @@ export function FeaturesExternal() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button
                   label="Ver exemplo de site"
-                  icon={<ArrowRight className="ml-2 w-5 h-5" />}
+                  icon={<ArrowRight className="mr-2" size={16} />}
                   iconPos="right"
                   className="bg-white text-[#8b3d35] border-0 hover:scale-105 transition-all duration-300 px-10 py-4 rounded-xl font-bold shadow-2xl"
                 />

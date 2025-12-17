@@ -123,7 +123,7 @@ export function FinalCTA() {
           >
             Pronto para transformar{" "}
             <span className="bg-gradient-to-r from-[#db6f57] via-[#e88c76] to-[#db6f57] bg-clip-text text-transparent">
-              seu salão
+              seu negócio
             </span>?
           </motion.h2>
 

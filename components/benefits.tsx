@@ -63,7 +63,7 @@ const testimonials = [
     location: "São Paulo, SP",
     image: "/professional-woman-salon-owner.jpg",
     rating: 5,
-    content: "O Bellory transformou completamente a gestão do meu salão. Agora tenho controle total sobre agendamentos e financeiro. O agente virtual no WhatsApp sozinho já vale o investimento - responde clientes 24/7!",
+    content: "O Bellory transformou completamente a gestão do meu negócio. Agora tenho controle total sobre agendamentos e financeiro. O agente virtual no WhatsApp sozinho já vale o investimento - responde clientes 24/7!",
     results: [
       { label: "Faturamento", value: "+42%" },
       { label: "Faltas", value: "-38%" }

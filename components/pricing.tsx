@@ -155,12 +155,12 @@ const PlanCard = ({ plan, isAnnual, index }: any) => {
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, delay: index * 0.1 }}
-      className={`relative ${plan.popular ? 'lg:-mt-6' : ''}`}
+      className={`relative group ${plan.popular ? 'lg:-mt-6' : ''}`}
     >
       {/* Badge popular */}
       {plan.badge && (
         <div 
-          className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full font-bold text-sm text-white shadow-xl z-10"
+          className={`absolute ${plan.popular? 'group-hover:-top-9':'group-hover:-top-6'}  -top-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full font-bold text-sm text-white shadow-xl z-10 transition-all duration-300`}
           style={{ background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)` }}
         >
           {plan.badge}
@@ -170,7 +170,7 @@ const PlanCard = ({ plan, isAnnual, index }: any) => {
       <Card 
         className={`h-full p-8 rounded-3xl transition-all duration-300 ${
           plan.popular 
-            ? 'bg-white border-2 shadow-2xl scale-105 hover:scale-110' 
+            ? 'bg-white border-2 shadow-2xl scale-100 hover:scale-105' 
             : 'bg-white border border-[#d8ccc4] shadow-lg hover:shadow-2xl hover:-translate-y-2'
         }`}
         style={plan.popular ? { borderColor: plan.color } : {}}
@@ -209,9 +209,9 @@ const PlanCard = ({ plan, isAnnual, index }: any) => {
         {/* CTA */}
         <Button
           label={plan.cta}
-          icon={<ArrowRight className="ml-2 w-5 h-5" />}
+          icon={<ArrowRight className="mx-2" size={16} />}
           iconPos="right"
-          className={`w-full mb-8 py-4 rounded-xl font-bold text-base transition-all duration-300 ${
+          className={`w-full mb-8 py-3 px-3 rounded-xl font-medium text-base transition-all duration-300 ${
             plan.popular
               ? 'bg-gradient-to-r text-white border-0 hover:scale-105 shadow-lg'
               : 'bg-white border-2 hover:scale-105'
@@ -321,6 +321,7 @@ export function Pricing() {
 
           {/* Toggle anual/mensal */}
           <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="w-[130px]"></div>
             <span className={`font-semibold ${!isAnnual ? 'text-[#2a2420]' : 'text-[#4f6f64]'}`}>
               Mensal
             </span>
@@ -337,16 +338,19 @@ export function Pricing() {
             <span className={`font-semibold ${isAnnual ? 'text-[#2a2420]' : 'text-[#4f6f64]'}`}>
               Anual
             </span>
-            {isAnnual && (
-              <span className="px-3 py-1 bg-[#5a7a6e] text-white text-sm font-bold rounded-full">
-                Economize 20%
-              </span>
-            )}
+            <div className="w-[130px]">
+              {isAnnual && (
+                <span className="px-3 py-1 bg-[#5a7a6e] text-white text-sm font-bold rounded-full">
+                  Economize 20%
+                </span>
+              )}
+            </div>
+            
           </div>
         </motion.div>
 
         {/* Grid de planos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20 max-w-8xl mx-auto ">
           {plans.map((plan, index) => (
             <PlanCard 
               key={plan.id} 

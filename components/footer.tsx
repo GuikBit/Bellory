@@ -107,7 +107,7 @@ export function Footer() {
                 <Button
                   type="submit"
                   label="Inscrever"
-                  icon={<ArrowRight className="ml-2 w-5 h-5" />}
+                  icon={<ArrowRight className="mr-2" size={16} />}
                   iconPos="right"
                   className="bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 hover:scale-105 transition-all px-8 py-4 rounded-xl font-bold shadow-lg whitespace-nowrap"
                 />

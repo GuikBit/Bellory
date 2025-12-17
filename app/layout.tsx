@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   description:
     "Plataforma completa de gestão para barbearias, salões de beleza e clínicas de estética. Gerencie agendamentos, clientes, funcionários, serviços e financeiro com personalização total.",
   keywords:
-    "sistema para barbearias, sistema para salões de beleza, software de estética, agenda online para salão, gestão de barbearia, sistema de agendamento",
+    "sistema para barbearias, sistema para salões de beleza, software de estética, agenda online para negócio, gestão de barbearia, sistema de agendamento",
   authors: [{ name: "Bellory" }],
   openGraph: {
     title: "Bellory - Sistema de Gestão para Barbearias e Salões",

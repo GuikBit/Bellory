@@ -86,7 +86,7 @@ const benefitSections = [
   },
   {
     category: "Presença digital profissional",
-    tagline: "Seu salão online com site personalizado e e-commerce integrado",
+    tagline: "Seu negócio online com site personalizado e e-commerce integrado",
     color: "#8b3d35",
     gradient: "from-[#8b3d35]/10 to-[#a8524a]/10",
     borderColor: "border-[#8b3d35]/20",
@@ -101,7 +101,7 @@ const benefitSections = [
       {
         icon: ShoppingBag,
         title: "Mini E-commerce",
-        description: "Venda produtos online com pagamento integrado. Entrega ou retirada no salão.",
+        description: "Venda produtos online com pagamento integrado. Entrega ou retirada no negócio.",
         impact: "Nova fonte de receita",
         stat: "+35%"
       },
@@ -339,7 +339,7 @@ export function FeaturesInternal() {
           <div className="relative z-10">
             <Heart className="w-16 h-16 text-white mx-auto mb-6" />
             <h3 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-              Pronto para transformar seu salão?
+              Pronto para transformar seu negócio?
             </h3>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
               Comece grátis hoje. Sem cartão de crédito. Sem compromisso.

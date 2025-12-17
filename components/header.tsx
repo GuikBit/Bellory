@@ -1,14 +1,17 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Menu, X, ArrowRight, Sparkles } from "lucide-react"
+import { Menu, X, ArrowRight, Sparkles, LogIn } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { Button } from "primereact/button"
+import { useRouter } from 'next/navigation';
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,14 +71,16 @@ export function Header() {
             {/* Desktop CTAs */}
             <div className="hidden lg:flex items-center gap-4">
               <Button
+                icon={<LogIn className="mr-2" size={16}/>}
                 label="Entrar"
-                className="bg-transparent text-[#8b3d35] border-0 hover:text-[#db6f57] font-semibold px-6 py-2"
+                className="bg-transparent text-[#8b3d35] border border-[#8b3d35] hover:border-[#db6f57] hover:text-[#db6f57] hover:scale-105 transition-all duration-300 px-6 py-3 rounded-xl font-semibold shadow-lg"
                 text
+                onClick={() => router.push('https://app.bellory.com.br')}
               />
               <Link href="/cadastro">
                 <Button
                   label="Começar grátis"
-                  icon={<ArrowRight className="ml-2 w-4 h-4" />}
+                  icon={<ArrowRight className="mr-2" size={16} />}
                   iconPos="right"
                   className="bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 hover:scale-105 transition-all duration-300 px-6 py-3 rounded-xl font-semibold shadow-lg"
                 />
@@ -131,7 +136,7 @@ export function Header() {
                 <Link href="/cadastro" className="w-full">
                   <Button
                     label="Começar grátis"
-                    icon={<ArrowRight className="ml-2 w-5 h-5" />}
+                    icon={<ArrowRight className="mr-2" size={16} />}
                     iconPos="right"
                     className="w-full bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 py-3 rounded-xl font-semibold shadow-lg"
                   />

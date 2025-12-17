@@ -27,40 +27,17 @@ export default function Home() {
     //   <FinalCTA />
     // </main>
     <main className="min-h-screen overflow-x-hidden">
-      {/* Navegação principal */}
       <Header />
-
-      {/* Hero - Primeira impressão com proposta de valor */}
       <Hero />
-
-      {/* Funcionalidades Internas - Benefícios organizados */}
       <FeaturesInternal />
-
-      {/* Agente Virtual IA - Diferencial competitivo ⭐ */}
       <AIAgentSection />
-
-      {/* Personalização Externa - Site + E-commerce */}
       <FeaturesExternal />
-
-      {/* Demonstração Visual - Screenshots + Antes/Depois */}
       <DemoSection />
-
-      {/* Benefícios e Prova Social - Depoimentos + Métricas */}
       <Benefits />
-
-      {/* Comparação - Bellory vs Concorrentes */}
       <ComparisonSection />
-
-      {/* Planos e Preços - Com calculadora de ROI */}
       <Pricing />
-
-      {/* Contato - Formulário de contato */}
       <Contact />
-
-      {/* CTA Final - Conversão máxima */}
       <FinalCTA />
-
-      {/* Footer - Links completos + Newsletter */}
       <Footer />
     </main>
 
