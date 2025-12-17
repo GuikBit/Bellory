@@ -9,14 +9,6 @@ import { useRef } from "react"
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"]
-  })
-  
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95])
-  const y = useTransform(scrollYProgress, [0, 0.5], [0, 100])
 
   return (
     <>
@@ -63,12 +55,12 @@ export function Hero() {
 
       <motion.div 
         className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
-        style={{ opacity, scale, y }}
+        // style={{ opacity, scale, y }}
       >
         <div className="max-w-7xl mx-auto">
           
           {/* Badge de destaque */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -87,14 +79,14 @@ export function Hero() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </motion.div> */}
 
           {/* Headline principal */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-center mb-6"
+            className="text-center mb-6 mt-4"
           >
             <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.1] text-balance">
               <span className="text-[#2a2420]">Transforme seu negócio</span>
