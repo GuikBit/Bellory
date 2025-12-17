@@ -202,12 +202,12 @@ export function Planos() {
 
             {periodo === "mensal" ? (
               // <BarbeariaButton rounded="full" size="sm" onClick={() => setPeriodo("mensal")}>Mensal</BarbeariaButton>
-              <Button variant="default" size="lg" rounded="full" onClick={() => setPeriodo("mensal")} className="cursor-pointer">
+              <Button variant="default" size="lg" onClick={() => setPeriodo("mensal")} className="cursor-pointer">
                 Mensal
               </Button>
             ):(
               // <BarbeariaButton variant="ghost" rounded="full" size="sm" onClick={() => setPeriodo("mensal")}>Mensal</BarbeariaButton>
-            <Button variant="secondary" size="lg" rounded="full" onClick={() => setPeriodo("mensal")} className="cursor-pointer">
+            <Button variant="secondary" size="lg"  onClick={() => setPeriodo("mensal")} className="cursor-pointer">
               Mensal
             </Button>
             )}
@@ -217,7 +217,7 @@ export function Planos() {
               //   Anual
               //   <span className="ml-1 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">-20%</span>
               // </BarbeariaButton>
-            <Button variant="default" size="lg" rounded="full" onClick={() => setPeriodo("anual")} className="cursor-pointer ">
+            <Button variant="default" size="lg"  onClick={() => setPeriodo("anual")} className="cursor-pointer ">
               Anual
               <span className="ml-1 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full" >-20%</span>
             </Button>
@@ -226,7 +226,7 @@ export function Planos() {
               //   Anual
               //   <span className="ml-1 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">-20%</span>
               // </BarbeariaButton>
-            <Button variant="secondary" size="lg" rounded="full" onClick={() => setPeriodo("anual")} className="cursor-pointer">
+            <Button variant="secondary" size="lg"  onClick={() => setPeriodo("anual")} className="cursor-pointer">
               Anual
               <span className="ml-1 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">-20%</span>
             </Button>
@@ -302,7 +302,7 @@ export function Planos() {
                   // <BarbeariaButton fullWidth variant="primary" leftIcon={<CreditCard />}>
                   //   Assinar {plano.nome}
                   // </BarbeariaButton>
-                  <Button variant="default" size="lg" className="w-full" rounded="full">
+                  <Button variant="default" size="lg" className="w-full">
                     Assinar {plano.nome}
                     <span className="ml-1 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">-20%</span>
                   </Button>
@@ -310,7 +310,7 @@ export function Planos() {
                   // <BarbeariaButton fullWidth variant="outline" leftIcon={<CreditCard />}>
                   //   Assinar {plano.nome}
                   // </BarbeariaButton>
-                  <Button variant="secondary" size="lg" className="w-full" rounded="full">
+                  <Button variant="secondary" size="lg" className="w-full">
                     Assinar {plano.nome}
                     <span className="ml-1 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">-20%</span>
                   </Button>

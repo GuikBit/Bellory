@@ -1,154 +1,438 @@
 "use client"
 
-import { motion } from "framer-motion"
-// import { Button } from "@/components/ui/button"
-// import { Input } from "@/components/ui/input"
-// import { Textarea } from "@/components/ui/textarea"
-// import { Card } from "@/components/ui/card"
-import { MessageCircle, Mail, Phone } from "lucide-react"
+import { motion, useInView } from "framer-motion"
+import { 
+  MessageCircle, 
+  Mail, 
+  Phone,
+  MapPin,
+  Send,
+  Clock,
+  CheckCircle2,
+  Sparkles,
+  HeadphonesIcon
+} from "lucide-react"
 import { Button } from "primereact/button"
 import { Card } from "primereact/card"
 import { InputText } from "primereact/inputtext"
 import { InputTextarea } from "primereact/inputtextarea"
+import { useRef, useState } from "react"
+import Link from "next/link"
 
 export function Contact() {
+  const sectionRef = useRef(null)
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: ""
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log("Form submitted:", formData)
+    // Implementar lógica de envio
+  }
+
+  const contactMethods = [
+    {
+      icon: MessageCircle,
+      title: "WhatsApp",
+      description: "Resposta em até 5 minutos",
+      value: "(11) 99999-9999",
+      link: "https://wa.me/5511999999999",
+      color: "#25D366",
+      available: "Online agora"
+    },
+    {
+      icon: Mail,
+      title: "E-mail",
+      description: "Resposta em até 24h",
+      value: "contato@bellory.com.br",
+      link: "mailto:contato@bellory.com.br",
+      color: "#db6f57",
+      available: "Sempre disponível"
+    },
+    {
+      icon: Phone,
+      title: "Telefone",
+      description: "Seg-Sex: 8h às 18h",
+      value: "0800 123 4567",
+      link: "tel:08001234567",
+      color: "#4f6f64",
+      available: "Horário comercial"
+    },
+  ]
+
+  const benefits = [
+    {
+      icon: CheckCircle2,
+      text: "Resposta rápida e personalizada"
+    },
+    {
+      icon: CheckCircle2,
+      text: "Sem compromisso ou taxas"
+    },
+    {
+      icon: CheckCircle2,
+      text: "Suporte durante todo processo"
+    },
+    {
+      icon: CheckCircle2,
+      text: "Demonstração personalizada gratuita"
+    }
+  ]
+
   return (
-    <section id="contato" className="py-24 sm:py-32">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section 
+      ref={sectionRef}
+      id="contato" 
+      className="py-32 relative overflow-hidden bg-gradient-to-b from-white via-[#faf8f6] to-white"
+    >
+      {/* Background decorativo */}
+      <div className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23db6f57' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* Blob animado */}
+      <motion.div 
+        className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-[#4f6f64]/20 to-[#db6f57]/20 rounded-full blur-3xl"
+        animate={{
+          scale: [1, 1.2, 1],
+          x: [0, -50, 0],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-4xl mx-auto mb-20"
         >
-          <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-balance mb-6">
-            Comece agora <span className="text-accent">gratuitamente</span>
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-[#db6f57]/10 to-[#8b3d35]/10 border border-[#db6f57]/20 mb-8">
+            <HeadphonesIcon className="w-5 h-5 text-[#db6f57]" />
+            <span className="font-bold text-[#8b3d35] uppercase tracking-wide text-sm">
+              Fale Conosco
+            </span>
+          </div>
+
+          <h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-[#2a2420] leading-[1.1]">
+            Pronto para{" "}
+            <span className="bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent">
+              começar
+            </span>?
           </h2>
-          <p className="text-lg sm:text-xl text-muted-foreground text-balance leading-relaxed">
-            Entre em contato e descubra como o Bellory pode transformar seu negócio
+
+          <p className="text-xl sm:text-2xl text-[#4f6f64] leading-relaxed">
+            Entre em contato e descubra como o Bellory pode{" "}
+            <span className="text-[#8b3d35] font-semibold">
+              transformar seu negócio
+            </span>
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        {/* Conteúdo principal */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
+          
+          {/* Formulário */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            initial={{ opacity: 0, x: -50 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <Card className="p-8 bg-card border border-border/50 shadow-lg rounded-xl">
-              <h3 className="text-2xl font-semibold mb-6">Envie uma mensagem</h3>
-              <form className="space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium mb-2">
-                    Nome completo
-                  </label>
-                  <InputText id="name" placeholder="Seu nome" className="w-full p-3 border border-border rounded-lg" />
+            <Card className="p-8 lg:p-10 bg-white border-2 border-[#d8ccc4] shadow-2xl rounded-3xl hover:shadow-3xl transition-all duration-300">
+              <div className="flex items-center gap-3 mb-8 pb-6 border-b border-[#d8ccc4]">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#db6f57] to-[#c55a42] flex items-center justify-center shadow-lg">
+                  <Send className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium mb-2">
-                    E-mail
+                  <h3 className="text-2xl font-bold text-[#2a2420]">Envie uma mensagem</h3>
+                  <p className="text-sm text-[#4f6f64]">Responderemos em breve</p>
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-semibold text-[#2a2420] mb-2">
+                    Nome completo <span className="text-[#d15847]">*</span>
                   </label>
-                  <InputText
-                    id="email"
-                    type="email"
-                    placeholder="seu@email.com"
-                    className="w-full p-3 border border-border rounded-lg"
+                  <InputText 
+                    id="name" 
+                    placeholder="Seu nome completo"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-[#d8ccc4] rounded-xl focus:border-[#db6f57] transition-all"
+                    required
                   />
                 </div>
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium mb-2">
-                    Telefone
-                  </label>
-                  <InputText
-                    id="phone"
-                    type="tel"
-                    placeholder="(00) 00000-0000"
-                    className="w-full p-3 border border-border rounded-lg"
-                  />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-semibold text-[#2a2420] mb-2">
+                      E-mail <span className="text-[#d15847]">*</span>
+                    </label>
+                    <InputText
+                      id="email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-[#d8ccc4] rounded-xl focus:border-[#db6f57] transition-all"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-semibold text-[#2a2420] mb-2">
+                      Telefone <span className="text-[#d15847]">*</span>
+                    </label>
+                    <InputText
+                      id="phone"
+                      type="tel"
+                      placeholder="(00) 00000-0000"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-[#d8ccc4] rounded-xl focus:border-[#db6f57] transition-all"
+                      required
+                    />
+                  </div>
                 </div>
+
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium mb-2">
-                    Mensagem
+                  <label htmlFor="message" className="block text-sm font-semibold text-[#2a2420] mb-2">
+                    Mensagem <span className="text-[#d15847]">*</span>
                   </label>
                   <InputTextarea
                     id="message"
-                    placeholder="Conte-nos sobre seu negócio..."
-                    className="w-full p-3 border border-border rounded-lg"
+                    placeholder="Conte-nos sobre seu negócio e como podemos ajudar..."
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-[#d8ccc4] rounded-xl focus:border-[#db6f57] transition-all resize-none"
                     rows={5}
+                    required
                   />
                 </div>
+
                 <Button
                   type="submit"
                   label="Enviar mensagem"
-                  className="w-full bg-accent text-accent-foreground border-0 hover:bg-accent/90 p-3 rounded-lg"
+                  icon={<Send className="ml-2 w-5 h-5" />}
+                  iconPos="right"
+                  className="w-full bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 hover:scale-105 transition-all py-4 rounded-xl font-bold text-lg shadow-lg"
                 />
+
+                <p className="text-center text-sm text-[#4f6f64]">
+                  Ao enviar, você concorda com nossa política de privacidade
+                </p>
               </form>
             </Card>
           </motion.div>
 
+          {/* Informações de contato e CTA */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="space-y-6"
+            initial={{ opacity: 0, x: 50 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="space-y-8"
           >
+            {/* Métodos de contato */}
             <div>
-              <h3 className="text-2xl font-semibold mb-6">Outras formas de contato</h3>
+              <h3 className="text-2xl font-bold text-[#2a2420] mb-6">
+                Outras formas de contato
+              </h3>
               <div className="space-y-4">
-                <Card className="p-6 bg-card border border-border/50 shadow-md flex items-start gap-4 rounded-xl">
-                  <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                    <MessageCircle className="w-6 h-6 text-accent" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-1">WhatsApp</h4>
-                    <p className="text-muted-foreground text-sm mb-2">Fale conosco diretamente pelo WhatsApp</p>
-                    <Button label="(11) 99999-9999" className="p-0 h-auto text-accent bg-transparent border-0" link />
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-card border border-border/50 shadow-md flex items-start gap-4 rounded-xl">
-                  <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-6 h-6 text-accent" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-1">E-mail</h4>
-                    <p className="text-muted-foreground text-sm mb-2">Envie um e-mail para nossa equipe</p>
-                    <Button
-                      label="contato@bellory.com.br"
-                      className="p-0 h-auto text-accent bg-transparent border-0"
-                      link
-                    />
-                  </div>
-                </Card>
-
-                <Card className="p-6 bg-card border border-border/50 shadow-md flex items-start gap-4 rounded-xl">
-                  <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6 text-accent" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-1">Telefone</h4>
-                    <p className="text-muted-foreground text-sm mb-2">Ligue para nossa central de atendimento</p>
-                    <Button label="0800 123 4567" className="p-0 h-auto text-accent bg-transparent border-0" link />
-                  </div>
-                </Card>
+                {contactMethods.map((method, index) => (
+                  <motion.div
+                    key={method.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
+                  >
+                    <a
+                      href={method.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block"
+                    >
+                      <Card className="p-6 bg-white border-2 border-[#d8ccc4] hover:border-[#db6f57]/50 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl group hover:-translate-y-1">
+                        <div className="flex items-start gap-4">
+                          <div 
+                            className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform shadow-md"
+                            style={{ 
+                              backgroundColor: `${method.color}15`,
+                              border: `2px solid ${method.color}30`
+                            }}
+                          >
+                            <method.icon 
+                              className="w-7 h-7" 
+                              style={{ color: method.color }} 
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <h4 className="font-bold text-lg text-[#2a2420]">{method.title}</h4>
+                              <span className="text-xs px-3 py-1 rounded-full bg-[#5a7a6e]/10 text-[#5a7a6e] font-semibold">
+                                {method.available}
+                              </span>
+                            </div>
+                            <p className="text-sm text-[#4f6f64] mb-2">{method.description}</p>
+                            <p 
+                              className="font-semibold text-base group-hover:underline"
+                              style={{ color: method.color }}
+                            >
+                              {method.value}
+                            </p>
+                          </div>
+                        </div>
+                      </Card>
+                    </a>
+                  </motion.div>
+                ))}
               </div>
             </div>
 
-            <Card className="p-8 bg-accent/5 border border-accent/20 shadow-md rounded-xl">
-              <h4 className="font-semibold text-lg mb-3">Teste grátis por 14 dias</h4>
-              <p className="text-muted-foreground mb-4 leading-relaxed">
-                Experimente todas as funcionalidades do Bellory sem compromisso. Não é necessário cartão de crédito.
-              </p>
-              <Button
-                label="Começar teste grátis"
-                className="w-full bg-accent text-accent-foreground border-0 hover:bg-accent/90 p-3 rounded-lg"
-              />
-            </Card>
+            {/* Endereço */}
+            {/* <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.9 }}
+            >
+              <Card className="p-6 bg-gradient-to-br from-[#4f6f64]/5 to-[#4f6f64]/10 border-2 border-[#4f6f64]/20 rounded-2xl">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#4f6f64]/20 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-6 h-6 text-[#4f6f64]" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-lg text-[#2a2420] mb-1">Nosso escritório</h4>
+                    <p className="text-[#4f6f64] leading-relaxed">
+                      Av. Paulista, 1000 - Conj. 42<br />
+                      Bela Vista, São Paulo - SP<br />
+                      CEP: 01310-100
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </motion.div> */}
+
+            
           </motion.div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 1.2 }}
+          className="mt-20 text-center max-w-4xl mx-auto space-y-8"
+        >
+
+          {/* Benefícios */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 1 }}
+            >
+              <Card className="p-8 bg-white border-2 border-[#d8ccc4] rounded-2xl shadow-lg">
+                <h4 className="font-bold text-xl text-[#2a2420] mb-6">
+                  Por que entrar em contato?
+                </h4>
+                <ul className="space-y-4 mb-6">
+                  {benefits.map((benefit, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <benefit.icon className="w-5 h-5 text-[#5a7a6e] mt-0.5 flex-shrink-0" />
+                      <span className="text-[#4f6f64] leading-relaxed">{benefit.text}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            </motion.div>
+
+            {/* CTA Final */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 1.1 }}
+            >
+              <Card className="p-8 bg-gradient-to-br from-[#8b3d35] via-[#db6f57] to-[#8b3d35] border-0 shadow-2xl rounded-3xl relative overflow-hidden">
+                {/* Padrão decorativo */}
+                <div className="absolute inset-0 opacity-10"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                  }}
+                />
+
+                <div className="relative z-10">
+                  <Sparkles className="w-12 h-12 text-white mb-4" />
+                  <h4 className="font-bold text-2xl text-white mb-3">
+                    Teste grátis por 14 dias
+                  </h4>
+                  <p className="text-white/90 mb-6 leading-relaxed">
+                    Experimente todas as funcionalidades do Bellory sem compromisso. 
+                    Não é necessário cartão de crédito.
+                  </p>
+                  <Link href="/cadastro">
+                    <Button
+                      label="Começar teste grátis"
+                      icon={<Sparkles className="ml-2 w-5 h-5" />}
+                      iconPos="right"
+                      className="w-full bg-white text-[#8b3d35] border-0 hover:scale-105 transition-all py-4 rounded-xl font-bold text-lg shadow-lg"
+                    />
+                  </Link>
+                  <p className="text-center text-white/70 text-sm mt-4">
+                    ✓ Sem cartão • ✓ Sem compromisso • ✓ Cancele quando quiser
+                  </p>
+                </div>
+              </Card>
+            </motion.div>
+        </motion.div>
+        
+
+        {/* FAQ Rápido */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 1.2 }}
+          className="mt-20 text-center max-w-4xl mx-auto"
+        >
+          <h3 className="text-2xl font-bold text-[#2a2420] mb-6">
+            Dúvidas Frequentes
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="p-6 bg-white border border-[#d8ccc4] rounded-2xl shadow-md hover:shadow-lg transition-all">
+              <Clock className="w-8 h-8 text-[#db6f57] mx-auto mb-3" />
+              <h4 className="font-semibold text-[#2a2420] mb-2">Quanto tempo leva?</h4>
+              <p className="text-sm text-[#4f6f64]">
+                Você pode começar em menos de 5 minutos
+              </p>
+            </Card>
+
+            <Card className="p-6 bg-white border border-[#d8ccc4] rounded-2xl shadow-md hover:shadow-lg transition-all">
+              <CheckCircle2 className="w-8 h-8 text-[#4f6f64] mx-auto mb-3" />
+              <h4 className="font-semibold text-[#2a2420] mb-2">Preciso de cartão?</h4>
+              <p className="text-sm text-[#4f6f64]">
+                Não! Teste grátis sem informar cartão
+              </p>
+            </Card>
+
+            <Card className="p-6 bg-white border border-[#d8ccc4] rounded-2xl shadow-md hover:shadow-lg transition-all">
+              <HeadphonesIcon className="w-8 h-8 text-[#8b3d35] mx-auto mb-3" />
+              <h4 className="font-semibold text-[#2a2420] mb-2">Tem suporte?</h4>
+              <p className="text-sm text-[#4f6f64]">
+                Sim! Suporte completo via WhatsApp
+              </p>
+            </Card>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

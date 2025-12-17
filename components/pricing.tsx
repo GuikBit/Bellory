@@ -1,286 +1,485 @@
 "use client"
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Check, X, Scissors, Crown } from "lucide-react"
+import { motion, useInView } from "framer-motion"
+import { 
+  Check,
+  X,
+  Sparkles,
+  Zap,
+  Crown,
+  Gift,
+  ArrowRight,
+  HelpCircle,
+  Calculator,
+  TrendingUp
+} from "lucide-react"
+import { Card } from "primereact/card"
 import { Button } from "primereact/button"
+import { useRef, useState } from "react"
 
-export function Pricing() {
-  const [periodo, setPeriodo] = useState<"mensal" | "anual">("mensal")
+// Planos
+const plans = [
+  {
+    id: "gratuito",
+    name: "Gratuito",
+    tagline: "Experimente sem compromisso",
+    price: 0,
+    priceAnnual: 0,
+    icon: Gift,
+    color: "#4f6f64",
+    gradient: "from-[#4f6f64] to-[#3d574f]",
+    popular: false,
+    features: [
+      { text: "Até 50 agendamentos/mês", included: true },
+      { text: "1 usuário", included: true },
+      { text: "Cadastro de clientes", included: true },
+      { text: "Agendamento manual", included: true },
+      { text: "Dashboard básico", included: true },
+      { text: "Agendamento online 24/7", included: false },
+      { text: "Agente virtual no WhatsApp", included: false },
+      { text: "Site personalizado", included: false },
+      { text: "E-commerce", included: false },
+      { text: "Relatórios avançados", included: false },
+    ],
+    cta: "Começar grátis",
+    badge: null
+  },
+  {
+    id: "basico",
+    name: "Básico",
+    tagline: "Para começar a crescer",
+    price: 79.90,
+    priceAnnual: 64.90,
+    icon: Zap,
+    color: "#db6f57",
+    gradient: "from-[#db6f57] to-[#c55a42]",
+    popular: false,
+    features: [
+      { text: "Agendamentos ilimitados", included: true },
+      { text: "Até 3 usuários", included: true },
+      { text: "Gestão completa de clientes", included: true },
+      { text: "Agendamento online 24/7", included: true },
+      { text: "Lembretes automáticos", included: true },
+      { text: "Dashboard inteligente", included: true },
+      { text: "Controle financeiro", included: true },
+      { text: "Agente virtual no WhatsApp", included: false },
+      { text: "Site personalizado", included: false },
+      { text: "E-commerce", included: false },
+    ],
+    cta: "Experimentar 14 dias grátis",
+    badge: null
+  },
+  {
+    id: "plus",
+    name: "Plus",
+    tagline: "Tudo que você precisa",
+    price: 129.90,
+    priceAnnual: 99.90,
+    icon: Sparkles,
+    color: "#8b3d35",
+    gradient: "from-[#8b3d35] to-[#a8524a]",
+    popular: true,
+    features: [
+      { text: "Tudo do Básico +", included: true },
+      { text: "Usuários ilimitados", included: true },
+      { text: "Agente virtual no WhatsApp", included: true },
+      { text: "Site personalizado completo", included: true },
+      { text: "Mini e-commerce integrado", included: true },
+      { text: "Relatórios avançados", included: true },
+      { text: "Programa de fidelidade", included: true },
+      { text: "Suporte prioritário", included: true },
+      { text: "Treinamento da equipe", included: true },
+      { text: "Domínio personalizado", included: true },
+    ],
+    cta: "Experimentar 14 dias grátis",
+    badge: "🔥 Mais popular"
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    tagline: "Para quem quer o máximo",
+    price: 199.90,
+    priceAnnual: 159.90,
+    icon: Crown,
+    color: "#db6f57",
+    gradient: "from-[#db6f57] to-[#e88c76]",
+    popular: false,
+    features: [
+      { text: "Tudo do Plus +", included: true },
+      { text: "Múltiplas unidades", included: true },
+      { text: "API completa", included: true },
+      { text: "Integrações personalizadas", included: true },
+      { text: "Gerente de conta dedicado", included: true },
+      { text: "Suporte 24/7", included: true },
+      { text: "Onboarding personalizado", included: true },
+      { text: "Customizações sob demanda", included: true },
+      { text: "Relatórios personalizados", included: true },
+      { text: "SLA garantido", included: true },
+    ],
+    cta: "Falar com especialista",
+    badge: "👑 Premium"
+  }
+]
 
-  const planos = [
-    {
-      id: "gratuito",
-      nome: "PLANO GRATUITO",
-      descricaoBreve: "Avalie se a nossa solução faz sentido para o negócio",
-      precoMensal: 0.0,
-      precoAnual: 0.0,
-      icone: <Scissors size={28} className="text-accent" />,
-      destaque: false,
-      beneficios: [
-        "Agendamentos limitados",
-        "Cadastro de clientes limitados",
-        "Cadastro de funcionários limitados",
-        "Cadastro de serviços limitados",
-        "Acesso a dashboards inteligentes",
-      ],
-      naoIncluido: ["Produtos exclusivos", "Atendimento VIP", "Serviços premium", "Acesso a eventos exclusivos"],
-    },
-    {
-      id: "basico",
-      nome: "PLANO BÁSICO",
-      descricaoBreve: "Cuidados essenciais para sua beleza",
-      precoMensal: 79.9,
-      precoAnual: 64.9,
-      icone: <Scissors size={28} className="text-accent" />,
-      destaque: false,
-      beneficios: [
-        "Agendamentos ilimitados",
-        "Cadastro de clientes ilimitados",
-        "2 funcionários cadastrados",
-        "Serviços ilimitados",
-        "Dashboards inteligentes",
-        "Suporte por email",
-      ],
-      naoIncluido: ["Produtos exclusivos", "Atendimento VIP", "Serviços premium", "Acesso a eventos exclusivos"],
-    },
-    {
-      id: "plus",
-      nome: "PLANO PLUS",
-      descricaoBreve: "Experiência completa de gestão e bem-estar",
-      precoMensal: 129.9,
-      precoAnual: 99.9,
-      icone: <Scissors size={28} className="text-accent" />,
-      destaque: false,
-      beneficios: [
-        "Agendamentos ilimitados",
-        "Cadastro de clientes ilimitados",
-        "5 funcionários cadastrados",
-        "Serviços ilimitados",
-        "Dashboards inteligentes avançados",
-        "Suporte prioritário",
-        "Integração com redes sociais",
-        "Relatórios personalizados",
-      ],
-      naoIncluido: [],
-    },
-    {
-      id: "premium",
-      nome: "PLANO PREMIUM",
-      descricaoBreve: "Experiência completa com recursos exclusivos",
-      precoMensal: 249.9,
-      precoAnual: 199.9,
-      icone: <Crown size={28} className="text-accent" />,
-      destaque: true,
-      beneficios: [
-        "Tudo do Plano Plus",
-        "Funcionários ilimitados",
-        "Múltiplas unidades",
-        "API personalizada",
-        "Suporte VIP 24/7",
-        "Consultoria especializada",
-        "Treinamento da equipe",
-        "Customizações exclusivas",
-      ],
-      naoIncluido: [],
-    },
-  ]
+// FAQ por plano
+const planFAQs = [
+  {
+    question: "Posso mudar de plano depois?",
+    answer: "Sim! Você pode fazer upgrade ou downgrade a qualquer momento. As mudanças são aplicadas imediatamente."
+  },
+  {
+    question: "O que acontece após o período gratuito?",
+    answer: "Após 14 dias, você escolhe se quer continuar. Não cobramos automaticamente - você decide."
+  },
+  {
+    question: "Posso cancelar quando quiser?",
+    answer: "Sim, sem multas ou taxas. Cancele a qualquer momento direto no sistema."
+  },
+  {
+    question: "Há taxa de configuração?",
+    answer: "Não! Não cobramos taxa de setup, implementação ou treinamento. Está tudo incluído."
+  }
+]
+
+// Card de plano
+const PlanCard = ({ plan, isAnnual, index }: any) => {
+  const cardRef = useRef(null)
+  const isInView = useInView(cardRef, { once: true, margin: "-50px" })
+
+  const displayPrice = isAnnual ? plan.priceAnnual : plan.price
+  const savings = plan.price > 0 ? ((plan.price - plan.priceAnnual) * 12).toFixed(0) : 0
 
   return (
-    <section
-      id="planos"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden py-24 bg-secondary/30"
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      className={`relative ${plan.popular ? 'lg:-mt-6' : ''}`}
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-secondary/30 via-background to-background" />
+      {/* Badge popular */}
+      {plan.badge && (
+        <div 
+          className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full font-bold text-sm text-white shadow-xl z-10"
+          style={{ background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)` }}
+        >
+          {plan.badge}
+        </div>
+      )}
+
+      <Card 
+        className={`h-full p-8 rounded-3xl transition-all duration-300 ${
+          plan.popular 
+            ? 'bg-white border-2 shadow-2xl scale-105 hover:scale-110' 
+            : 'bg-white border border-[#d8ccc4] shadow-lg hover:shadow-2xl hover:-translate-y-2'
+        }`}
+        style={plan.popular ? { borderColor: plan.color } : {}}
+      >
+        {/* Icon */}
+        <div 
+          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+          style={{ 
+            background: `linear-gradient(135deg, ${plan.color}20, ${plan.color}40)`
+          }}
+        >
+          <plan.icon className="w-8 h-8" style={{ color: plan.color }} />
+        </div>
+
+        {/* Nome e tagline */}
+        <h3 className="text-3xl font-bold text-[#2a2420] mb-2">{plan.name}</h3>
+        <p className="text-[#4f6f64] mb-6">{plan.tagline}</p>
+
+        {/* Preço */}
+        <div className="mb-8">
+          <div className="flex items-baseline gap-2">
+            <span className="text-5xl font-bold text-[#2a2420]">
+              R$ {displayPrice.toFixed(2).replace('.', ',')}
+            </span>
+            {plan.price > 0 && (
+              <span className="text-[#4f6f64]">/mês</span>
+            )}
+          </div>
+          {isAnnual && Number(savings) > 0 && (
+            <div className="mt-2 text-sm font-semibold" style={{ color: plan.color }}>
+              💰 Economize R$ {savings}/ano
+            </div>
+          )}
+        </div>
+
+        {/* CTA */}
+        <Button
+          label={plan.cta}
+          icon={<ArrowRight className="ml-2 w-5 h-5" />}
+          iconPos="right"
+          className={`w-full mb-8 py-4 rounded-xl font-bold text-base transition-all duration-300 ${
+            plan.popular
+              ? 'bg-gradient-to-r text-white border-0 hover:scale-105 shadow-lg'
+              : 'bg-white border-2 hover:scale-105'
+          }`}
+          style={plan.popular ? { 
+            background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)` 
+          } : {
+            color: plan.color,
+            borderColor: plan.color
+          }}
+        />
+
+        {/* Features */}
+        <ul className="space-y-3">
+          {plan.features.map((feature: any, i: number) => (
+            <li 
+              key={i}
+              className="flex items-start gap-3"
+            >
+              {feature.included ? (
+                <Check className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: plan.color }} />
+              ) : (
+                <X className="w-5 h-5 mt-0.5 flex-shrink-0 text-gray-300" />
+              )}
+              <span className={feature.included ? "text-[#2a2420]" : "text-gray-400 line-through"}>
+                {feature.text}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Card>
+    </motion.div>
+  )
+}
+
+export function Pricing() {
+  const sectionRef = useRef(null)
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
+  const [isAnnual, setIsAnnual] = useState(false)
+  const [showROI, setShowROI] = useState(false)
+  const [monthlyRevenue, setMonthlyRevenue] = useState(10000)
+
+  // Cálculo simplificado de ROI
+  const calculateROI = () => {
+    const timeSaved = 40 // horas por mês
+    const hourlyValue = 50 // valor hora médio
+    const noShowReduction = monthlyRevenue * 0.35 // 35% de redução em faltas
+    const newCustomers = monthlyRevenue * 0.25 // 25% mais clientes
+    
+    const totalGain = (timeSaved * hourlyValue) + noShowReduction + newCustomers
+    const systemCost = 129.90 // plano Plus
+    const roi = ((totalGain - systemCost) / systemCost * 100).toFixed(0)
+    
+    return {
+      timeSaved: (timeSaved * hourlyValue).toFixed(0),
+      noShowReduction: noShowReduction.toFixed(0),
+      newCustomers: newCustomers.toFixed(0),
+      totalGain: totalGain.toFixed(0),
+      roi
+    }
+  }
+
+  const roiData = calculateROI()
+
+  return (
+    <section 
+      ref={sectionRef}
+      id="planos" 
+      className="py-32 relative overflow-hidden bg-gradient-to-b from-white via-[#faf8f6] to-white"
+    >
+      {/* Background decorativo */}
+      <div className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b3d35' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}
+      />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        
+        {/* Header */}
         <motion.div
-          className="flex flex-col items-center justify-center mb-16"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
+          className="text-center max-w-4xl mx-auto mb-16"
         >
-          <div className="flex items-center mb-6">
-            <motion.div
-              className="h-px w-16 bg-accent"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-            />
-            <motion.div
-              className="mx-4 w-2 h-2 rounded-full bg-accent"
-              animate={{
-                scale: [1, 1.5, 1],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Number.POSITIVE_INFINITY,
-              }}
-            />
-            <motion.div
-              className="h-px w-16 bg-accent"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-            />
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-[#db6f57]/10 to-[#8b3d35]/10 border border-[#db6f57]/20 mb-8">
+            <Crown className="w-5 h-5 text-[#db6f57]" />
+            <span className="font-bold text-[#8b3d35] uppercase tracking-wide text-sm">
+              Planos e Preços
+            </span>
           </div>
 
-          <motion.h2
-            className="text-3xl md:text-5xl font-serif font-normal mb-6 text-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-          >
-            Planos de Assinatura
-          </motion.h2>
+          <h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-[#2a2420] leading-[1.1]">
+            Escolha o plano{" "}
+            <span className="bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent">
+              perfeito para você
+            </span>
+          </h2>
 
-          <motion.p
-            className="text-lg text-muted-foreground mb-8 leading-relaxed text-center max-w-2xl"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-          >
-            Escolha o plano ideal para o seu negócio e tenha acesso a recursos exclusivos para gestão completa
-          </motion.p>
+          <p className="text-xl sm:text-2xl text-[#4f6f64] leading-relaxed mb-8">
+            Sem surpresas. Sem taxas escondidas.{" "}
+            <span className="text-[#8b3d35] font-semibold">
+              Cancele quando quiser
+            </span>.
+          </p>
 
-          <motion.div
-            className="flex items-center justify-center bg-card p-1 gap-2 rounded-full shadow-sm border border-border"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-          >
-            {/* <Button
-              // variant={periodo === "mensal" ? "default" : "ghost"}
-              size="small"
-              className="rounded-full px-6"
-              onClick={() => setPeriodo("mensal")}
-            >
+          {/* Toggle anual/mensal */}
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <span className={`font-semibold ${!isAnnual ? 'text-[#2a2420]' : 'text-[#4f6f64]'}`}>
               Mensal
-            </Button> */}
-            <Button              
-              size="small"
-              className={`rounded-full px-4 py-2 border-0 ${periodo == 'mensal'? 'bg-accent text-accent-foreground  hover:bg-accent/90 shadow-2xl ':'text-black bg-accent/10'} `}
-              onClick={() => setPeriodo("mensal")}
+            </span>
+            <button
+              onClick={() => setIsAnnual(!isAnnual)}
+              className="relative w-16 h-8 rounded-full transition-colors duration-300"
+              style={{ backgroundColor: isAnnual ? '#db6f57' : '#d8ccc4' }}
             >
-              <span className={`font-semibold transition-all ${periodo == 'mensal'? 'text-white':'text-black' } `}>Mensal</span>
-            </Button>
-            <Button              
-              size="small"
-              className={`rounded-full px-4 py-2 border-0 ${periodo == 'anual'? 'bg-accent text-accent-foreground  hover:bg-accent/90 shadow-2xl ':'text-black bg-accent/10'} `}
-              onClick={() => setPeriodo("anual")}
-            >
-              <span className={`font-semibold transition-all ${periodo == 'anual'? 'text-white':'text-black' } `}>Anual</span>
-              <span className="ml-2 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">-20%</span>
-            </Button>
-
-          </motion.div>
+              <div 
+                className="absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300"
+                style={{ transform: isAnnual ? 'translateX(32px)' : 'translateX(0)' }}
+              />
+            </button>
+            <span className={`font-semibold ${isAnnual ? 'text-[#2a2420]' : 'text-[#4f6f64]'}`}>
+              Anual
+            </span>
+            {isAnnual && (
+              <span className="px-3 py-1 bg-[#5a7a6e] text-white text-sm font-bold rounded-full">
+                Economize 20%
+              </span>
+            )}
+          </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6  mx-auto">
-          {planos.map((plano, index) => (
-            <motion.div
-              key={plano.id}
-              className={`rounded-2xl overflow-hidden ${
-                plano.destaque
-                  ? "bg-card border-2 border-accent shadow-2xl scale-105"
-                  : "bg-card border border-border shadow-lg"
-              }`}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ y: -10, transition: { duration: 0.3 } }}
-            >
-              {plano.destaque && (
-                <div className="bg-accent text-accent-foreground text-center py-2 text-sm font-bold">Mais Popular</div>
-              )}
-
-              <div className="p-6">
-                <div className="flex items-center mb-4">
-                  <div className="p-2 rounded-full bg-accent/10">{plano.icone}</div>
-                  <h3 className="text-xl font-serif font-bold ml-3">{plano.nome}</h3>
-                </div>
-
-                <p className="text-muted-foreground text-sm mb-6">{plano.descricaoBreve}</p>
-
-                <div className="mb-8">
-                  <div className="flex items-baseline">
-                    <span className="text-4xl font-bold font-serif">
-                      R$ {periodo === "mensal" ? plano.precoMensal.toFixed(2) : plano.precoAnual.toFixed(2)}
-                    </span>
-                    <span className="ml-2 text-muted-foreground">/mês</span>
-                  </div>
-                  {periodo === "anual" && plano.precoAnual > 0 && (
-                    <p className="text-green-600 text-sm mt-1">
-                      Economia de R$ {((plano.precoMensal - plano.precoAnual) * 12).toFixed(2)} ao ano
-                    </p>
-                  )}
-                </div>
-                {plano.destaque ?
-                  <Button 
-                    outlined
-                    className="w-full rounded-xl"
-                    label={`Assinar ${plano.nome.split(" ")[1]}`}
-                  />
-                :
-                  <Button                
-                    className="w-full rounded-xl"
-                    label={`Assinar ${plano.nome.split(" ")[1]}`}
-                  />
-                }
-              
-
-                <div className="mt-8">
-                  <p className="font-medium text-sm mb-4">O que está incluso:</p>
-                  <ul className="space-y-3">
-                    {plano.beneficios.map((beneficio, i) => (
-                      <li key={i} className="flex items-start text-sm">
-                        <div className="p-1 rounded-full bg-green-100 mr-2 flex-shrink-0 mt-0.5">
-                          <Check size={12} className="text-green-600" />
-                        </div>
-                        <span className="text-muted-foreground">{beneficio}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {plano.naoIncluido && plano.naoIncluido.length > 0 && (
-                    <>
-                      <p className="font-medium text-sm mt-6 mb-4">Não incluso:</p>
-                      <ul className="space-y-3">
-                        {plano.naoIncluido.map((item, i) => (
-                          <li key={i} className="flex items-start text-sm">
-                            <div className="p-1 rounded-full bg-red-100 mr-2 flex-shrink-0 mt-0.5">
-                              <X size={12} className="text-red-500" />
-                            </div>
-                            <span className="text-muted-foreground/60">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
-                </div>
-              </div>
-            </motion.div>
+        {/* Grid de planos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20 max-w-7xl mx-auto">
+          {plans.map((plan, index) => (
+            <PlanCard 
+              key={plan.id} 
+              plan={plan} 
+              isAnnual={isAnnual}
+              index={index}
+            />
           ))}
         </div>
 
+        {/* Calculadora de ROI */}
         <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.8 }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="max-w-4xl mx-auto mb-20"
         >
-          <p className="text-muted-foreground mb-6">
-            Todos os planos incluem acesso ao aplicativo móvel e cancelamento a qualquer momento.
-          </p>
+          <button
+            onClick={() => setShowROI(!showROI)}
+            className="w-full bg-gradient-to-r from-[#4f6f64] to-[#3d574f] text-white rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Calculator className="w-12 h-12" />
+                <div className="text-left">
+                  <h3 className="text-2xl font-bold mb-1">Calcule seu retorno sobre investimento</h3>
+                  <p className="text-white/80">Veja quanto você pode economizar e ganhar com o Bellory</p>
+                </div>
+              </div>
+              <ArrowRight 
+                className={`w-6 h-6 transition-transform duration-300 ${showROI ? 'rotate-90' : ''}`} 
+              />
+            </div>
+          </button>
+
+          {showROI && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="bg-white rounded-3xl p-8 mt-4 shadow-xl border border-[#d8ccc4]"
+            >
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-[#2a2420] mb-2">
+                  Qual seu faturamento mensal médio?
+                </label>
+                <input
+                  type="range"
+                  min="5000"
+                  max="50000"
+                  step="1000"
+                  value={monthlyRevenue}
+                  onChange={(e) => setMonthlyRevenue(Number(e.target.value))}
+                  className="w-full"
+                />
+                <div className="text-center text-3xl font-bold text-[#db6f57] mt-2">
+                  R$ {monthlyRevenue.toLocaleString('pt-BR')}
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-[#faf8f6] rounded-2xl p-6">
+                  <h4 className="font-bold text-[#2a2420] mb-4 flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-[#5a7a6e]" />
+                    Ganhos Mensais
+                  </h4>
+                  <ul className="space-y-3 text-sm">
+                    <li className="flex justify-between">
+                      <span className="text-[#4f6f64]">Tempo economizado:</span>
+                      <span className="font-bold text-[#2a2420]">R$ {roiData.timeSaved}</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-[#4f6f64]">Redução de faltas:</span>
+                      <span className="font-bold text-[#2a2420]">R$ {roiData.noShowReduction}</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-[#4f6f64]">Novos clientes:</span>
+                      <span className="font-bold text-[#2a2420]">R$ {roiData.newCustomers}</span>
+                    </li>
+                    <li className="flex justify-between pt-3 border-t border-[#d8ccc4]">
+                      <span className="font-bold text-[#2a2420]">Total:</span>
+                      <span className="font-bold text-[#5a7a6e]">R$ {roiData.totalGain}</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-gradient-to-br from-[#5a7a6e] to-[#4f6f64] rounded-2xl p-6 text-white">
+                  <h4 className="font-bold mb-4">Seu ROI</h4>
+                  <div className="text-6xl font-bold mb-2">{roiData.roi}%</div>
+                  <p className="text-white/80 mb-4">de retorno sobre investimento</p>
+                  <div className="bg-white/20 rounded-xl p-4">
+                    <p className="text-sm">
+                      Com o plano Plus (R$ 129,90/mês), você pode ganhar até{' '}
+                      <span className="font-bold">R$ {(Number(roiData.totalGain) - 129.90).toFixed(0)}/mês</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-center text-sm text-[#4f6f64]">
+                *Cálculo baseado em médias de clientes reais. Resultados podem variar.
+              </p>
+            </motion.div>
+          )}
         </motion.div>
+
+        {/* FAQ */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="max-w-3xl mx-auto"
+        >
+          <h3 className="text-center text-3xl font-bold text-[#2a2420] mb-8">
+            Perguntas Frequentes
+          </h3>
+          <div className="space-y-4">
+            {planFAQs.map((faq, index) => (
+              <div 
+                key={index}
+                className="bg-white rounded-2xl p-6 shadow-lg border border-[#d8ccc4]"
+              >
+                <div className="flex items-start gap-3">
+                  <HelpCircle className="w-6 h-6 text-[#db6f57] flex-shrink-0 mt-1" />
+                  <div>
+                    <h4 className="font-bold text-lg text-[#2a2420] mb-2">{faq.question}</h4>
+                    <p className="text-[#4f6f64] leading-relaxed">{faq.answer}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
       </div>
     </section>
   )
