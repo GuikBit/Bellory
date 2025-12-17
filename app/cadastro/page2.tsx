@@ -56,8 +56,6 @@ interface FormData {
   senha: string
   confSenha: string
 
-  tenantId: string
-
   tema: string // ID do tema selecionado
   planoId: string // ID do plano selecionado
 
@@ -431,7 +429,7 @@ const StepperMain: React.FC<StepperMainProps> = ({
 
   // 2. ESTILOS COPIADOS PARA OS DEMAIS INPUTS
   const baseStyle =
-    "w-full py-3 !pl-4 dark:!bg-neutral-700/50 !bg-neutral-100 border rounded-lg dark:text-neutral-300 text-neutral-700 placeholder-neutral-500 transition-all"
+    "w-full py-3 dark:!bg-neutral-700/50 !bg-neutral-100 border rounded-lg dark:text-neutral-300 text-neutral-700 placeholder-neutral-500 transition-all"
   const errorStyle = "border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
   const normalStyle =
     "dark:border-neutral-600 border-neutral-300 focus:outline-none focus:ring-2 focus:dark:ring-primary focus:ring-primary focus:border-transparent"
@@ -536,7 +534,7 @@ const StepperMain: React.FC<StepperMainProps> = ({
                           id="inscricaoEstadual"
                           {...field}
                           placeholder="000.000.000.000"
-                          className={classNames(baseStyle, "pr-6", normalStyle)}
+                          className={classNames(baseStyle, "pr-4", normalStyle)}
                         />
                       )}
                     />
@@ -1006,43 +1004,6 @@ const StepperMain: React.FC<StepperMainProps> = ({
                     )}
                   </div>
                 </div>
-
-                <div
-                  className="flex items-center gap-3 md:mb-8 mb-4 px-4 mt-10"
-                  style={{ filter: "drop-shadow(2px 2px 2px #11111140)" }}
-                >
-                  <div className="text-center w-full">
-                    <h3 className="md:text-xl text-lg font-semibold text-foreground pb-1">Configuração</h3>
-                    <p className="md:text-sm text-xs text-muted-foreground">
-                      Cadastre a URL de acesso do seu negócio
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
-                  <div className="col-span-3 relative">
-                    <label htmlFor="login" className="text-sm font-medium text-foreground mb-1 mx-3">
-                      URL <span className="text-destructive">*</span>
-                    </label>
-                    <Controller
-                      name="tenantId"
-                      control={control}
-                      rules={{ required: "URL é obrigatório" }}
-                      render={({ field }) => (
-                        <InputText
-                          id="tenantId"
-                          {...field}
-                          placeholder="barberia-monteiro"
-                          autoCorrect="off"
-                          className={classNames(baseStyle, "pl-67.5", errors.login ? errorStyle : normalStyle)}
-                        />
-                      )}
-                    />
-                    <small className="dark:text-gray-400">Seus clientes usarão essa URL para acessar a página do seu négocio no Bellory.</small>
-                    <span className="absolute top-9 left-3 dark:text-gray-500">https://www.app.bellory.com.br/</span>
-                    {errors.login && <small className="text-destructive mx-3">{errors.login.message}</small>}
-                  </div>
-                </div>
               </div>
             </div>
           )}
@@ -1509,7 +1470,7 @@ const StepperFooter: React.FC<StepperFooterProps> = ({
 // ----------------------------------------------------------------------
 
 export default function Cadastro() {
-
+  // const stepperRef = useRef<any>(null) // Este ref não parece estar sendo usado para 'nextCallback' ou 'prevCallback'
   const [activeStep, setActiveStep] = useState(0)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -1701,17 +1662,18 @@ export default function Cadastro() {
     const temaSelecionado = themes[data.tema as keyof typeof themes]
 
     const dadosCompletos = {
-
-      cnpj: data.cnpj,
-      razaoSocial: data.razaoSocial,
-      nomeFantasia: data.nomeFantasia,
-      inscricaoEstadual: data.inscricaoEstadual,
-      email: data.email,
-      telefone: data.telefone,
-      responsavel: {
-        nome: data.nomeResponsavel,
-        email: data.emailResponsavel,
-        telefone: data.telefoneResponsavel,
+      empresa: {
+        cnpj: data.cnpj,
+        razaoSocial: data.razaoSocial,
+        nomeFantasia: data.nomeFantasia,
+        inscricaoEstadual: data.inscricaoEstadual,
+        email: data.email,
+        telefone: data.telefone,
+        responsavel: {
+          nome: data.nomeResponsavel,
+          email: data.emailResponsavel,
+          telefone: data.telefoneResponsavel,
+        },
       },
       endereco: {
         cep: data.cep,
@@ -1731,9 +1693,6 @@ export default function Cadastro() {
         nome: temaSelecionado?.name,
         tipo: temaSelecionado?.type,
         cores: temaSelecionado?.colors,
-        fonts: temaSelecionado?.fonts,
-        borderRadius: temaSelecionado?.borderRadius,
-        shadows: temaSelecionado?.shadows
       },
       plano: {
         id: data.planoId,
@@ -1753,14 +1712,12 @@ export default function Cadastro() {
     }
 
     console.log("[v0] Dados completos do cadastro:", JSON.stringify(dadosCompletos))
-    
+
     postOrganizacao(dadosCompletos).then(()=>{
       setIsSubmitted(true)
     }).catch((error)=>{
       console.log(error)
     })
-
-    
   }
 
   // Agora, esta função será chamada em CADA renderização (em cada keystroke)
@@ -1839,8 +1796,10 @@ export default function Cadastro() {
       className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-24 pb-10"
       style={{ color: theme.colors.text, background: theme.colors.background }}
     >
+      {/* <Header /> */}
 
       <Header />
+
       <div className="absolute inset-0 bg-gradient-to-b from-secondary/30 via-background to-background" />
 
       <div

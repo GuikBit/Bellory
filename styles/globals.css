@@ -123,3 +123,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.inputPr4{
+ margin-left:  pr-4;
+}

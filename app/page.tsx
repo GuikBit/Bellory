@@ -8,6 +8,7 @@ import { Pricing } from "@/components/pricing"
 import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
 import { FloatingCTA } from "@/components/floating-cta"
+import Demo from "@/components/demo"
 
 export default function Home() {
   return (

@@ -1,82 +1,360 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Calendar, Users, Briefcase, Scissors, DollarSign, BarChart3 } from "lucide-react"
+import { motion, useInView } from "framer-motion"
+import { 
+  Calendar, 
+  Users, 
+  Briefcase, 
+  Scissors, 
+  DollarSign, 
+  BarChart3,
+  Clock,
+  TrendingUp,
+  Shield,
+  Zap,
+  Heart,
+  CheckCircle2,
+  ArrowRight,
+  Bot,
+  Globe,
+  ShoppingBag
+} from "lucide-react"
 import { Card } from "primereact/card"
+import { useRef } from "react"
 
-
-const features = [
+// Benefícios principais organizados por problema que resolvem
+const benefitSections = [
   {
-    icon: Calendar,
-    title: "Agendamentos Inteligentes",
-    description: "Sistema completo de agendamento online com confirmações automáticas e lembretes por WhatsApp.",
+    category: "Nunca mais perca um cliente",
+    tagline: "Reduza faltas em até 40% com automação inteligente",
+    color: "#db6f57",
+    gradient: "from-[#db6f57]/10 to-[#c55a42]/10",
+    borderColor: "border-[#db6f57]/20",
+    features: [
+      {
+        icon: Calendar,
+        title: "Agendamento Online 24/7",
+        description: "Seus clientes agendam quando quiserem pelo site ou WhatsApp. Nunca perca uma venda por estar fechado.",
+        impact: "Aumento de 30% em agendamentos",
+        stat: "+30%"
+      },
+      {
+        icon: Bot,
+        title: "Agente Virtual no WhatsApp",
+        description: "IA que responde instantaneamente, agenda serviços, confirma horários e envia lembretes automáticos.",
+        impact: "Responde em menos de 5 segundos",
+        stat: "<5s"
+      },
+      {
+        icon: Clock,
+        title: "Lembretes Automáticos",
+        description: "Confirmações e lembretes por WhatsApp 24h antes. Cliente confirma em 1 clique.",
+        impact: "40% menos faltas",
+        stat: "-40%"
+      }
+    ]
   },
   {
-    icon: Users,
-    title: "Gestão de Clientes",
-    description: "Cadastro completo com histórico de atendimentos, preferências e programa de fidelidade.",
+    category: "Gestão no piloto automático",
+    tagline: "Economize até 10 horas por semana em tarefas administrativas",
+    color: "#4f6f64",
+    gradient: "from-[#4f6f64]/10 to-[#3d574f]/10",
+    borderColor: "border-[#4f6f64]/20",
+    features: [
+      {
+        icon: BarChart3,
+        title: "Dashboard Inteligente",
+        description: "Métricas em tempo real sobre agendamentos, faturamento, clientes e performance da equipe.",
+        impact: "Visão 360º do negócio",
+        stat: "Real-time"
+      },
+      {
+        icon: Users,
+        title: "Gestão Completa de Clientes",
+        description: "Histórico detalhado, preferências, aniversários e programa de fidelidade automático.",
+        impact: "50% mais retenção",
+        stat: "+50%"
+      },
+      {
+        icon: Briefcase,
+        title: "Controle de Equipe",
+        description: "Horários, comissões, metas e produtividade. Tudo calculado automaticamente.",
+        impact: "Zero erros de comissão",
+        stat: "0 erros"
+      }
+    ]
   },
   {
-    icon: Briefcase,
-    title: "Controle de Funcionários",
-    description: "Gerencie horários, comissões, desempenho e produtividade da sua equipe.",
+    category: "Presença digital profissional",
+    tagline: "Seu salão online com site personalizado e e-commerce integrado",
+    color: "#8b3d35",
+    gradient: "from-[#8b3d35]/10 to-[#a8524a]/10",
+    borderColor: "border-[#8b3d35]/20",
+    features: [
+      {
+        icon: Globe,
+        title: "Site Personalizado",
+        description: "Landing page linda e responsiva com sua identidade visual. Seus clientes te encontram no Google.",
+        impact: "SEO otimizado",
+        stat: "Top 3"
+      },
+      {
+        icon: ShoppingBag,
+        title: "Mini E-commerce",
+        description: "Venda produtos online com pagamento integrado. Entrega ou retirada no salão.",
+        impact: "Nova fonte de receita",
+        stat: "+35%"
+      },
+      {
+        icon: Scissors,
+        title: "Catálogo Digital",
+        description: "Seus serviços com fotos, descrições e preços. Cliente escolhe profissional e horário.",
+        impact: "Conversão de 60%",
+        stat: "60%"
+      }
+    ]
   },
   {
-    icon: Scissors,
-    title: "Catálogo de Serviços",
-    description: "Organize todos os seus serviços com preços, duração e profissionais responsáveis.",
-  },
-  {
-    icon: DollarSign,
-    title: "Financeiro Completo",
-    description: "Controle de caixa, contas a pagar e receber, relatórios financeiros detalhados.",
-  },
-  {
-    icon: BarChart3,
-    title: "Relatórios e Análises",
-    description: "Dashboards intuitivos com métricas de desempenho e insights para seu negócio.",
-  },
+    category: "Financeiro sob controle",
+    tagline: "Saúde financeira em tempo real para decisões inteligentes",
+    color: "#db6f57",
+    gradient: "from-[#db6f57]/10 to-[#e88c76]/10",
+    borderColor: "border-[#db6f57]/20",
+    features: [
+      {
+        icon: DollarSign,
+        title: "Controle de Caixa",
+        description: "Entradas, saídas, contas a pagar e receber. Relatórios fiscais automáticos.",
+        impact: "Compliance total",
+        stat: "100%"
+      },
+      {
+        icon: TrendingUp,
+        title: "Análises Financeiras",
+        description: "Entenda o que dá mais lucro, qual profissional vende mais, horários de pico e muito mais.",
+        impact: "Decisões baseadas em dados",
+        stat: "Data-driven"
+      },
+      {
+        icon: Shield,
+        title: "Comissões Automáticas",
+        description: "Sistema calcula comissões de cada profissional automaticamente. Zero disputas.",
+        impact: "Transparência total",
+        stat: "Auto"
+      }
+    ]
+  }
 ]
+
+// Card de feature individual
+const FeatureCard = ({ feature, color, index }: any) => {
+  const cardRef = useRef(null)
+  const isInView = useInView(cardRef, { once: true, margin: "-100px" })
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+    >
+      <Card className="group relative p-8 h-full bg-white hover:bg-gradient-to-br hover:from-white hover:to-[#faf8f6] border border-[#d8ccc4] hover:border-[#c55a42]/30 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden">
+        {/* Decoração de fundo */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-full blur-3xl"
+          style={{ backgroundColor: color }}
+        />
+        
+        {/* Ícone */}
+        <div className="relative">
+          <div 
+            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-110"
+            style={{ 
+              backgroundColor: `${color}15`,
+              border: `2px solid ${color}30`
+            }}
+          >
+            <feature.icon 
+              className="w-8 h-8 transition-transform duration-300 group-hover:rotate-3" 
+              style={{ color }} 
+            />
+          </div>
+
+          {/* Badge de impacto */}
+          <div className="absolute -top-2 -right-2 bg-gradient-to-r from-[#4f6f64] to-[#3d574f] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+            {feature.stat}
+          </div>
+        </div>
+
+        {/* Conteúdo */}
+        <h3 className="text-2xl font-bold mb-3 text-[#2a2420] group-hover:text-[#8b3d35] transition-colors">
+          {feature.title}
+        </h3>
+        <p className="text-[#4f6f64] leading-relaxed mb-4 text-base">
+          {feature.description}
+        </p>
+
+        {/* Impacto */}
+        <div className="flex items-center gap-2 text-sm font-semibold" style={{ color }}>
+          <TrendingUp className="w-4 h-4" />
+          <span>{feature.impact}</span>
+        </div>
+
+        {/* Linha decorativa no hover */}
+        <div 
+          className="absolute bottom-0 left-0 h-1 w-0 group-hover:w-full transition-all duration-500"
+          style={{ backgroundColor: color }}
+        />
+      </Card>
+    </motion.div>
+  )
+}
+
+// Seção de benefícios
+const BenefitSection = ({ section, index }: any) => {
+  const sectionRef = useRef(null)
+  const isInView = useInView(sectionRef, { once: true, margin: "-50px" })
+
+  return (
+    <motion.div
+      ref={sectionRef}
+      initial={{ opacity: 0 }}
+      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+      transition={{ duration: 0.8 }}
+      className="mb-24 last:mb-0"
+    >
+      {/* Header da seção */}
+      <div className="text-center max-w-4xl mx-auto mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="inline-flex items-center gap-2 px-6 py-2 rounded-full mb-6 shadow-lg"
+          style={{ 
+            backgroundColor: `${section.color}15`,
+            border: `2px solid ${section.color}30`
+          }}
+        >
+          <CheckCircle2 className="w-5 h-5" style={{ color: section.color }} />
+          <span className="font-bold text-[#2a2420] uppercase tracking-wide text-sm">
+            {section.category}
+          </span>
+        </motion.div>
+
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4 text-[#2a2420]"
+        >
+          {section.tagline}
+        </motion.h2>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="w-24 h-1 mx-auto rounded-full"
+          style={{ backgroundColor: section.color }}
+        />
+      </div>
+
+      {/* Grid de features */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {section.features.map((feature: any, idx: number) => (
+          <FeatureCard 
+            key={feature.title} 
+            feature={feature} 
+            color={section.color}
+            index={idx}
+          />
+        ))}
+      </div>
+    </motion.div>
+  )
+}
 
 export function FeaturesInternal() {
   return (
-    <section id="funcionalidades" className="py-24 sm:py-32">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="funcionalidades" className="py-32 relative overflow-hidden">
+      {/* Background decorativo */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#faf8f6] via-white to-[#faf8f6]" />
+      
+      {/* Padrão de fundo */}
+      <div className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b3d35' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}
+      />
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        
+        {/* Header principal */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-16"
-          style={{filter: 'drop-shadow(2px 2px 2px #11111140)'}}
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-4xl mx-auto mb-24"
         >
-          <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-balance mb-6">
-            Funcionalidades que <span className="text-accent">transformam</span> seu negócio
+          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#db6f57]/10 to-[#8b3d35]/10 border border-[#db6f57]/20 mb-8">
+            <Zap className="w-5 h-5 text-[#db6f57]" />
+            <span className="font-bold text-[#8b3d35] uppercase tracking-wide text-sm">
+              Funcionalidades que transformam
+            </span>
+          </div>
+
+          <h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-[#2a2420] leading-[1.1]">
+            Foque no que importa:{" "}
+            <span className="bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent">
+              seus clientes
+            </span>
           </h2>
-          <p className="text-lg sm:text-xl text-muted-foreground text-balance leading-relaxed">
-            Tudo que você precisa para gerenciar seu salão com eficiência e profissionalismo
+
+          <p className="text-xl sm:text-2xl text-[#4f6f64] leading-relaxed">
+            Deixe a tecnologia cuidar da gestão. Nós automatizamos o chato,{" "}
+            <span className="text-[#8b3d35] font-semibold">você cuida do que ama</span>.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+        {/* Seções de benefícios */}
+        {benefitSections.map((section, index) => (
+          <BenefitSection key={section.category} section={section} index={index} />
+        ))}
+
+        {/* CTA final */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mt-24 p-12 rounded-3xl bg-gradient-to-br from-[#db6f57] to-[#8b3d35] relative overflow-hidden"
+        >
+          {/* Padrão decorativo */}
+          <div className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          />
+
+          <div className="relative z-10">
+            <Heart className="w-16 h-16 text-white mx-auto mb-6" />
+            <h3 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+              Pronto para transformar seu salão?
+            </h3>
+            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+              Comece grátis hoje. Sem cartão de crédito. Sem compromisso.
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center gap-3 px-10 py-5 bg-white text-[#8b3d35] rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300"
             >
-              <Card className="p-6 h-full hover:shadow-lg transition-shadow duration-300 bg-card border-border/50 rounded-xl">
-                <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-6 shadow" >
-                  <feature.icon className="w-7 h-7 text-accent" style={{filter: 'drop-shadow(2px 2px 2px #11111140)'}}/>
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-balance">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed text-balance">{feature.description}</p>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+              Teste grátis por 14 dias
+              <ArrowRight className="w-6 h-6" />
+            </motion.button>
+          </div>
+        </motion.div>
+
       </div>
     </section>
   )

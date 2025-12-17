@@ -7,6 +7,8 @@ import './globals.css'; // Mantenha apenas esta importação de CSS
 // import './theme.css'
 
 import PrimeProvider from "@/components/PrimeProvider"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import ReactQueryProvider from "@/providers/ReactQueryProvider"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -34,6 +36,16 @@ export const metadata: Metadata = {
   }
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5,
+    },
+  },
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -43,9 +55,11 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${playfair.variable} ${inter.variable} overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-accent scrollbar-track-transparent`}>
       <body className="font-sans antialiased ">
         <Suspense fallback={<div>Loading...</div>}>
-          <PrimeProvider>
-            {children}
-          </PrimeProvider>          
+          <ReactQueryProvider>
+            <PrimeProvider>
+              {children}
+            </PrimeProvider>
+          </ReactQueryProvider>                  
           <Analytics />
         </Suspense>
       </body>
