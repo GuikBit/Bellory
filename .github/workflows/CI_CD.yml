@@ -13,51 +13,81 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Build do Next.js
+      # 1. Configurar SSH Agent
+      - name: Configurar SSH Agent
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # 2. Configurar known_hosts
+      - name: Configurar Known Hosts
         run: |
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      # 3. Build no servidor
+      - name: Build do Next.js no Servidor
+        run: |
+          REPO_URL="git@github.com:GuikBit/Bellory.git"
           BUILD_DIR="/var/www/site"
 
-          echo "--- Copiando código para diretório de build..."
-          rm -rf "$BUILD_DIR"
-          mkdir -p "$BUILD_DIR"
-          cp -r . "$BUILD_DIR/"
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+            set -e
 
-          cd "$BUILD_DIR"
+            if [ -d "$BUILD_DIR/.git" ]; then
+              echo "--- Repositório existe. Atualizando..."
+              cd "$BUILD_DIR"
+              git checkout main
+              git pull origin main
+            else
+              echo "--- Clone inicial..."
+              mkdir -p "$BUILD_DIR"
+              git clone -b main "$REPO_URL" "$BUILD_DIR"
+              cd "$BUILD_DIR"
+            fi
 
-          echo "--- Instalando dependências..."
-          npm ci
+            echo "--- Instalando dependências..."
+            npm ci
 
-          echo "--- Build do Next.js..."
-          npm run build
+            echo "--- Build do Next.js..."
+            npm run build
+          EOF
 
+      # 4. Deploy e restart do serviço
       - name: Deploy e Restart Next.js
         run: |
-          PROD_DIR="/var/www/html/site"
-          BUILD_DIR="/var/www/site"
-          APP_NAME="next-site"
-          PORT=3000
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            set -e
 
-          echo "--- Preparando diretório de produção..."
-          rm -rf "$PROD_DIR"
-          mkdir -p "$PROD_DIR"
+            PROD_DIR="/var/www/html/site"
+            BUILD_DIR="/var/www/site"
+            APP_NAME="next-site"
+            PORT=3000
 
-          echo "--- Copiando arquivos necessários..."
-          cp -r "$BUILD_DIR/.next" "$PROD_DIR/"
-          cp -r "$BUILD_DIR/public" "$PROD_DIR/" 2>/dev/null || true
-          cp "$BUILD_DIR/package.json" "$PROD_DIR/"
-          cp "$BUILD_DIR/package-lock.json" "$PROD_DIR/"
-          cp "$BUILD_DIR/next.config.js" "$PROD_DIR/" 2>/dev/null || true
+            echo "--- Preparando diretório de produção..."
 
-          cd "$PROD_DIR"
+            rm -rf "$PROD_DIR"
+            mkdir -p "$PROD_DIR"
 
-          echo "--- Instalando dependências de produção..."
-          npm ci --omit=dev
+            echo "--- Copiando arquivos necessários..."
+            cp -r "$BUILD_DIR/.next" "$PROD_DIR/"
+            cp -r "$BUILD_DIR/public" "$PROD_DIR/"
+            cp "$BUILD_DIR/package.json" "$PROD_DIR/"
+            cp "$BUILD_DIR/package-lock.json" "$PROD_DIR/"
+            cp "$BUILD_DIR/next.config.js" "$PROD_DIR/" 2>/dev/null || true
 
-          echo "--- Reiniciando aplicação com PM2..."
-          pm2 delete "$APP_NAME" 2>/dev/null || true
+            cd "$PROD_DIR"
 
-          pm2 start npm --name "$APP_NAME" -- start -- -p $PORT
+            echo "--- Instalando dependências de produção..."
+            npm ci --omit=dev
 
-          pm2 save
+            echo "--- Reiniciando aplicação com PM2..."
+            pm2 delete "$APP_NAME" || true
 
-          echo "✅ Deploy concluído!"
+            pm2 start npm \
+              --name "$APP_NAME" \
+              -- start -- -p $PORT
+
+            pm2 save
+
+            echo "Deploy concluído com sucesso!"
+          EOF
