@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "sistema para barbearias, sistema para salões de beleza, software de estética, agenda online para negócio, gestão de barbearia, sistema de agendamento",
   authors: [{ name: "Bellory" }],
   openGraph: {
-    title: "Bellory - Sistema de Gestão para Barbearias e Salões",
+    title: "Bellory - Sistema de Gestão para o seu negócio",
     description: "Transforme a gestão do seu negócio com o Bellory",
     type: "website",
   }
