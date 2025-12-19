@@ -39,7 +39,7 @@ import Link from "next/link"
 import { themes } from "@/utils/themes"
 import { AddressForm } from "@/components/address-form-improved"
 import { ThemeSelector } from "@/components/theme-selector-improved"
-import { useMutationPostOrganizacao, useMutationValidaCNPJ } from "@/service/Querys/Organizacao"
+import { useMutationPostOrganizacao, useMutationValidaCNPJ, useMutationValidaEmail, useMutationValidaUsername } from "@/service/Querys/Organizacao"
 
 interface Theme {
   id: string
@@ -142,8 +142,8 @@ export default function Cadastro() {
 
   const {mutateAsync: postOrganizacao} = useMutationPostOrganizacao();
   const {mutateAsync: validaCNPJ, isPending} = useMutationValidaCNPJ();
-  const {mutateAsync: validaEmail, isPending: isPendingEmail} = useMutationValidaCNPJ();
-  const {mutateAsync: validaUsername, isPending: isPendingUsername} = useMutationValidaCNPJ();
+  const {mutateAsync: validaEmail, isPending: isPendingEmail} = useMutationValidaEmail();
+  const {mutateAsync: validaUsername, isPending: isPendingUsername} = useMutationValidaUsername();
   const {
     control,
     handleSubmit,
