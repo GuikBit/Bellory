@@ -42,7 +42,7 @@ export async function postOrganizacao(payload: any): Promise<Response> {
 export async function validaCNPJ(cnpj: string): Promise<Response> {
   try {
     
-    const response = await api.post<Response>(`/organizacao/verificar-cnpj/${cnpj}`);
+    const response = await api.get<Response>(`/organizacao/verificar-cnpj/${cnpj}`);
     
     return {
       success: response.data.success,
@@ -61,7 +61,7 @@ export async function validaCNPJ(cnpj: string): Promise<Response> {
 export async function validaEmail(email: string): Promise<Response> {
   try {
     
-    const response = await api.post<Response>(`/organizacao/verificar-email/${email}`);
+    const response = await api.get<Response>(`/organizacao/verificar-email/${email}`);
     
     return {
       success: response.data.success,
@@ -80,7 +80,7 @@ export async function validaEmail(email: string): Promise<Response> {
 export async function validaUsename(username: string): Promise<Response> {
   try {
     
-    const response = await api.post<Response>(`/organizacao/verificar-username/${username}`);
+    const response = await api.get<Response>(`/organizacao/verificar-username/${username}`);
     
     return {
       success: response.data.success,
