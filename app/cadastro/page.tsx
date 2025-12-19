@@ -161,87 +161,113 @@ export default function Cadastro() {
     },
   })
 
+  // Validação CNPJ
   const cnpjValue = watch("cnpj")
 
-useEffect(() => {
-  const cnpjLimpo = cnpjValue?.replace(/\D/g, "") || ""
-  
-  if (cnpjLimpo.length === 14) {
-    validaCNPJ(cnpjLimpo)
-      .then((response) => {
-        setCnpjFound(true)
-        setCnpjValid(true)
-        setCnpjError("✓ CNPJ válido e disponível")
-      })
-      .catch((error) => {
-        setCnpjFound(true)
-        setCnpjValid(false)
-        const errorMessage = error?.response?.data?.message || "CNPJ inválido ou já cadastrado"
-        setCnpjError(errorMessage)
-      })
-  } else if (cnpjLimpo.length < 14) {
-    setCnpjFound(false)
-    setCnpjValid(false)
-    setCnpjError("")
-  }
-}, [cnpjValue, validaCNPJ])
-
-const emailValue = watch("email")
-
-useEffect(() => {
-  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
-  
-  if (emailValue && emailRegex.test(emailValue)) {
-    const timeoutId = setTimeout(() => {
-      validaEmail(emailValue)
+  useEffect(() => {
+    const cnpjLimpo = cnpjValue?.replace(/\D/g, "") || ""
+    
+    if (cnpjLimpo.length === 14) {
+      validaCNPJ(cnpjLimpo)
         .then((response) => {
-          setEmailFound(true)
-          setEmailValid(true)
-          setEmailError("✓ Email disponível")
+          setCnpjFound(true)
+          
+          // Se dados === false, CNPJ está disponível
+          if (response.dados === false) {
+            setCnpjValid(true)
+            setCnpjError("✓ CNPJ válido e disponível")
+          } else {
+            // Se dados === true, CNPJ já está cadastrado
+            setCnpjValid(false)
+            setCnpjError(response.message || "CNPJ já cadastrado no sistema")
+          }
         })
         .catch((error) => {
-          setEmailFound(true)
-          setEmailValid(false)
-          const errorMessage = error?.response?.data?.message || "Email já cadastrado"
-          setEmailError(errorMessage)
+          setCnpjFound(true)
+          setCnpjValid(false)
+          const errorMessage = error?.response?.data?.message || "Erro ao validar CNPJ"
+          setCnpjError(errorMessage)
         })
-    }, 500) // Debounce de 500ms
+    } else if (cnpjLimpo.length < 14) {
+      setCnpjFound(false)
+      setCnpjValid(false)
+      setCnpjError("")
+    }
+  }, [cnpjValue, validaCNPJ])
 
-    return () => clearTimeout(timeoutId)
-  } else {
-    setEmailFound(false)
-    setEmailValid(false)
-    setEmailError("")
-  }
-}, [emailValue, validaEmail])
+  // Validação de Email
+  const emailValue = watch("email")
 
-// Nova validação de Username
-const usernameValue = watch("login")
+  useEffect(() => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+    
+    if (emailValue && emailRegex.test(emailValue)) {
+      const timeoutId = setTimeout(() => {
+        validaEmail(emailValue)
+          .then((response) => {
+            setEmailFound(true)
+            
+            // Se dados === false, email está disponível
+            if (response.dados === false) {
+              setEmailValid(true)
+              setEmailError("✓ Email disponível")
+            } else {
+              // Se dados === true, email já está cadastrado
+              setEmailValid(false)
+              setEmailError(response.message || "Email já cadastrado no sistema")
+            }
+          })
+          .catch((error) => {
+            setEmailFound(true)
+            setEmailValid(false)
+            const errorMessage = error?.response?.data?.message || "Erro ao validar email"
+            setEmailError(errorMessage)
+          })
+      }, 500) // Debounce de 500ms
 
-useEffect(() => {
-  if (usernameValue && usernameValue.length >= 3) {
-    const timeoutId = setTimeout(() => {
-      validaUsername(usernameValue)
-        .then((response) => {
-          setUsernameFound(true)
-          setUsernameValid(true)
-          setUsernameError("✓ Username disponível")
-        })
-        .catch((error) => {
-          setUsernameFound(true)
-          setUsernameValid(false)
-          const errorMessage = error?.response?.data?.message || "Username já cadastrado"
-          setUsernameError(errorMessage)
-        })
-    }, 500) // Debounce de 500ms
+      return () => clearTimeout(timeoutId)
+    } else {
+      setEmailFound(false)
+      setEmailValid(false)
+      setEmailError("")
+    }
+  }, [emailValue, validaEmail])
 
-    return () => clearTimeout(timeoutId)
-  } else {
-    setUsernameFound(false)
-    setUsernameValid(false)
-    setUsernameError("")
-  }
-}, [usernameValue, validaUsername])
+  // Validação de Username
+  const usernameValue = watch("login")
+
+  useEffect(() => {
+    if (usernameValue && usernameValue.length >= 3) {
+      const timeoutId = setTimeout(() => {
+        validaUsername(usernameValue)
+          .then((response) => {
+            setUsernameFound(true)
+            
+            // Se dados === false, username está disponível
+            if (response.dados === false) {
+              setUsernameValid(true)
+              setUsernameError("✓ Username disponível")
+            } else {
+              // Se dados === true, username já está cadastrado
+              setUsernameValid(false)
+              setUsernameError(response.message || "Username já cadastrado no sistema")
+            }
+          })
+          .catch((error) => {
+            setUsernameFound(true)
+            setUsernameValid(false)
+            const errorMessage = error?.response?.data?.message || "Erro ao validar username"
+            setUsernameError(errorMessage)
+          })
+      }, 500) // Debounce de 500ms
+
+      return () => clearTimeout(timeoutId)
+    } else {
+      setUsernameFound(false)
+      setUsernameValid(false)
+      setUsernameError("")
+    }
+  }, [usernameValue, validaUsername])
 
   const publicoAlvoOptions = [
     { name: 'Masculino', code: 'M' },
