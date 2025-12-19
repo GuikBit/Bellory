@@ -1,7 +1,7 @@
 "use client"
 
 import { Header } from "@/components/header"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "primereact/button"
 import { Card } from "primereact/card"
 import { InputText } from "primereact/inputtext"
@@ -39,6 +39,7 @@ import Link from "next/link"
 import { themes } from "@/utils/themes"
 import { AddressForm } from "@/components/address-form-improved"
 import { ThemeSelector } from "@/components/theme-selector-improved"
+import { useMutationPostOrganizacao, useMutationValidaCNPJ } from "@/service/Querys/Organizacao"
 
 interface Theme {
   id: string
@@ -126,6 +127,23 @@ export default function Cadastro() {
   const [selectedPlan, setSelectedPlan] = useState<string>("")
   const [isAnnual, setIsAnnual] = useState(false)
 
+  const [cnpjFound, setCnpjFound] = useState(false)
+  const [cnpjError, setCnpjError] = useState("")
+  const [cnpjValid, setCnpjValid] = useState(false)
+
+  const [emailFound, setEmailFound] = useState(false)
+  const [emailError, setEmailError] = useState("")
+  const [emailValid, setEmailValid] = useState(false)
+
+  // Novos estados para Username
+  const [usernameFound, setUsernameFound] = useState(false)
+  const [usernameError, setUsernameError] = useState("")
+  const [usernameValid, setUsernameValid] = useState(false)
+
+  const {mutateAsync: postOrganizacao} = useMutationPostOrganizacao();
+  const {mutateAsync: validaCNPJ, isPending} = useMutationValidaCNPJ();
+  const {mutateAsync: validaEmail, isPending: isPendingEmail} = useMutationValidaCNPJ();
+  const {mutateAsync: validaUsername, isPending: isPendingUsername} = useMutationValidaCNPJ();
   const {
     control,
     handleSubmit,
@@ -142,6 +160,88 @@ export default function Cadastro() {
       tema: ""
     },
   })
+
+  const cnpjValue = watch("cnpj")
+
+useEffect(() => {
+  const cnpjLimpo = cnpjValue?.replace(/\D/g, "") || ""
+  
+  if (cnpjLimpo.length === 14) {
+    validaCNPJ(cnpjLimpo)
+      .then((response) => {
+        setCnpjFound(true)
+        setCnpjValid(true)
+        setCnpjError("✓ CNPJ válido e disponível")
+      })
+      .catch((error) => {
+        setCnpjFound(true)
+        setCnpjValid(false)
+        const errorMessage = error?.response?.data?.message || "CNPJ inválido ou já cadastrado"
+        setCnpjError(errorMessage)
+      })
+  } else if (cnpjLimpo.length < 14) {
+    setCnpjFound(false)
+    setCnpjValid(false)
+    setCnpjError("")
+  }
+}, [cnpjValue, validaCNPJ])
+
+const emailValue = watch("email")
+
+useEffect(() => {
+  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+  
+  if (emailValue && emailRegex.test(emailValue)) {
+    const timeoutId = setTimeout(() => {
+      validaEmail(emailValue)
+        .then((response) => {
+          setEmailFound(true)
+          setEmailValid(true)
+          setEmailError("✓ Email disponível")
+        })
+        .catch((error) => {
+          setEmailFound(true)
+          setEmailValid(false)
+          const errorMessage = error?.response?.data?.message || "Email já cadastrado"
+          setEmailError(errorMessage)
+        })
+    }, 500) // Debounce de 500ms
+
+    return () => clearTimeout(timeoutId)
+  } else {
+    setEmailFound(false)
+    setEmailValid(false)
+    setEmailError("")
+  }
+}, [emailValue, validaEmail])
+
+// Nova validação de Username
+const usernameValue = watch("login")
+
+useEffect(() => {
+  if (usernameValue && usernameValue.length >= 3) {
+    const timeoutId = setTimeout(() => {
+      validaUsername(usernameValue)
+        .then((response) => {
+          setUsernameFound(true)
+          setUsernameValid(true)
+          setUsernameError("✓ Username disponível")
+        })
+        .catch((error) => {
+          setUsernameFound(true)
+          setUsernameValid(false)
+          const errorMessage = error?.response?.data?.message || "Username já cadastrado"
+          setUsernameError(errorMessage)
+        })
+    }, 500) // Debounce de 500ms
+
+    return () => clearTimeout(timeoutId)
+  } else {
+    setUsernameFound(false)
+    setUsernameValid(false)
+    setUsernameError("")
+  }
+}, [usernameValue, validaUsername])
 
   const publicoAlvoOptions = [
     { name: 'Masculino', code: 'M' },
@@ -253,6 +353,11 @@ export default function Cadastro() {
     let fieldsToValidate: (keyof FormData)[] = []
 
     if (activeStep === 0) {
+      // Verifica se o CNPJ foi validado antes de prosseguir
+      if (!cnpjValid || !cnpjFound) {
+        return
+      }
+      
       fieldsToValidate = [
         "cnpj", "razaoSocial", "nomeFantasia", "email", "telefone",
         "nomeResponsavel", "emailResponsavel", "telefoneResponsavel", "publicoAlvo"
@@ -262,12 +367,10 @@ export default function Cadastro() {
     } else if (activeStep === 2) {
       fieldsToValidate = ["login", "senha", "confSenha"]
     } else if (activeStep === 3) {
-      // Valida se um tema foi selecionado
       if (!getValues("tema")) {
         return
       }
     } else if (activeStep === 4) {
-      // Valida se um plano foi selecionado
       if (!selectedPlan) {
         return
       }
@@ -358,7 +461,15 @@ export default function Cadastro() {
     // Aqui você pode fazer a chamada para sua API
     // await api.post('/empresas', finalData)
     
-    setIsSubmitted(true)
+    // setIsSubmitted(true)
+
+
+    postOrganizacao(finalData).then((response)=>{
+      console.log(response)
+      setIsSubmitted(true)
+    }).catch((error)=>{
+      console.log(error)
+    })
   }
 
   const isCurrentStepValid = () => {
@@ -367,7 +478,8 @@ export default function Cadastro() {
       return !!(
         values.cnpj && values.razaoSocial && values.nomeFantasia &&
         values.email && values.telefone && values.nomeResponsavel &&
-        values.emailResponsavel && values.telefoneResponsavel && values.publicoAlvo
+        values.emailResponsavel && values.telefoneResponsavel && 
+        values.publicoAlvo && cnpjValid && cnpjFound
       )
     } else if (activeStep === 1) {
       const values = getValues()
@@ -576,19 +688,61 @@ export default function Cadastro() {
                           <Controller
                             name="cnpj"
                             control={control}
-                            rules={{ required: "CNPJ é obrigatório" }}
+                            rules={{ 
+                              required: "CNPJ é obrigatório",
+                              validate: () => {
+                                if (!cnpjFound) return "Aguardando validação do CNPJ"
+                                if (!cnpjValid) return "CNPJ inválido ou já cadastrado"
+                                return true
+                              }
+                            }}
                             render={({ field }) => (
-                              <InputMask
-                                {...field}
-                                mask="99.999.999/9999-99"
-                                placeholder="00.000.000/0000-00"
-                                className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.cnpj ? "border-[#d15847]" : "border-[#d8ccc4] focus:border-[#db6f57]"
-                                }`}
-                              />
+                              <div className="relative">
+                                <InputMask
+                                  {...field}
+                                  mask="99.999.999/9999-99"
+                                  placeholder="00.000.000/0000-00"
+                                  className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
+                                    errors.cnpj 
+                                      ? "border-[#d15847]" 
+                                      : cnpjValid && cnpjFound
+                                      ? "border-green-500"
+                                      : cnpjFound && !cnpjValid
+                                      ? "border-[#d15847]"
+                                      : "border-[#d8ccc4] focus:border-[#db6f57]"
+                                  }`}
+                                  disabled={isPending}
+                                />
+                                {isPending && (
+                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                    <div className="w-5 h-5 border-2 border-[#db6f57] border-t-transparent rounded-full animate-spin" />
+                                  </div>
+                                )}
+                                {cnpjFound && cnpjValid && (
+                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                    <Check className="w-5 h-5 text-green-500" />
+                                  </div>
+                                )}
+                                {cnpjFound && !cnpjValid && (
+                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                    <X className="w-5 h-5 text-[#d15847]" />
+                                  </div>
+                                )}
+                              </div>
                             )}
                           />
-                          {errors.cnpj && (
+                          {isPending && (
+                            <small className="text-[#4f6f64] text-sm mt-1 block flex items-center gap-2">
+                              <div className="w-3 h-3 border-2 border-[#4f6f64] border-t-transparent rounded-full animate-spin" />
+                              Validando CNPJ...
+                            </small>
+                          )}
+                          {cnpjError && cnpjFound && (
+                            <small className={`text-sm mt-1 block ${cnpjValid ? "text-green-600" : "text-[#d15847]"}`}>
+                              {cnpjError}
+                            </small>
+                          )}
+                          {errors.cnpj && !cnpjFound && (
                             <small className="text-[#d15847] text-sm mt-1 block">{errors.cnpj.message}</small>
                           )}
                         </div>
@@ -698,19 +852,63 @@ export default function Cadastro() {
                                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                                 message: "Email inválido",
                               },
+                              validate: () => {
+                                const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+                                const email = getValues("email")
+                                
+                                if (!email || !emailRegex.test(email)) return true // Deixa a validação de pattern cuidar disso
+                                if (!emailFound) return "Aguardando validação do email"
+                                if (!emailValid) return "Email já cadastrado"
+                                return true
+                              }
                             }}
                             render={({ field }) => (
-                              <InputText
-                                {...field}
-                                type="email"
-                                placeholder="contato@empresa.com"
-                                className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.email ? "border-[#d15847]" : "border-[#d8ccc4] focus:border-[#db6f57]"
-                                }`}
-                              />
+                              <div className="relative">
+                                <InputText
+                                  {...field}
+                                  type="email"
+                                  placeholder="contato@empresa.com"
+                                  className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
+                                    errors.email 
+                                      ? "border-[#d15847]" 
+                                      : emailValid && emailFound
+                                      ? "border-green-500"
+                                      : emailFound && !emailValid
+                                      ? "border-[#d15847]"
+                                      : "border-[#d8ccc4] focus:border-[#db6f57]"
+                                  }`}
+                                  disabled={isPendingEmail}
+                                />
+                                {isPendingEmail && (
+                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                    <div className="w-5 h-5 border-2 border-[#db6f57] border-t-transparent rounded-full animate-spin" />
+                                  </div>
+                                )}
+                                {emailFound && emailValid && (
+                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                    <Check className="w-5 h-5 text-green-500" />
+                                  </div>
+                                )}
+                                {emailFound && !emailValid && (
+                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                    <X className="w-5 h-5 text-[#d15847]" />
+                                  </div>
+                                )}
+                              </div>
                             )}
                           />
-                          {errors.email && (
+                          {isPendingEmail && (
+                            <small className="text-[#4f6f64] text-sm mt-1 block flex items-center gap-2">
+                              <div className="w-3 h-3 border-2 border-[#4f6f64] border-t-transparent rounded-full animate-spin" />
+                              Validando email...
+                            </small>
+                          )}
+                          {emailError && emailFound && (
+                            <small className={`text-sm mt-1 block ${emailValid ? "text-green-600" : "text-[#d15847]"}`}>
+                              {emailError}
+                            </small>
+                          )}
+                          {errors.email && !emailFound && (
                             <small className="text-[#d15847] text-sm mt-1 block">{errors.email.message}</small>
                           )}
                         </div>
@@ -850,18 +1048,67 @@ export default function Cadastro() {
                           <Controller
                             name="login"
                             control={control}
-                            rules={{ required: "Login é obrigatório" }}
+                            rules={{ 
+                              required: "Login é obrigatório",
+                              minLength: {
+                                value: 3,
+                                message: "Mínimo 3 caracteres"
+                              },
+                              validate: () => {
+                                const username = getValues("login")
+                                
+                                if (!username || username.length < 3) return true // Deixa a validação de minLength cuidar disso
+                                if (!usernameFound) return "Aguardando validação do username"
+                                if (!usernameValid) return "Username já cadastrado"
+                                return true
+                              }
+                            }}
                             render={({ field }) => (
-                              <InputText
-                                {...field}
-                                placeholder="Escolha um nome de usuário"
-                                className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.login ? "border-[#d15847]" : "border-[#d8ccc4] focus:border-[#8b3d35]"
-                                }`}
-                              />
+                              <div className="relative">
+                                <InputText
+                                  {...field}
+                                  placeholder="Escolha um nome de usuário"
+                                  className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
+                                    errors.login 
+                                      ? "border-[#d15847]" 
+                                      : usernameValid && usernameFound
+                                      ? "border-green-500"
+                                      : usernameFound && !usernameValid
+                                      ? "border-[#d15847]"
+                                      : "border-[#d8ccc4] focus:border-[#8b3d35]"
+                                  }`}
+                                  disabled={isPendingUsername}
+                                />
+                                {isPendingUsername && (
+                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                    <div className="w-5 h-5 border-2 border-[#8b3d35] border-t-transparent rounded-full animate-spin" />
+                                  </div>
+                                )}
+                                {usernameFound && usernameValid && (
+                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                    <Check className="w-5 h-5 text-green-500" />
+                                  </div>
+                                )}
+                                {usernameFound && !usernameValid && (
+                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                    <X className="w-5 h-5 text-[#d15847]" />
+                                  </div>
+                                )}
+                              </div>
                             )}
                           />
-                          {errors.login && (
+                          {isPendingUsername && (
+                            <small className="text-[#4f6f64] text-sm mt-1 block flex items-center gap-2">
+                              <div className="w-3 h-3 border-2 border-[#4f6f64] border-t-transparent rounded-full animate-spin" />
+                              Validando username...
+                            </small>
+                          )}
+                          {usernameError && usernameFound && (
+                            <small className={`text-sm mt-1 block ${usernameValid ? "text-green-600" : "text-[#d15847]"}`}>
+                              {usernameError}
+                            </small>
+                          )}
+                          {errors.login && !usernameFound && (
                             <small className="text-[#d15847] text-sm mt-1 block">{errors.login.message}</small>
                           )}
                         </div>
@@ -1383,30 +1630,30 @@ export default function Cadastro() {
                   disabled={activeStep === 0}
                   icon={<ArrowLeft className="mr-2 w-5 h-5" />}
                   label="Voltar"
-                  className="bg-white text-[#4f6f64] border-2 border-[#d8ccc4] hover:border-[#4f6f64] hover:scale-105 transition-all px-8 py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-white text-[#4f6f64] border-2 border-[#d8ccc4] hover:border-[#4f6f64] hover:scale-105 transition-all px-5 py-2 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                   outlined
                 />
 
                 {activeStep === steps.length  ? (
                   <Button
                     type="submit"
-                    icon={<Check className="mr-2 w-5 h-5" />}
+                    icon={<Check className="mr-2"size={18} />}
                     label="Finalizar Cadastro"
                     disabled={!isCurrentStepValid()}
-                    className="bg-gradient-to-r from-[#5a7a6e] to-[#4f6f64] text-white border-0 hover:scale-105 transition-all px-8 py-3 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-[#5a7a6e] to-[#4f6f64] text-white border-0 hover:scale-105 transition-all px-5 py-2 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 ) : (
                   <Button
                     type="button"
                     onClick={handleNext}
                     disabled={!isCurrentStepValid()}
-                    icon={<ArrowRight className="ml-2" size={16} />}
+                    icon={<ArrowRight className="mr-2" size={18} />}
                     iconPos="right"
                     label="Próximo"
                     style={{ 
                       background: `linear-gradient(135deg, ${steps[activeStep].color}, ${steps[activeStep].color}dd)` 
                     }}
-                    className="text-white border-0 hover:scale-105 transition-all px-8 py-3 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-white border-0 hover:scale-105 transition-all px-5 py-2 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 )}
               </div>
