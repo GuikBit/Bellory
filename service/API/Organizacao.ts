@@ -38,3 +38,18 @@ export async function postOrganizacao(payload: any): Promise<Response> {
     throw new Error('Erro de rede ou inesperado.');
   }
 }
+
+
+export async function getBuscarCEP(cep: any): Promise<any> {
+  try {
+    const response = await api.get<Response>(`https://viacep.com.br/ws/${cep}/json`);
+    
+    return response.data;
+
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.mensagem || 'Erro ao buscar serviços.');
+    }
+    throw new Error('Erro de rede ou inesperado.');
+  }
+}

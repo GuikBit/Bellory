@@ -6,8 +6,9 @@ import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { Button } from "primereact/button"
 import { useRouter } from 'next/navigation'
+import { Spinner } from "./ui/spinner"
 
-export function Header() {
+export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boolean}) {
   const [isScrolled, setIsScrolled] = useState(true)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
@@ -181,7 +182,6 @@ export function Header() {
       >
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 ">
           <div className="flex items-center justify-between md:h-20 h-12">
-            
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group">
               <motion.div
@@ -193,113 +193,120 @@ export function Header() {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-8">
-              {navItems.map((item) => (
-                <div
-                  key={item.label}
-                  className="relative"
-                  onMouseEnter={() => item.hasDropdown && setActiveDropdown(item.key)}
-                  onMouseLeave={() => setActiveDropdown(null)}
-                >
-                  {item.hasDropdown ? (
-                    <button className="text-[#2a2420] hover:text-[#db6f57] font-medium transition-colors duration-300 relative group flex items-center gap-1">
-                      {item.label}
-                      <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${
-                        activeDropdown === item.key ? 'rotate-180' : ''
-                      }`} />
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#db6f57] group-hover:w-full transition-all duration-300" />
-                    </button>
-                  ) : (
-                    <a
-                      href={item.href}
-                      className="text-[#2a2420] hover:text-[#db6f57] font-medium transition-colors duration-300 relative group"
-                    >
-                      {item.label}
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#db6f57] group-hover:w-full transition-all duration-300" />
-                    </a>
-                  )}
-
-                  {/* Dropdown Menu */}
-                  <AnimatePresence>
-                    {item.hasDropdown && activeDropdown === item.key && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[500px] bg-white rounded-2xl shadow-2xl border border-[#e6d9d4] p-6"
+            {isMenu && (
+              <nav className="hidden lg:flex items-center gap-8">
+                {navItems.map((item) => (
+                  <div
+                    key={item.label}
+                    className="relative"
+                    onMouseEnter={() => item.hasDropdown && setActiveDropdown(item.key)}
+                    onMouseLeave={() => setActiveDropdown(null)}
+                  >
+                    {item.hasDropdown ? (
+                      <button className="text-[#2a2420] hover:text-[#db6f57] font-medium transition-colors duration-300 relative group flex items-center gap-1">
+                        {item.label}
+                        <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${
+                          activeDropdown === item.key ? 'rotate-180' : ''
+                        }`} />
+                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#db6f57] group-hover:w-full transition-all duration-300" />
+                      </button>
+                    ) : (
+                      <a
+                        href={item.href}
+                        className="text-[#2a2420] hover:text-[#db6f57] font-medium transition-colors duration-300 relative group"
                       >
-                        <div className={`grid gap-3 ${
-                          item.key === 'publicoAlvo' ? 'grid-cols-2' : 'grid-cols-1'
-                        }`}>
-                          {menuData[item.key as keyof typeof menuData]?.items.map((dropdownItem, index) => {
-                            const Icon = dropdownItem.icon
-                            return (
-                              <motion.a
-                                key={index}
-                                href={dropdownItem.href}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                                className="flex items-start gap-4 p-4 rounded-xl hover:bg-[#faf8f6] transition-all duration-300 group"
-                              >
-                                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-[#db6f57] to-[#c55a42] flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-                                  <Icon className="w-5 h-5" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    <h4 className="font-semibold text-[#2a2420] group-hover:text-[#db6f57] transition-colors">
-                                      {dropdownItem.title}
-                                    </h4>
-                                    {'badge' in dropdownItem && dropdownItem.badge && (
-                                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#db6f57] text-white font-semibold">
-                                        {dropdownItem.badge}
-                                      </span>
-                                    )}
-                                  </div>
-                                  <p className="text-sm text-[#6b5d57] mt-1">
-                                    {dropdownItem.description}
-                                  </p>
-                                </div>
-                                <ArrowRight className="w-4 h-4 text-[#db6f57] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-1" />
-                              </motion.a>
-                            )
-                          })}
-                        </div>
-
-                        {/* Footer do Dropdown (opcional) */}
-                        {item.key === 'planos' && (
-                          <div className="mt-4 pt-4 border-t border-[#e6d9d4]">
-                            <Link href="/comparar-planos" className="text-sm text-[#db6f57] hover:text-[#c55a42] font-semibold flex items-center justify-center gap-2 group">
-                              Ver comparação completa de planos
-                              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                          </div>
-                        )}
-                      </motion.div>
+                        {item.label}
+                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#db6f57] group-hover:w-full transition-all duration-300" />
+                      </a>
                     )}
-                  </AnimatePresence>
-                </div>
-              ))}
-            </nav>
+
+                    {/* Dropdown Menu */}
+                    <AnimatePresence>
+                      {item.hasDropdown && activeDropdown === item.key && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[500px] bg-white rounded-2xl shadow-2xl border border-[#e6d9d4] p-6"
+                        >
+                          <div className={`grid gap-3 ${
+                            item.key === 'publicoAlvo' ? 'grid-cols-2' : 'grid-cols-1'
+                          }`}>
+                            {menuData[item.key as keyof typeof menuData]?.items.map((dropdownItem, index) => {
+                              const Icon = dropdownItem.icon
+                              return (
+                                <motion.a
+                                  key={index}
+                                  href={dropdownItem.href}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: index * 0.05 }}
+                                  className="flex items-start gap-4 p-4 rounded-xl hover:bg-[#faf8f6] transition-all duration-300 group"
+                                >
+                                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-[#db6f57] to-[#c55a42] flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                                    <Icon className="w-5 h-5" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <h4 className="font-semibold text-[#2a2420] group-hover:text-[#db6f57] transition-colors">
+                                        {dropdownItem.title}
+                                      </h4>
+                                      {'badge' in dropdownItem && dropdownItem.badge && (
+                                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#db6f57] text-white font-semibold">
+                                          {dropdownItem.badge}
+                                        </span>
+                                      )}
+                                    </div>
+                                    <p className="text-sm text-[#6b5d57] mt-1">
+                                      {dropdownItem.description}
+                                    </p>
+                                  </div>
+                                  <ArrowRight className="w-4 h-4 text-[#db6f57] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-1" />
+                                </motion.a>
+                              )
+                            })}
+                          </div>
+
+                          {/* Footer do Dropdown (opcional) */}
+                          {item.key === 'planos' && (
+                            <div className="mt-4 pt-4 border-t border-[#e6d9d4]">
+                              <Link href="/comparar-planos" className="text-sm text-[#db6f57] hover:text-[#c55a42] font-semibold flex items-center justify-center gap-2 group">
+                                Ver comparação completa de planos
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                              </Link>
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ))}
+              </nav>
+            )}
+            
 
             {/* Desktop CTAs */}
             <div className="hidden lg:flex items-center gap-4">
               <Button
                 icon={<LogIn className="mr-2" size={16}/>}
                 label="Entrar"
-                className="bg-white text-[#8b3d35] border border-[#8b3d35] hover:border-[#db6f57] hover:text-[#db6f57] hover:scale-105 transition-all duration-300 px-6 py-3 rounded-xl font-semibold shadow-lg"
+                className="bg-white text-[#8b3d35] border border-[#8b3d35] hover:border-[#db6f57] hover:text-[#db6f57] hover:scale-105 transition-all duration-300 px-4 py-1.5 rounded-lg text-sm font-semibold shadow-lg"
                 text
+                size="small"
                 onClick={() => router.push('https://app.bellory.com.br')}
               />
-              <Link href="/cadastro">
-                <Button
-                  label="Começar grátis"
-                  icon={<ArrowRight className="mr-2" size={16} />}
-                  iconPos="right"
-                  className="bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 hover:scale-105 transition-all duration-300 px-6 py-3 rounded-xl font-semibold shadow-lg"
-                />
-              </Link>
+              {isCadastro && (
+                <Link href="/cadastro">
+                  <Button
+                    label="Começar grátis"
+                    icon={<ArrowRight className="mr-2" size={16} />}
+                    iconPos="right"
+                    className="bg-gradient-to-r from-[#db6f57] to-[#c55a42] border border-[#db6f57] hover:border-[#db6f57] text-white hover:scale-105 transition-all duration-300 px-4 py-1.5 rounded-lg text-sm font-semibold shadow-lg"
+                  />
+                </Link>
+              )}
+              
             </div>
 
             {/* Mobile Menu Button */}
@@ -394,27 +401,30 @@ export function Header() {
       </AnimatePresence>
 
       {/* Sticky promo bar (aparece no scroll) */}
-      <AnimatePresence>
-        {isScrolled && (
-          <motion.div
-            initial={{ y: -100 }}
-            animate={{ y: 80 }}
-            exit={{ y: -100 }}
-            className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-[#8b3d35] to-[#db6f57] text-white py-2 shadow-lg hidden lg:block"
-          >
-            <div className="container mx-auto px-4 flex items-center justify-center gap-4 text-sm">
-              <Sparkles className="w-4 h-4" />
-              <span className="font-semibold">
-                🎉 Oferta especial: 14 dias grátis + 20% de desconto no plano anual
-              </span>
-              <Button
-                label="Aproveitar"
-                className="bg-white text-[#8b3d35] border-0 hover:scale-105 transition-all px-4 py-1 rounded-lg font-bold text-xs"
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isMenu && (
+        <AnimatePresence>
+          {isScrolled && (
+            <motion.div
+              initial={{ y: -100 }}
+              animate={{ y: 80 }}
+              exit={{ y: -100 }}
+              className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-[#8b3d35] to-[#db6f57] text-white py-2 shadow-lg hidden lg:block"
+            >
+              <div className="container mx-auto px-4 flex items-center justify-center gap-4 text-sm">
+                <Sparkles className="w-4 h-4" />
+                <span className="font-semibold">
+                  🎉 Oferta especial: 14 dias grátis + 20% de desconto no plano anual
+                </span>
+                <Button
+                  label="Aproveitar"
+                  className="bg-white text-[#8b3d35] border-0 hover:scale-105 transition-all px-4 py-1 rounded-lg font-bold text-xs"
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
+
     </>
   )
 }

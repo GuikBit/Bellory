@@ -11,11 +11,14 @@ import {
   Zap,
   Heart,
   ArrowRight,
-  Check
+  Check,
+  Moon,
+  Sun
 } from "lucide-react"
 import { Card } from "primereact/card"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { Button } from "primereact/button"
+import { Theme, themes } from "@/utils/themes"
 
 const features = [
   {
@@ -99,32 +102,36 @@ const features = [
 ]
 
 // Elementos de demonstração de tema
-const themeExamples = [
-  {
-    name: "Elegância Bellory",
-    colors: ["#e6d9d4", "#db6f57", "#8b3d35"],
-    style: "Suave e sofisticado"
-  },
-  {
-    name: "Feminino Elegante",
-    colors: ["#FAF7FA", "#B08D9A", "#4B4453"],
-    style: "Calmo e orgânico"
-  },
-  {
-    name: "Dark Bellory",
-    colors: ["#0A0A0A", "#FE9A00", "#FFB900"],
-    style: "Calmo e orgânico"
-  },
-  {
-    name: "Masculino Clássico",
-    colors: ["#F5EFE6", "#6B4F4F", "#423838"],
-    style: "Forte e confiável"
-  },  
-]
+// const themeExamples = [
+//   {
+//     name: "Elegância Bellory",
+//     colors: ["#e6d9d4", "#db6f57", "#8b3d35"],
+//     style: "Suave e sofisticado"
+//   },
+//   {
+//     name: "Feminino Elegante",
+//     colors: ["#FAF7FA", "#B08D9A", "#4B4453"],
+//     style: "Calmo e orgânico"
+//   },
+//   {
+//     name: "Dark Bellory",
+//     colors: ["#0A0A0A", "#FE9A00", "#FFB900"],
+//     style: "Calmo e orgânico"
+//   },
+//   {
+//     name: "Masculino Clássico",
+//     colors: ["#F5EFE6", "#6B4F4F", "#423838"],
+//     style: "Forte e confiável"
+//   },  
+// ]
 
 export function FeaturesExternal() {
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
+
+  const themeArray = Object.values(themes) as Theme[];
+  const [showDetails, setShowDetails] = useState(false);
+  
 
   return (
     <section 
@@ -180,26 +187,69 @@ export function FeaturesExternal() {
           <h3 className="text-center text-2xl font-bold text-[#2a2420] mb-8">
             Escolha o tema perfeito para sua marca
           </h3>
-          <div className="grid md:grid-cols-4 gap-8 max-w-7xl mx-auto">
-            {themeExamples.map((theme, index) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            {themeArray.map((theme, index) => (
               <motion.div
                 key={theme.name}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
                 className="bg-white rounded-2xl p-6 shadow-lg border border-[#d8ccc4] hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+                onMouseEnter={() => setShowDetails(true)}
+                onMouseLeave={() => setShowDetails(false)}
               >
-                <div className="flex gap-2 mb-4">
-                  {theme.colors.map((color, i) => (
-                    <div 
-                      key={i}
-                      className="w-12 h-12 rounded-full shadow-md border-2 border-white"
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
+              
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-bold text-lg text-[#2a2420]">{theme.name}</h4>
+                  {theme.isDark ? (
+                    <Moon className="w-5 h-5 text-[#4f6f64]" />
+                  ) : (
+                    <Sun className="w-5 h-5 text-[#db6f57]" />
+                  )}
                 </div>
-                <h4 className="font-bold text-lg text-[#2a2420] mb-2">{theme.name}</h4>
-                <p className="text-sm text-[#4f6f64]">{theme.style}</p>
+                <div className="flex gap-2 mb-4">
+                  <div className="flex items-center justify-center gap-2">
+                    {[
+                      { color: theme.colors.primary, label: 'Primária' },
+                      { color: theme.colors.secondary, label: 'Secundária' },
+                      { color: theme.colors.accent, label: 'Destaque' },
+                      { color: theme.colors.background, label: 'Fundo' }
+                    ].map((item, idx) => (
+                      <div key={idx} className="relative group">
+                        <motion.div
+                          whileHover={{ scale: 1.2 }}
+                          className="w-8 h-8 rounded-full shadow-md ring-2 ring-white transition-all"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        {showDetails && (
+                          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#2a2420] text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                            {item.label}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-4 pt-4 border-t border-[#d8ccc4] overflow-hidden"
+                >
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-[#4f6f64]">Fonte Título: <span className="font-bold">{theme.fonts?.heading}</span></span>
+                    <span className="font-semibold text-[#2a2420]" style={{ fontFamily: theme.fonts?.heading }}>
+                      Aa
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs mt-2">
+                    <span className="text-[#4f6f64]">Fonte Corpo: <span className="font-bold">{theme.fonts?.body}</span></span>
+                    <span className="font-semibold text-[#2a2420]" style={{ fontFamily: theme.fonts?.body }}>
+                      Aa
+                    </span>
+                  </div>
+                </motion.div>
+                
               </motion.div>
             ))}
           </div>

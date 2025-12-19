@@ -142,7 +142,7 @@ const planFAQs = [
 ]
 
 // Card de plano
-const PlanCard = ({ plan, isAnnual, index }: any) => {
+export const PlanCard = ({ plan, isAnnual, index, isCadastro }: any) => {
   const cardRef = useRef(null)
   const isInView = useInView(cardRef, { once: true, margin: "-50px" })
 
@@ -155,12 +155,12 @@ const PlanCard = ({ plan, isAnnual, index }: any) => {
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, delay: index * 0.1 }}
-      className={`relative group ${plan.popular ? 'lg:-mt-6' : ''}`}
+      className={`relative group ${!isCadastro && plan.popular ? 'lg:-mt-6' : ''}`}
     >
       {/* Badge popular */}
       {plan.badge && (
         <div 
-          className={`absolute ${plan.popular? 'group-hover:-top-9':'group-hover:-top-6'}  -top-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full font-bold text-sm text-white shadow-xl z-10 transition-all duration-300`}
+          className={`absolute ${!isCadastro && plan.popular? 'group-hover:-top-9':'group-hover:-top-6'}  -top-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full font-bold text-sm text-white shadow-xl z-10 transition-all duration-300`}
           style={{ background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)` }}
         >
           {plan.badge}
@@ -207,41 +207,48 @@ const PlanCard = ({ plan, isAnnual, index }: any) => {
         </div>
 
         {/* CTA */}
-        <Button
-          label={plan.cta}
-          icon={<ArrowRight className="mx-2" size={16} />}
-          iconPos="right"
-          className={`w-full mb-8 py-3 px-3 rounded-xl font-medium text-base transition-all duration-300 ${
-            plan.popular
-              ? 'bg-gradient-to-r text-white border-0 hover:scale-105 shadow-lg'
-              : 'bg-white border-2 hover:scale-105'
-          }`}
-          style={plan.popular ? { 
-            background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)` 
-          } : {
-            color: plan.color,
-            borderColor: plan.color
-          }}
-        />
+        {!isCadastro && ( 
+          <Button
+            label={plan.cta}
+            icon={<ArrowRight className="mx-2" size={16} />}
+            iconPos="right"
+            className={`w-full mb-8 py-3 px-3 rounded-xl font-medium text-base transition-all duration-300 ${
+              plan.popular
+                ? 'bg-gradient-to-r text-white border-0 hover:scale-105 shadow-lg'
+                : 'bg-white border-2 hover:scale-105'
+            }`}
+            style={plan.popular ? { 
+              background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)` 
+            } : {
+              color: plan.color,
+              borderColor: plan.color
+            }}
+          />
+        )}
+        
 
         {/* Features */}
-        <ul className="space-y-3">
-          {plan.features.map((feature: any, i: number) => (
-            <li 
-              key={i}
-              className="flex items-start gap-3"
-            >
-              {feature.included ? (
-                <Check className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: plan.color }} />
-              ) : (
-                <X className="w-5 h-5 mt-0.5 flex-shrink-0 text-gray-300" />
-              )}
-              <span className={feature.included ? "text-[#2a2420]" : "text-gray-400 line-through"}>
-                {feature.text}
-              </span>
-            </li>
-          ))}
-        </ul>
+        {!isCadastro && (
+
+          <ul className="space-y-3">
+            {plan.features.map((feature: any, i: number) => (
+              <li 
+                key={i}
+                className="flex items-start gap-3"
+              >
+                {feature.included ? (
+                  <Check className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: plan.color }} />
+                ) : (
+                  <X className="w-5 h-5 mt-0.5 flex-shrink-0 text-gray-300" />
+                )}
+                <span className={feature.included ? "text-[#2a2420]" : "text-gray-400 line-through"}>
+                  {feature.text}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        
       </Card>
     </motion.div>
   )
@@ -321,7 +328,7 @@ export function Pricing() {
 
           {/* Toggle anual/mensal */}
           <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="w-[130px]"></div>
+            <div className="w-[130px]"></div>
             <span className={`font-semibold ${!isAnnual ? 'text-[#2a2420]' : 'text-[#4f6f64]'}`}>
               Mensal
             </span>

@@ -9,6 +9,8 @@ import './globals.css'; // Mantenha apenas esta importação de CSS
 import PrimeProvider from "@/components/PrimeProvider"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import ReactQueryProvider from "@/providers/ReactQueryProvider"
+import { Loader2Icon } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -42,9 +44,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" className={`${playfair.variable} ${inter.variable} overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-accent scrollbar-track-transparent`}>
+    <html lang="pt-BR" className={`${playfair.variable} ${inter.variable} overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-primary scrollbar-track-transparent`}>
       <body className="font-sans antialiased ">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Spinner />}>
           <ReactQueryProvider>
             <PrimeProvider>
               {children}

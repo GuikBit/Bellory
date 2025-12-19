@@ -27,7 +27,7 @@ export default function Home() {
     //   <FinalCTA />
     // </main>
     <main className="min-h-screen overflow-x-hidden">
-      <Header />
+      <Header isMenu={true} isCadastro={true}/>
       <Hero />
       <FeaturesInternal />
       <AIAgentSection />

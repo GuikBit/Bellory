@@ -1,6 +1,6 @@
 
 import { useMutation } from "@tanstack/react-query";
-import { postOrganizacao } from "../API/Organizacao";
+import { getBuscarCEP, postOrganizacao } from "../API/Organizacao";
 
 export function useMutationPostOrganizacao(){
     // const queryClient = useQueryClient();
@@ -15,4 +15,16 @@ export function useMutationPostOrganizacao(){
       }         
     } 
   })
+}
+
+
+export function useMutationGetBuscarCEP(){
+    // const queryClient = useQueryClient();
+    return useMutation({
+        mutationKey: ['buscarcep'],
+        mutationFn: async (cep: any) =>{
+            const response = await getBuscarCEP(cep); 
+            return response;       
+        } 
+    })
 }
