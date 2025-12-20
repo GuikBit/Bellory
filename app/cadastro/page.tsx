@@ -119,7 +119,7 @@ const steps = [
 ]
 
 export default function Cadastro() {
-  const [activeStep, setActiveStep] = useState(0)
+  const [activeStep, setActiveStep] = useState(4)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfPassword, setShowConfPassword] = useState(false)
@@ -171,7 +171,7 @@ export default function Cadastro() {
       validaCNPJ(cnpjLimpo)
         .then((response) => {
           setCnpjFound(true)
-          
+          console.log(response)
           // Se dados === false, CNPJ está disponível
           if (response.dados === false) {
             setCnpjValid(true)
@@ -234,10 +234,11 @@ export default function Cadastro() {
   }, [emailValue, validaEmail])
 
   // Validação de Username
+  // Validação de Username
   const usernameValue = watch("login")
 
   useEffect(() => {
-    if (usernameValue && usernameValue.length >= 3) {
+    if (usernameValue && usernameValue.length >= 6) {
       const timeoutId = setTimeout(() => {
         validaUsername(usernameValue)
           .then((response) => {
@@ -259,10 +260,16 @@ export default function Cadastro() {
             const errorMessage = error?.response?.data?.message || "Erro ao validar username"
             setUsernameError(errorMessage)
           })
-      }, 500) // Debounce de 500ms
+      }, 800) // Aumentei para 800ms - melhor UX
 
       return () => clearTimeout(timeoutId)
+    } else if (usernameValue && usernameValue.length < 6) {
+      // Limpa validações se tiver menos de 6 caracteres
+      setUsernameFound(false)
+      setUsernameValid(false)
+      setUsernameError("")
     } else {
+      // Limpa tudo se vazio
       setUsernameFound(false)
       setUsernameValid(false)
       setUsernameError("")
@@ -1077,13 +1084,13 @@ export default function Cadastro() {
                             rules={{ 
                               required: "Login é obrigatório",
                               minLength: {
-                                value: 3,
-                                message: "Mínimo 3 caracteres"
+                                value: 6,
+                                message: "Mínimo 6 caracteres"
                               },
                               validate: () => {
                                 const username = getValues("login")
                                 
-                                if (!username || username.length < 3) return true // Deixa a validação de minLength cuidar disso
+                                if (!username || username.length < 6) return true // Deixa a validação de minLength cuidar disso
                                 if (!usernameFound) return "Aguardando validação do username"
                                 if (!usernameValid) return "Username já cadastrado"
                                 return true
@@ -1093,8 +1100,8 @@ export default function Cadastro() {
                               <div className="relative">
                                 <InputText
                                   {...field}
-                                  placeholder="Escolha um nome de usuário"
-                                  className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
+                                  placeholder="Escolha um nome de usuário (mínimo 6 caracteres)"
+                                  className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${
                                     errors.login 
                                       ? "border-[#d15847]" 
                                       : usernameValid && usernameFound
@@ -1103,23 +1110,20 @@ export default function Cadastro() {
                                       ? "border-[#d15847]"
                                       : "border-[#d8ccc4] focus:border-[#8b3d35]"
                                   }`}
-                                  disabled={isPendingUsername}
+                                  // Removido o disabled para não perder foco
                                 />
-                                {isPendingUsername && (
-                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                {/* Indicador sempre visível no canto direito */}
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                  {isPendingUsername && (
                                     <div className="w-5 h-5 border-2 border-[#8b3d35] border-t-transparent rounded-full animate-spin" />
-                                  </div>
-                                )}
-                                {usernameFound && usernameValid && (
-                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                  )}
+                                  {!isPendingUsername && usernameFound && usernameValid && (
                                     <Check className="w-5 h-5 text-green-500" />
-                                  </div>
-                                )}
-                                {usernameFound && !usernameValid && (
-                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                  )}
+                                  {!isPendingUsername && usernameFound && !usernameValid && (
                                     <X className="w-5 h-5 text-[#d15847]" />
-                                  </div>
-                                )}
+                                  )}
+                                </div>
                               </div>
                             )}
                           />
@@ -1129,7 +1133,7 @@ export default function Cadastro() {
                               Validando username...
                             </small>
                           )}
-                          {usernameError && usernameFound && (
+                          {usernameError && usernameFound && !isPendingUsername && (
                             <small className={`text-sm mt-1 block ${usernameValid ? "text-green-600" : "text-[#d15847]"}`}>
                               {usernameError}
                             </small>
@@ -1660,7 +1664,7 @@ export default function Cadastro() {
                   outlined
                 />
 
-                {activeStep === steps.length  ? (
+                {activeStep === steps.length - 1 ? (
                   <Button
                     type="submit"
                     icon={<Check className="mr-2"size={18} />}

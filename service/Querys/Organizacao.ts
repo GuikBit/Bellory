@@ -24,7 +24,7 @@ export function useMutationValidaCNPJ(){
     mutationFn: async (payload: any) =>{
       const response = await validaCNPJ(payload); 
       if (response.success) {
-        return response.dados;
+        return response;
       }  else {
         throw new Error(response.message);
       }         
@@ -39,7 +39,7 @@ export function useMutationValidaEmail(){
     mutationFn: async (payload: any) =>{
       const response = await validaEmail(payload); 
       if (response.success) {
-        return response.dados;
+        return response;
       }  else {
         throw new Error(response.message);
       }         
@@ -54,7 +54,7 @@ export function useMutationValidaUsername(){
     mutationFn: async (payload: any) =>{
       const response = await validaUsename(payload); 
       if (response.success) {
-        return response.dados;
+        return response;
       }  else {
         throw new Error(response.message);
       }         
