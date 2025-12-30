@@ -386,7 +386,6 @@ export default function Cadastro() {
     let fieldsToValidate: (keyof FormData)[] = []
 
     if (activeStep === 0) {
-      // Verifica se o CNPJ foi validado antes de prosseguir
       if (!cnpjValid || !cnpjFound) {
         return
       }
@@ -407,9 +406,12 @@ export default function Cadastro() {
       if (!selectedPlan) {
         return
       }
+      // CORREÇÃO 1: Salvar os valores do plano no formulário
       setValue("planoId", selectedPlan)
       setValue("plano", isAnnual ? "anual" : "mensal")
+      // NÃO fazer validação de campos aqui, apenas verificar se tem plano selecionado
     }
+    // CORREÇÃO 2: Remover o else if do step 4 que estava duplicado
 
     const isValid = fieldsToValidate.length === 0 || await trigger(fieldsToValidate)
 
@@ -512,19 +514,26 @@ export default function Cadastro() {
         values.cnpj && values.razaoSocial && values.nomeFantasia &&
         values.email && values.telefone && values.nomeResponsavel &&
         values.emailResponsavel && values.telefoneResponsavel && 
-        values.publicoAlvo && cnpjValid && cnpjFound
+        values.publicoAlvo && cnpjValid && cnpjFound && 
+        emailValid && emailFound // CORREÇÃO 3: Adicionar validação de email
       )
     } else if (activeStep === 1) {
       const values = getValues()
       return !!(values.cep && values.rua && values.numero && values.bairro && values.cidade && values.estado)
     } else if (activeStep === 2) {
       const values = getValues()
-      return !!(values.login && values.senha && values.confSenha && values.senha === values.confSenha)
+      // CORREÇÃO 4: Adicionar validação de username
+      return !!(
+        values.login && values.senha && values.confSenha && 
+        values.senha === values.confSenha &&
+        usernameValid && usernameFound
+      )
     } else if (activeStep === 3) {
       return !!getValues("tema")
     } else if (activeStep === 4) {
       return !!selectedPlan
     } else if (activeStep === 5) {
+      // CORREÇÃO 5: Step 5 é apenas visualização, sempre válido
       return true
     }
     return true
