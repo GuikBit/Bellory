@@ -25,17 +25,41 @@ export const AddressForm = ({ control, errors, setValue, watch }: AddressFormPro
   const latitude = watch("latitude")
   const longitude = watch("longitude")
 
+  const numero = watch("numero")
+
   // Busca automática quando CEP estiver completo
   useEffect(() => {
-    const cepLimpo = cepValue?.replace(/\D/g, "") || ""
-    
+    const cepLimpo = cepValue?.replace(/\D/g, "") || ""    
     if (cepLimpo.length === 8 && !cepFound) {
       buscarCEP()
     } else if (cepLimpo.length < 8) {
       setCepFound(false)
       setCepError("")
+
+      setValue("rua", "")
+      setValue("bairro", "")
+      setValue("cidade", "")
+      setValue("estado", "")
+      setValue("complemento", "")
+      setValue("numero", "")
     }
   }, [cepValue])
+
+
+  useEffect(() => {
+    const fetchCoordenadas = async () => {
+      if (numero !== null && numero !== undefined && numero !== "") {
+        const logradouro = watch("rua");
+        const bairro = watch("bairro");
+        const cidade = watch("cidade");
+        const estado = watch("estado");
+
+        // Ajuste: Remover 'data.localidade' e 'data.uf', usar as variáveis corretas
+        await buscarCoordenadas(logradouro, cidade, estado, numero);
+      }
+    };
+    fetchCoordenadas();
+  }, [numero]);
 
   // Função para buscar CEP
   const buscarCEP = async () => {
@@ -80,9 +104,9 @@ export const AddressForm = ({ control, errors, setValue, watch }: AddressFormPro
   }
 
   // Função para buscar coordenadas
-  const buscarCoordenadas = async (rua: string, cidade: string, estado: string) => {
+  const buscarCoordenadas = async (rua: string, cidade: string, estado: string, numero?: number) => {
     try {
-      const endereco = `${rua}, ${cidade}, ${estado}, Brasil`
+      const endereco = `${rua}, ${numero}, ${cidade}, ${estado}, Brasil`
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}&limit=1`
       )
