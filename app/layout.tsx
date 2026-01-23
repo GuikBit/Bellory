@@ -31,6 +31,9 @@ export const metadata: Metadata = {
   keywords:
     "sistema para barbearias, sistema para salões de beleza, software de estética, agenda online para negócio, gestão de barbearia, sistema de agendamento",
   authors: [{ name: "Bellory" }],
+  verification: {
+    google: "GaRq4KadKmbKwHQPZpC0fR3GvaT80d6nZnKh4KzOgF0",
+  },
   openGraph: {
     title: "Bellory - Sistema de Gestão para o seu negócio",
     description: "Transforme a gestão do seu negócio com o Bellory",
