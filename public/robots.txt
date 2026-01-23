@@ -1,0 +1,30 @@
+# robots.txt para Bellory - Sistema de Gestão
+# Permitir todos os crawlers em todas as páginas
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://bellory.com.br/sitemap.xml
+
+# Bloquear acesso a diretórios sensíveis
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Permitir crawling de assets estáticos
+Allow: /public/
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.webp
+Allow: /*.svg
+
+# Crawl-delay para crawlers específicos (opcional)
+# User-agent: Googlebot
+# Crawl-delay: 0
+
+# User-agent: Bingbot
+# Crawl-delay: 1
