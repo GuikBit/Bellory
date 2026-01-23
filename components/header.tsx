@@ -132,7 +132,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
         {
           icon: Gift,
           title: "Plano Gratuito",
-          description: "Ideal para começar - até 50 agendamentos/mês",
+          description: "Ideal para começar",
           href: "#planos",
           badge: "Grátis"
         },
@@ -179,9 +179,11 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
         }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500  ${
           isScrolled
-            ? 'backdrop-blur-md bg-white/95 shadow-xl border-b border-[#e6d9d4]/50'
+            ? 'md:backdrop-blur-md bg-white md:bg-white/95 md:shadow-xl md:border-b md:border-[#e6d9d4]/50'
             : 'bg-transparent '
-        }`}
+          }
+          ${isMobileMenuOpen ? 'bg-white':'bg-transparent'}
+        `}
       >
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 ">
           <div className="flex items-center justify-between md:h-20 h-12">
@@ -226,7 +228,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                       <motion.button
                         whileHover={{ y: -2 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="text-[#2a2420] hover:text-[#db6f57] font-medium transition-colors duration-300 relative group flex items-center gap-1"
+                        className="text-[#2a2420] hover:text-[#db6f57] font-medium transition-colors duration-300 relative group flex items-center gap-3"
                       >
                         {item.label}
                         <motion.div
@@ -250,7 +252,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                         href={item.href}
                         whileHover={{ y: -2 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="text-[#2a2420] hover:text-[#db6f57] font-medium transition-colors duration-300 relative group"
+                        className="text-[#2a2420]  hover:text-[#db6f57] font-medium transition-colors duration-300 relative group"
                       >
                         {item.label}
                         <motion.span
@@ -288,7 +290,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                             duration: 0.4,
                             ease: [0.22, 1, 0.36, 1]
                           }}
-                          className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-[500px] bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-[#e6d9d4]/50 p-6 overflow-hidden"
+                          className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-[400px] bg-white backdrop-blur-xl rounded-2xl shadow-2xl border border-[#e6d9d4]/50 p-6 overflow-hidden"
                           style={{
                             boxShadow: "0 20px 60px -15px rgba(219, 111, 87, 0.2), 0 10px 20px -10px rgba(0, 0, 0, 0.1)"
                           }}
@@ -297,7 +299,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#db6f57]/10 to-transparent rounded-full blur-3xl" />
 
                           <div className={`grid gap-3 relative z-10 ${
-                            item.key === 'publicoAlvo' ? 'grid-cols-2' : 'grid-cols-1'
+                            item.key === 'publicoAlvo' ? 'grid-cols-1' : 'grid-cols-1'
                           }`}>
                             {menuData[item.key as keyof typeof menuData]?.items.map((dropdownItem, index) => {
                               const Icon = dropdownItem.icon
@@ -313,11 +315,11 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                     ease: [0.22, 1, 0.36, 1]
                                   }}
                                   whileHover={{
-                                    scale: 1.02,
-                                    y: -4,
+                                    scale: 1.01,
+                                    y: -2,
                                     transition: { duration: 0.2 }
                                   }}
-                                  className="flex items-start gap-4 p-4 rounded-xl hover:bg-white hover:shadow-lg transition-all duration-300 group relative overflow-hidden"
+                                  className="flex items-start gap-4 p-2   transition-all duration-300 group relative overflow-hidden hover:border-r hover:border-r-4 border-r-[#db6f57]"
                                 >
                                   {/* Efeito de brilho no hover */}
                                   <motion.div
@@ -333,16 +335,16 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                       scale: 1.15
                                     }}
                                     transition={{ duration: 0.5 }}
-                                    className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-[#db6f57] to-[#c55a42] flex items-center justify-center text-white shadow-md relative z-10"
+                                    className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-[#db6f57]/70 to-[#c55a42] flex items-center justify-center text-white shadow-md relative z-10"
                                   >
                                     <Icon className="w-5 h-5" />
                                   </motion.div>
 
                                   <div className="flex-1 min-w-0 relative z-10">
                                     <div className="flex items-center gap-2">
-                                      <h4 className="font-semibold text-[#2a2420] group-hover:text-[#db6f57] transition-colors">
+                                      <h5 className="font-semibold text-[#2a2420] group-hover:text-[#db6f57] transition-colors">
                                         {dropdownItem.title}
-                                      </h4>
+                                      </h5>
                                       {'badge' in dropdownItem && dropdownItem.badge && (
                                         <motion.span
                                           initial={{ scale: 0.8, opacity: 0 }}
@@ -355,7 +357,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                         </motion.span>
                                       )}
                                     </div>
-                                    <p className="text-sm text-[#6b5d57] mt-1">
+                                    <p className="text-xs text-[#6b5d57]">
                                       {dropdownItem.description}
                                     </p>
                                   </div>
@@ -364,7 +366,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                     initial={{ opacity: 0, x: -10 }}
                                     whileHover={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.2 }}
-                                    className="flex-shrink-0 mt-1 relative z-10"
+                                    className="flex-shrink-0 mt-1 relative z-10 "
                                   >
                                     <ArrowRight className="w-4 h-4 text-[#db6f57]" />
                                   </motion.div>
@@ -379,7 +381,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.3 }}
-                              className="mt-4 pt-4 border-t border-[#e6d9d4] relative z-10"
+                              className="mt-4 pt-3  border-t border-[#e6d9d4] relative z-10"
                             >
                               <Link href="/comparar-planos" className="text-sm text-[#db6f57] hover:text-[#c55a42] font-semibold flex items-center justify-center gap-2 group">
                                 Ver comparação completa de planos
@@ -441,7 +443,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                       label="Começar grátis"
                       icon={<ArrowRight className="mr-2" size={16} />}
                       iconPos="right"
-                      className="bg-gradient-to-r from-[#db6f57] to-[#c55a42] border-0 text-white transition-all duration-300 px-4 py-1.5 rounded-lg text-sm font-semibold shadow-lg hover:shadow-2xl relative z-10"
+                      className="bg-gradient-to-r from-[#db6f57] to-[#c55a42] border-0 text-white transition-all duration-300 px-4 py-2 rounded-lg text-sm font-semibold shadow-lg hover:shadow-2xl relative z-10"
                     />
                   </motion.div>
                 </Link>
@@ -495,7 +497,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                       ease: [0.22, 1, 0.36, 1]
                     }}
                   >
-                    {item.hasDropdown ? (
+                    {/* {item.hasDropdown ? (
                       <motion.div
                         whileHover={{ scale: 1.02 }}
                         transition={{ duration: 0.2 }}
@@ -504,7 +506,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                         <h3 className="font-semibold text-[#2a2420] mb-3 flex items-center gap-2">
                           {item.label}
                         </h3>
-                        <div className="space-y-2">
+                         <div className="space-y-2">
                           {menuData[item.key as keyof typeof menuData]?.items.map((dropdownItem, idx) => {
                             const Icon = dropdownItem.icon
                             return (
@@ -535,7 +537,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                               </motion.a>
                             )
                           })}
-                        </div>
+                        </div> 
                       </motion.div>
                     ) : (
                       <motion.a
@@ -546,7 +548,15 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                       >
                         {item.label}
                       </motion.a>
-                    )}
+                    )} */}
+                    <motion.a
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      whileTap={{ scale: 0.98 }}
+                      className="text-lg font-medium text-[#2a2420] hover:text-[#db6f57] py-3 px-4 rounded-xl hover:bg-[#faf8f6] transition-all block"
+                    >
+                      {item.label}
+                    </motion.a>
                   </motion.div>
                 ))}
               </nav>
@@ -557,9 +567,16 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                 className="flex flex-col gap-3"
               >
                 <motion.div whileTap={{ scale: 0.98 }}>
-                  <Button
+                  {/* <Button
                     label="Entrar"
                     className="w-full border-2 border-[#8b3d35] text-[#8b3d35] hover:bg-[#8b3d35] hover:text-white py-3 rounded-xl font-semibold transition-all"
+                    outlined
+                    onClick={() => router.push('https://app.bellory.com.br')}
+                  /> */}
+                  <Button
+                    icon={<LogIn className="ml-5" size={16}/>}
+                    label="Entrar"
+                    className="w-full border-2 border-[#8b3d35] text-[#8b3d35] hover:bg-[#8b3d35] hover:text-white px-4 py-3 rounded-xl font-semibold transition-all"
                     outlined
                     onClick={() => router.push('https://app.bellory.com.br')}
                   />
@@ -582,9 +599,9 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                     />
                     <Button
                       label="Começar grátis"
-                      icon={<ArrowRight className="mr-2" size={16} />}
+                      icon={<ArrowRight className="ml-5" size={16} />}
                       iconPos="right"
-                      className="w-full bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 py-3 rounded-xl font-semibold shadow-lg relative z-10"
+                      className="bg-gradient-to-r w-full from-[#db6f57] to-[#c55a42] border-0 text-white transition-all duration-300 px-4 py-4 rounded-lg text-sm font-semibold shadow-lg hover:shadow-2xl relative z-10"
                     />
                   </motion.div>
                 </Link>
