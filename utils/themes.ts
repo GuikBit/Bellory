@@ -1067,7 +1067,324 @@ export const themes = {
     primaryGlow: "0 0 20px rgba(200, 155, 123, 0.35)",
     accentGlow: "0 0 20px rgba(30, 60, 100, 0.35)",
   },
-  }
+  },
+
+  // ============================================================================
+  // BELLORY DARK ELEGANTE - Tema escuro sofisticado e luxuoso
+  // Baseado nas cores do tema claro, adaptado para transmitir elegância noturna
+  // ============================================================================
+  belloryDarkElegante: {
+    id: "belloryDarkElegante",
+    name: "Bellory Dark Elegante",
+    type: "dark",
+    isDark: true,
+    colors: {
+      // Cores principais - mantendo a identidade coral/terracota
+      primary: "#E07A62",           // Coral vibrante (versão mais clara do #db6f57)
+      primaryHover: "#E8937E",      // Coral hover
+      primaryMuted: "#DB6F57",      // Coral original
+      secondary: "#A8524A",         // Marrom avermelhado (versão do #8b3d35)
+      accent: "#6B8F82",            // Verde sage claro (versão clara do #4f6f64)
+
+      // Cores de luxo/destaque
+      gold: "#D4AF37",              // Dourado luxuoso
+      goldLight: "#E6C65A",         // Dourado claro
+      bronze: "#CD7F32",            // Bronze elegante
+      champagne: "#F7E7CE",         // Champagne suave
+
+      // Backgrounds - tons escuros sofisticados com nuances de marrom
+      background: "#0D0B0A",        // Fundo principal - quase preto com tom quente
+      backgroundSecondary: "#141210", // Fundo secundário
+      backgroundTertiary: "#1A1715",  // Fundo terciário (seções)
+      backgroundElevated: "#201D1A",  // Elementos elevados
+
+      // Texto - tons de creme/bege para elegância
+      text: "#F5F0EB",              // Texto principal - creme suave
+      textSecondary: "#B8AEA4",     // Texto secundário - bege médio
+      textMuted: "#7A716A",         // Texto muted - cinza quente
+      textAccent: "#E07A62",        // Texto de destaque - coral
+
+      // Cards - design sofisticado com bordas sutis
+      cardBackground: "#1A1715",
+      cardBackgroundHover: "#242120",
+      cardBackgroundSecondary: "#141210",
+      cardBorder: "#2D2925",
+      cardBorderHover: "#3D3630",
+
+      // Card de destaque (featured) - com efeito de luxo
+      cardFeatured: "linear-gradient(145deg, #1F1B18 0%, #2A2420 100%)",
+      cardFeaturedBorder: "#D4AF3740",
+      cardFeaturedGlow: "0 0 40px rgba(212, 175, 55, 0.15)",
+
+      // Botões
+      buttonPrimary: "linear-gradient(135deg, #E07A62 0%, #DB6F57 50%, #C55A42 100%)",
+      buttonPrimaryHover: "linear-gradient(135deg, #E8937E 0%, #E07A62 50%, #DB6F57 100%)",
+      buttonPrimaryText: "#FFFFFF",
+      buttonSecondary: "transparent",
+      buttonSecondaryBorder: "#E07A62",
+      buttonSecondaryText: "#E07A62",
+      buttonSecondaryHover: "#E07A6220",
+      buttonText: "#FFFFFF",
+
+      // Estados
+      success: "#4ADE80",
+      successMuted: "#22C55E20",
+      warning: "#FBBF24",
+      warningMuted: "#F59E0B20",
+      error: "#F87171",
+      errorMuted: "#EF444420",
+      info: "#60A5FA",
+      infoMuted: "#3B82F620",
+
+      // Bordas e divisores
+      border: "#2D2925",
+      borderLight: "#3D3630",
+      borderSubtle: "#1F1B18",
+      divider: "#2D2925",
+
+      // Overlays e modais
+      overlay: "rgba(13, 11, 10, 0.85)",
+      overlayLight: "rgba(13, 11, 10, 0.6)",
+      modalBackground: "#1A1715",
+      modalBorder: "#2D2925",
+
+      // Inputs e formulários
+      inputBackground: "#141210",
+      inputBackgroundFocus: "#1A1715",
+      inputBorder: "#2D2925",
+      inputBorderFocus: "#E07A62",
+      inputText: "#F5F0EB",
+      placeholder: "#7A716A",
+
+      // Navegação
+      navBackground: "#0D0B0A",
+      navBackgroundBlur: "rgba(13, 11, 10, 0.8)",
+      navHover: "#1A1715",
+      navActive: "#E07A62",
+      navBorder: "#1F1B18",
+
+      // Badges e tags
+      badgeBackground: "#E07A6220",
+      badgeBorder: "#E07A6240",
+      badgeText: "#E07A62",
+      badgeSecondary: "#6B8F8220",
+      badgeSecondaryBorder: "#6B8F8240",
+      badgeSecondaryText: "#6B8F82",
+
+      // Gradientes especiais para elementos de luxo
+      gradientPrimary: "linear-gradient(135deg, #E07A62 0%, #DB6F57 50%, #A8524A 100%)",
+      gradientGold: "linear-gradient(135deg, #D4AF37 0%, #E6C65A 50%, #D4AF37 100%)",
+      gradientLuxury: "linear-gradient(145deg, #1F1B18 0%, #2A2420 50%, #1A1715 100%)",
+      gradientGlow: "radial-gradient(circle at 50% 50%, #E07A6230 0%, transparent 70%)",
+
+      // Sombras
+      shadowColor: "rgba(0, 0, 0, 0.4)",
+
+      // Status
+      online: "#4ADE80",
+      offline: "#6B7280",
+      away: "#FBBF24",
+      busy: "#F87171",
+
+      // Backgrounds de seção com textura
+      sectionPattern: "#8b3d35",
+    },
+
+    // Gradientes de fundo para seções
+    gradients: {
+      hero: "linear-gradient(180deg, #0D0B0A 0%, #141210 50%, #1A1715 100%)",
+      heroBlob1: "linear-gradient(135deg, rgba(224, 122, 98, 0.15) 0%, rgba(168, 82, 74, 0.15) 100%)",
+      heroBlob2: "linear-gradient(135deg, rgba(107, 143, 130, 0.15) 0%, rgba(224, 122, 98, 0.1) 100%)",
+      card: "linear-gradient(145deg, #1A1715 0%, #201D1A 100%)",
+      cardHover: "linear-gradient(145deg, #201D1A 0%, #2A2420 100%)",
+      cta: "linear-gradient(135deg, #E07A62 0%, #DB6F57 50%, #A8524A 100%)",
+      section: "linear-gradient(180deg, #141210 0%, #1A1715 50%, #141210 100%)",
+    },
+
+    fonts: {
+      heading: '"Playfair Display", serif',
+      body: '"Inter", sans-serif',
+      mono: '"JetBrains Mono", monospace',
+
+      sizes: {
+        xs: "0.75rem",
+        sm: "0.875rem",
+        base: "1rem",
+        lg: "1.125rem",
+        xl: "1.25rem",
+        "2xl": "1.5rem",
+        "3xl": "1.875rem",
+        "4xl": "2.25rem",
+        "5xl": "3rem",
+        "6xl": "3.75rem",
+        "7xl": "4.5rem",
+        "8xl": "6rem",
+      },
+
+      weights: {
+        thin: "100",
+        light: "300",
+        normal: "400",
+        medium: "500",
+        semibold: "600",
+        bold: "700",
+        extrabold: "800",
+        black: "900",
+      },
+
+      lineHeights: {
+        tight: "1.1",
+        snug: "1.25",
+        normal: "1.5",
+        relaxed: "1.75",
+        loose: "2",
+      },
+    },
+
+    borderRadius: {
+      none: "0",
+      sm: "0.25rem",
+      small: "0.5rem",
+      medium: "0.75rem",
+      large: "1rem",
+      xl: "1.5rem",
+      "2xl": "2rem",
+      full: "9999px",
+    },
+
+    spacing: {
+      xs: "0.25rem",
+      sm: "0.5rem",
+      md: "1rem",
+      lg: "1.5rem",
+      xl: "2rem",
+      "2xl": "3rem",
+      "3xl": "4rem",
+      "4xl": "6rem",
+      "5xl": "8rem",
+    },
+
+    shadows: {
+      none: "none",
+      sm: "0 1px 2px 0 rgba(0, 0, 0, 0.3)",
+      base: "0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2)",
+      md: "0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)",
+      lg: "0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)",
+      xl: "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)",
+      "2xl": "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+      inner: "inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)",
+
+      // Sombras coloridas de luxo
+      primaryGlow: "0 0 30px rgba(224, 122, 98, 0.3)",
+      primaryGlowStrong: "0 0 50px rgba(224, 122, 98, 0.4)",
+      goldGlow: "0 0 30px rgba(212, 175, 55, 0.25)",
+      accentGlow: "0 0 25px rgba(107, 143, 130, 0.25)",
+      luxuryGlow: "0 0 60px rgba(212, 175, 55, 0.15), 0 0 30px rgba(224, 122, 98, 0.2)",
+
+      // Sombras para cards
+      card: "0 4px 20px rgba(0, 0, 0, 0.3)",
+      cardHover: "0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(224, 122, 98, 0.1)",
+      cardFeatured: "0 10px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(212, 175, 55, 0.15)",
+    },
+
+    transitions: {
+      fast: "150ms ease-in-out",
+      normal: "300ms ease-in-out",
+      slow: "500ms ease-in-out",
+      colors: "200ms ease-in-out",
+      transform: "300ms cubic-bezier(0.4, 0, 0.2, 1)",
+      opacity: "200ms ease-in-out",
+      shadow: "300ms ease-in-out",
+      all: "all 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+    },
+
+    opacity: {
+      disabled: 0.5,
+      hover: 0.8,
+      focus: 0.9,
+      overlay: 0.85,
+      overlayLight: 0.6,
+      subtle: 0.3,
+      medium: 0.5,
+      high: 0.8,
+    },
+
+    zIndex: {
+      dropdown: 1000,
+      sticky: 1020,
+      fixed: 1030,
+      modal: 1040,
+      popover: 1050,
+      tooltip: 1060,
+      toast: 1070,
+    },
+
+    breakpoints: {
+      xs: "475px",
+      sm: "640px",
+      md: "768px",
+      lg: "1024px",
+      xl: "1280px",
+      "2xl": "1536px",
+    },
+
+    effects: {
+      blur: {
+        sm: "4px",
+        base: "8px",
+        md: "12px",
+        lg: "16px",
+        xl: "24px",
+        "2xl": "40px",
+      },
+      backdropBlur: {
+        sm: "blur(4px)",
+        base: "blur(8px)",
+        md: "blur(12px)",
+        lg: "blur(16px)",
+        xl: "blur(24px)",
+      },
+      // Efeitos de textura para elementos de luxo
+      noise: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
+    },
+
+    components: {
+      button: {
+        minHeight: "44px",
+        iconSpacing: "8px",
+        borderRadius: "0.75rem",
+        paddingX: "1.5rem",
+        paddingY: "0.75rem",
+      },
+      input: {
+        minHeight: "44px",
+        iconSpacing: "12px",
+        borderRadius: "0.5rem",
+      },
+      card: {
+        defaultPadding: "2rem",
+        headerPadding: "1.5rem",
+        footerPadding: "1rem",
+        borderRadius: "1rem",
+        borderWidth: "1px",
+      },
+      modal: {
+        maxWidth: "500px",
+        padding: "2rem",
+        borderRadius: "1.5rem",
+      },
+      badge: {
+        paddingX: "1rem",
+        paddingY: "0.5rem",
+        borderRadius: "9999px",
+        fontSize: "0.875rem",
+      },
+      toast: {
+        width: "400px",
+        padding: "1rem",
+      },
+    },
+  },
 
 }
 
