@@ -1,13 +1,14 @@
 "use client"
 
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
-import { ArrowRight, Sparkles, CheckCircle2, TrendingUp, Users, Zap, Star, Moon, Sun } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { ArrowRight, Sparkles, CheckCircle2, TrendingUp, Users, Zap, Star } from "lucide-react"
 import { Button } from "primereact/button"
 import Link from "next/link"
-import { useRef, useState, useMemo } from "react"
+import { useRef, useMemo } from "react"
+import { useTheme } from "@/contexts/HeroThemeContext"
 
 // ============================================================================
-// CONFIGURAÇÃO DOS TEMAS - Light (Elegante) e Dark (Luxuoso)
+// CONFIGURACAO DOS TEMAS - Light (Elegante) e Dark (Luxuoso)
 // ============================================================================
 
 const themeConfig = {
@@ -33,12 +34,12 @@ const themeConfig = {
     textSecondary: "#4f6f64",
     textTertiary: "#8b3d35",
 
-    // Benefícios
+    // Beneficios
     benefitCard: "bg-white border-[#d8ccc4]",
     benefitText: "text-[#2a2420]",
     benefitColors: ["#4f6f64", "#db6f57", "#8b3d35", "#4f6f64"],
 
-    // Botões
+    // Botoes
     primaryButton: "bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white hover:shadow-xl",
     secondaryButton: "bg-white text-[#8b3d35] border-2 border-[#8b3d35] hover:bg-[#8b3d35] hover:text-white",
 
@@ -52,11 +53,6 @@ const themeConfig = {
     ratingText: "text-[#2a2420]",
     socialText: "text-[#4f6f64]",
     checkIcon: "text-[#4f6f64]",
-
-    // Theme toggle
-    toggleBg: "bg-white/80 backdrop-blur-sm border-[#d8ccc4]",
-    toggleIcon: "text-[#db6f57]",
-    toggleHover: "hover:bg-[#faf8f6]",
   },
 
   dark: {
@@ -83,12 +79,12 @@ const themeConfig = {
     textSecondary: "#B8AEA4",
     textTertiary: "#E07A62",
 
-    // Benefícios
+    // Beneficios
     benefitCard: "bg-[#1A1715]/80 backdrop-blur-sm border-[#2D2925]",
     benefitText: "text-[#F5F0EB]",
     benefitColors: ["#6B8F82", "#E07A62", "#D4AF37", "#6B8F82"],
 
-    // Botões
+    // Botoes
     primaryButton: "bg-gradient-to-r from-[#E07A62] via-[#DB6F57] to-[#A8524A] text-white hover:shadow-[0_0_30px_rgba(224,122,98,0.4)]",
     secondaryButton: "bg-transparent text-[#E07A62] border-2 border-[#E07A62] hover:bg-[#E07A62]/10 hover:border-[#E8937E]",
 
@@ -102,61 +98,7 @@ const themeConfig = {
     ratingText: "text-[#F5F0EB]",
     socialText: "text-[#B8AEA4]",
     checkIcon: "text-[#6B8F82]",
-
-    // Theme toggle
-    toggleBg: "bg-[#1A1715]/80 backdrop-blur-sm border-[#2D2925]",
-    toggleIcon: "text-[#D4AF37]",
-    toggleHover: "hover:bg-[#242120]",
   },
-}
-
-// ============================================================================
-// COMPONENTE THEME TOGGLE
-// ============================================================================
-
-interface ThemeToggleProps {
-  isDark: boolean
-  onToggle: () => void
-  theme: typeof themeConfig.light | typeof themeConfig.dark
-}
-
-function ThemeToggle({ isDark, onToggle, theme }: ThemeToggleProps) {
-  return (
-    <motion.button
-      onClick={onToggle}
-      className={`
-        fixed top-24 right-6 z-50
-        flex items-center gap-2 px-4 py-3
-        rounded-full border shadow-lg
-        transition-all duration-300
-        ${theme.toggleBg} ${theme.toggleHover}
-      `}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5, delay: 0.8 }}
-    >
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={isDark ? "moon" : "sun"}
-          initial={{ rotate: -90, opacity: 0 }}
-          animate={{ rotate: 0, opacity: 1 }}
-          exit={{ rotate: 90, opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          {isDark ? (
-            <Moon className={`w-5 h-5 ${theme.toggleIcon}`} />
-          ) : (
-            <Sun className={`w-5 h-5 ${theme.toggleIcon}`} />
-          )}
-        </motion.div>
-      </AnimatePresence>
-      <span className={`text-sm font-medium ${isDark ? "text-[#F5F0EB]" : "text-[#2a2420]"}`}>
-        {isDark ? "Dark" : "Light"}
-      </span>
-    </motion.button>
-  )
 }
 
 // ============================================================================
@@ -165,20 +107,20 @@ function ThemeToggle({ isDark, onToggle, theme }: ThemeToggleProps) {
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isDark, setIsDark] = useState(false)
+  const { isDark } = useTheme()
 
   // Seleciona o tema atual
   const theme = isDark ? themeConfig.dark : themeConfig.light
 
-  // Benefícios com cores dinâmicas
+  // Beneficios com cores dinamicas
   const benefits = useMemo(() => [
     { icon: CheckCircle2, text: "40% menos faltas", colorIndex: 0 },
     { icon: TrendingUp, text: "+35% de faturamento", colorIndex: 1 },
-    { icon: Users, text: "Clientes mais fiéis", colorIndex: 2 },
+    { icon: Users, text: "Clientes mais fieis", colorIndex: 2 },
     { icon: Zap, text: "Economia de 10h/semana", colorIndex: 3 },
   ], [])
 
-  // Pattern SVG dinâmico
+  // Pattern SVG dinamico
   const patternStyle = useMemo(() => ({
     backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(theme.patternColor)}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
     opacity: parseFloat(theme.patternOpacity),
@@ -186,9 +128,6 @@ export function Hero() {
 
   return (
     <>
-      {/* Botão de toggle do tema */}
-      <ThemeToggle isDark={isDark} onToggle={() => setIsDark(!isDark)} theme={theme} />
-
       <motion.section
         ref={containerRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20"
@@ -197,7 +136,7 @@ export function Hero() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Padrão decorativo de fundo */}
+        {/* Padrao decorativo de fundo */}
         <div
           className="absolute inset-0 transition-opacity duration-500"
           style={patternStyle}
@@ -297,11 +236,11 @@ export function Hero() {
             >
               <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.1] text-balance">
                 <span className={`${theme.headlineColor} transition-colors duration-500`}>
-                  Transforme seu negócio
+                  Transforme seu negocio
                 </span>
                 <br />
                 <span className={`${theme.gradientText} bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]`}>
-                  em um império digital
+                  em um imperio digital
                 </span>
               </h1>
             </motion.div>
@@ -313,15 +252,15 @@ export function Hero() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className={`text-center text-xl sm:text-2xl text-balance max-w-4xl mx-auto mb-8 leading-relaxed font-light ${theme.subheadlineColor} transition-colors duration-500`}
             >
-              Gestão completa + site personalizado + agente de IA no WhatsApp.
+              Gestao completa + site personalizado + agente de IA no WhatsApp.
               <br />
               <span className={`${theme.highlightColor} font-medium transition-colors duration-500`}>
-                Tudo em uma única plataforma
+                Tudo em uma unica plataforma
               </span>{" "}
-              para você focar no que importa: seus clientes.
+              para voce focar no que importa: seus clientes.
             </motion.p>
 
-            {/* Benefícios rápidos */}
+            {/* Beneficios rapidos */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -362,7 +301,7 @@ export function Hero() {
             >
               <Link href="/cadastro" className="w-full sm:w-auto">
                 <Button
-                  label="Comece grátis por 14 dias"
+                  label="Comece gratis por 14 dias"
                   icon={<ArrowRight className="mr-2" size={16} />}
                   iconPos="right"
                   className={`
@@ -375,7 +314,7 @@ export function Hero() {
               </Link>
 
               <Button
-                label="Agende uma demonstração"
+                label="Agende uma demonstracao"
                 className={`
                   w-full sm:w-auto text-base px-10 py-4 rounded-xl font-semibold
                   transition-all duration-300
@@ -385,7 +324,7 @@ export function Hero() {
               />
             </motion.div>
 
-            {/* Prova social com avaliação */}
+            {/* Prova social com avaliacao */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -405,11 +344,11 @@ export function Hero() {
                 <span className={`font-semibold ${theme.ratingText} transition-colors duration-500`}>
                   4.9/5
                 </span>
-                <span>• 127 avaliações</span>
+                <span>127 avaliacoes</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className={`w-5 h-5 ${theme.checkIcon} transition-colors duration-300`} />
-                <span>Sem cartão de crédito • Cancele quando quiser</span>
+                <span>Sem cartao de credito - Cancele quando quiser</span>
               </div>
             </motion.div>
 
@@ -432,7 +371,7 @@ export function Hero() {
           </div>
         </motion.div>
 
-        {/* CSS para animação do gradiente */}
+        {/* CSS para animacao do gradiente */}
         <style jsx>{`
           @keyframes gradient {
             0%, 100% {
