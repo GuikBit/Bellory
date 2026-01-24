@@ -1,12 +1,12 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react"
 import { themes } from "@/utils/themes"
 
 // Tipos
 export type ThemeMode = "light" | "dark"
 
-export interface HeroThemeContextType {
+export interface ThemeContextType {
   mode: ThemeMode
   theme: typeof themes.belloryDarkElegante | typeof themes.belloryElegante
   toggleTheme: () => void
@@ -15,11 +15,30 @@ export interface HeroThemeContextType {
 }
 
 // Contexto
-const HeroThemeContext = createContext<HeroThemeContextType | undefined>(undefined)
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 // Provider
-export function HeroThemeProvider({ children }: { children: ReactNode }) {
+export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mode, setModeState] = useState<ThemeMode>("light")
+  const [mounted, setMounted] = useState(false)
+
+  // Carrega preferência salva ou do sistema
+  useEffect(() => {
+    setMounted(true)
+    const saved = localStorage.getItem("bellory-theme") as ThemeMode | null
+    if (saved) {
+      setModeState(saved)
+    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      setModeState("dark")
+    }
+  }, [])
+
+  // Salva preferência
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem("bellory-theme", mode)
+    }
+  }, [mode, mounted])
 
   const theme = mode === "dark" ? themes.belloryDarkElegante : themes.belloryElegante
 
@@ -31,7 +50,7 @@ export function HeroThemeProvider({ children }: { children: ReactNode }) {
     setModeState(newMode)
   }, [])
 
-  const value: HeroThemeContextType = {
+  const value: ThemeContextType = {
     mode,
     theme,
     toggleTheme,
@@ -40,20 +59,25 @@ export function HeroThemeProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <HeroThemeContext.Provider value={value}>
+    <ThemeContext.Provider value={value}>
       {children}
-    </HeroThemeContext.Provider>
+    </ThemeContext.Provider>
   )
 }
 
 // Hook para usar o tema
-export function useHeroTheme() {
-  const context = useContext(HeroThemeContext)
+export function useTheme() {
+  const context = useContext(ThemeContext)
   if (context === undefined) {
-    throw new Error("useHeroTheme must be used within a HeroThemeProvider")
+    throw new Error("useTheme must be used within a ThemeProvider")
   }
   return context
 }
+
+// Mantém compatibilidade com código existente
+export const HeroThemeProvider = ThemeProvider
+export const useHeroTheme = useTheme
+export type HeroThemeContextType = ThemeContextType
 
 // Cores do tema claro (para referência no código)
 export const lightThemeColors = {
