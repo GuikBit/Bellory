@@ -148,6 +148,8 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro }: any) => {
 
   const displayPrice = isAnnual ? plan.priceAnnual : plan.price
   const savings = plan.price > 0 ? ((plan.price - plan.priceAnnual) * 12).toFixed(0) : 0
+  const discountPercent = plan.price > 0 ? Math.round(((plan.price - plan.priceAnnual) / plan.price) * 100) : 0
+  const totalAnnual = plan.priceAnnual * 12
 
   return (
     <motion.div
@@ -191,6 +193,7 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro }: any) => {
 
         {/* Preço */}
         <div className="mb-8">
+          {/* Preço mensal em destaque */}
           <div className="flex items-baseline gap-2">
             <span className="text-5xl font-bold text-[#2a2420]">
               R$ {displayPrice.toFixed(2).replace('.', ',')}
@@ -199,9 +202,40 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro }: any) => {
               <span className="text-[#4f6f64]">/mês</span>
             )}
           </div>
-          {isAnnual && Number(savings) > 0 && (
-            <div className="mt-2 text-sm font-semibold" style={{ color: plan.color }}>
-              💰 Economize R$ {savings}/ano
+
+          {/* Informações do plano anual */}
+          {isAnnual && plan.price > 0 && (
+            <div className="mt-3 space-y-2">
+              {/* Preço original riscado e desconto */}
+              <div className="flex items-center gap-2">
+                <span className="text-lg text-gray-400 line-through">
+                  R$ {plan.price.toFixed(2).replace('.', ',')}/mês
+                </span>
+                <span
+                  className="px-2 py-0.5 text-xs font-bold rounded-full text-white"
+                  style={{ backgroundColor: plan.color }}
+                >
+                  -{discountPercent}%
+                </span>
+              </div>
+
+              {/* Preço total anual */}
+              <div className="text-sm text-[#4f6f64]">
+                <span className="font-semibold text-[#2a2420]">
+                  R$ {totalAnnual.toFixed(2).replace('.', ',')}
+                </span>
+                {' '}cobrado anualmente
+              </div>
+
+              {/* Economia total */}
+              {Number(savings) > 0 && (
+                <div
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold"
+                  style={{ backgroundColor: `${plan.color}15`, color: plan.color }}
+                >
+                  💰 Economize R$ {savings}/ano
+                </div>
+              )}
             </div>
           )}
         </div>
