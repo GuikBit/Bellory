@@ -21,7 +21,7 @@ import { themeConfig } from "@/utils/themes"
 import Link from "next/link"
 
 // Planos
-const plans = [
+export const plans = [
   {
     id: "gratuito",
     name: "Gratuito",

@@ -6,6 +6,8 @@ import { InputText } from "primereact/inputtext"
 import { Button } from "primereact/button"
 import { Dialog } from "primereact/dialog"
 import { motion, AnimatePresence } from "framer-motion"
+import { useTheme } from "@/contexts/HeroThemeContext"
+import { cadastroThemeConfig } from "@/app/cadastro/page"
 
 interface AddressFormProps {
   control: any
@@ -15,11 +17,14 @@ interface AddressFormProps {
 }
 
 export const AddressForm = ({ control, errors, setValue, watch }: AddressFormProps) => {
+  const { isDark } = useTheme()
   const [isSearching, setIsSearching] = useState(false)
   const [cepFound, setCepFound] = useState(false)
   const [cepError, setCepError] = useState("")
   const [showMapModal, setShowMapModal] = useState(false)
   const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null)
+
+  const theme = isDark ? cadastroThemeConfig.dark : cadastroThemeConfig.light
 
   const cepValue = watch("cep")
   const latitude = watch("latitude")

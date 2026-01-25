@@ -42,12 +42,13 @@ import { AddressForm } from "@/components/address-form-improved"
 import { ThemeSelector } from "@/components/theme-selector-improved"
 import { useMutationPostOrganizacao, useMutationValidaCNPJ, useMutationValidaEmail, useMutationValidaUsername } from "@/service/Querys/Organizacao"
 import { useTheme } from "@/contexts/HeroThemeContext"
+import { plans } from "@/components/pricing"
 
 // ============================================================================
 // CONFIGURAÇÃO DOS TEMAS DO CADASTRO
 // ============================================================================
 
-const cadastroThemeConfig = {
+export const cadastroThemeConfig = {
   light: {
     // Backgrounds
     mainBg: "bg-gradient-to-b from-[#faf8f6] to-white",
@@ -58,7 +59,7 @@ const cadastroThemeConfig = {
     // Text
     headingColor: "text-[#2a2420]",
     textPrimary: "text-[#2a2420]",
-    textSecondary: `text-[#B8AEA4]`,
+    textSecondary: `text-[#6b5d57]`,
     textMuted: "text-[#6b5d57]",
 
     // Inputs
@@ -234,7 +235,7 @@ export default function Cadastro() {
   const theme = isDark ? cadastroThemeConfig.dark : cadastroThemeConfig.light
   const searchParams = useSearchParams()
 
-  const [activeStep, setActiveStep] = useState(0)
+  const [activeStep, setActiveStep] = useState(1)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfPassword, setShowConfPassword] = useState(false)
@@ -402,101 +403,6 @@ export default function Cadastro() {
   // Watch para validação em tempo real
   useWatch({ control })
 
-  const planos = [
-    {
-      id: "gratuito",
-      name: "Gratuito",
-      tagline: "Experimente sem compromisso",
-      price: 0,
-      priceAnnual: 0,
-      icon: Gift,
-      color: "#4f6f64",
-      gradient: "from-[#4f6f64] to-[#3d574f]",
-      popular: false,
-      features: [
-        { text: "Até 50 agendamentos/mês", included: true },
-        { text: "1 usuário", included: true },
-        { text: "Cadastro de clientes", included: true },
-        { text: "Agendamento manual", included: true },
-        { text: "Dashboard básico", included: true },
-        { text: "Agendamento online 24/7", included: false },
-        { text: "Agente virtual no WhatsApp", included: false },
-        { text: "Site personalizado", included: false },
-      ],
-      cta: "Começar grátis",
-      badge: null
-    },
-    {
-      id: "basico",
-      name: "Básico",
-      tagline: "Para começar a crescer",
-      price: 79.90,
-      priceAnnual: 64.90,
-      icon: Zap,
-      color: "#db6f57",
-      gradient: "from-[#db6f57] to-[#c55a42]",
-      popular: false,
-      features: [
-        { text: "Agendamentos ilimitados", included: true },
-        { text: "Até 3 usuários", included: true },
-        { text: "Gestão completa de clientes", included: true },
-        { text: "Agendamento online 24/7", included: true },
-        { text: "Lembretes automáticos", included: true },
-        { text: "Dashboard inteligente", included: true },
-        { text: "Controle financeiro", included: true },
-        { text: "Agente virtual no WhatsApp", included: false },
-      ],
-      cta: "Experimentar 14 dias grátis",
-      badge: null
-    },
-    {
-      id: "plus",
-      name: "Plus",
-      tagline: "Tudo que você precisa",
-      price: 129.90,
-      priceAnnual: 99.90,
-      icon: Sparkles,
-      color: "#8b3d35",
-      gradient: "from-[#8b3d35] to-[#a8524a]",
-      popular: true,
-      features: [
-        { text: "Tudo do Básico +", included: true },
-        { text: "Usuários ilimitados", included: true },
-        { text: "Agente virtual no WhatsApp", included: true },
-        { text: "Site personalizado completo", included: true },
-        { text: "Mini e-commerce integrado", included: true },
-        { text: "Relatórios avançados", included: true },
-        { text: "Programa de fidelidade", included: true },
-        { text: "Suporte prioritário", included: true },
-      ],
-      cta: "Experimentar 14 dias grátis",
-      badge: "🔥 Mais popular"
-    },
-    {
-      id: "premium",
-      name: "Premium",
-      tagline: "Para quem quer o máximo",
-      price: 199.90,
-      priceAnnual: 159.90,
-      icon: Crown,
-      color: "#db6f57",
-      gradient: "from-[#db6f57] to-[#e88c76]",
-      popular: false,
-      features: [
-        { text: "Tudo do Plus +", included: true },
-        { text: "Múltiplas unidades", included: true },
-        { text: "API completa", included: true },
-        { text: "Integrações personalizadas", included: true },
-        { text: "Gerente de conta dedicado", included: true },
-        { text: "Suporte 24/7", included: true },
-        { text: "Onboarding personalizado", included: true },
-        { text: "Customizações sob demanda", included: true },
-      ],
-      cta: "Falar com especialista",
-      badge: "👑 Premium"
-    }
-  ]
-
   // Efeito para ler parâmetros da URL e pré-selecionar plano e recorrência
   useEffect(() => {
     const planoParam = searchParams.get('plano')
@@ -504,7 +410,7 @@ export default function Cadastro() {
 
     // Verifica se o plano passado na URL existe nos planos disponíveis
     if (planoParam) {
-      const planoEncontrado = planos.find(p => p.id === planoParam.toLowerCase())
+      const planoEncontrado = plans.find(p => p.id === planoParam.toLowerCase())
       if (planoEncontrado) {
         setSelectedPlan(planoEncontrado.id)
       }
@@ -562,7 +468,7 @@ export default function Cadastro() {
   }
 
   const onSubmit = (data: FormData) => {
-    const selectedPlanData = planos.find(p => p.id === selectedPlan)
+    const selectedPlanData = plans.find(p => p.id === selectedPlan)
     const selectedThemeData = themeArray.find(t => t.id === data.tema)
     
     // Monta objeto base
@@ -789,7 +695,7 @@ export default function Cadastro() {
                           className={`absolute top-5 md:top-7 md:left-4/5 left-10/11 md:w-4/11 w-2/12 h-1 rounded-full transition-all duration-300 ${
                             isCompleted
                               ? "bg-gradient-to-r from-[#5a7a6e] to-[#4f6f64]"
-                              : "bg-[#e6d9d4]/20"
+                              : `${isDark?"bg-[#e6d9d4]/20":`bg-[#e6d9d4]`}`
                           }`}
                         />
                       )}
@@ -802,7 +708,7 @@ export default function Cadastro() {
                             ? "bg-gradient-to-br from-[#5a7a6e] to-[#4f6f64] text-white shadow-lg"
                             : isActive
                             ? "border-2 text-white shadow-xl"
-                            : `bg-[#e6d9d4]/20 ${theme.textSecondary}`
+                            : `${isDark? `bg-[#e6d9d4]/20 ${theme.textSecondary}`:'bg-[#e6d9d4] text-[#4f6f64]'}`
                         }`}
                         style={
                           isActive && !isCompleted
@@ -849,7 +755,7 @@ export default function Cadastro() {
                   {activeStep === 0 && (
                     <div className="space-y-6">
                       <div className={`flex items-center gap-3 mb-6 pb-4 border-b ${theme.cardBorder} transition-colors duration-300`}>
-                        <div className={`w-12 h-12 rounded-xl ${theme.sectionIconBg('#db6f57')} flex items-center justify-center`}>
+                        <div className={`w-12 h-12 rounded-xl bg-[#db6f57]/10 flex items-center justify-center`}>
                           <Building2 className={`w-6 h-6 ${isDark ? 'text-[#E07A62]' : 'text-[#db6f57]'}`} />
                         </div>
                         <div>
@@ -1436,10 +1342,12 @@ export default function Cadastro() {
 
                       {/* Cards de planos selecionáveis */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        {planos.map((plan) => {
+                        {plans.map((plan) => {
                           const displayPrice = isAnnual ? plan.priceAnnual : plan.price
                           const savings = plan.price > 0 ? ((plan.price - plan.priceAnnual) * 12).toFixed(0) : 0
                           const isSelected = selectedPlan === plan.id
+                          const discountPercent = plan.price > 0 ? Math.round(((plan.price - plan.priceAnnual) / plan.price) * 100) : 0
+                          const totalAnnual = plan.priceAnnual * 12
 
                           return (
                             <motion.button
@@ -1494,7 +1402,7 @@ export default function Cadastro() {
                                 </div>
 
                                 {/* Preço */}
-                                <div className="mb-4">
+                                {/* <div className="mb-4">
                                   <div className="flex items-baseline gap-2">
                                     <span className={`text-3xl font-bold ${theme.textPrimary} transition-colors duration-300`}>
                                       R$ {displayPrice.toFixed(2).replace('.', ',')}
@@ -1507,6 +1415,55 @@ export default function Cadastro() {
                                     <p className="text-sm font-semibold mt-1" style={{ color: plan.color }}>
                                       💰 Economize R$ {savings}/ano
                                     </p>
+                                  )}
+                                </div> */}
+                                <div className="mb-8 space-y-3">
+                                  {/* Preço mensal em destaque */}
+                                  {/* Preço original riscado e desconto */}
+                                  {isAnnual && plan.price > 0 &&  (
+                                    <div className="flex items-center gap-2">
+                                      <span className={`text-lg line-through ${theme.textMuted}`}>
+                                        R$ {plan.price.toFixed(2).replace('.', ',')}/mês
+                                      </span>
+                                      <span
+                                        className="px-2 py-0.5 text-xs font-bold rounded-full text-white"
+                                        style={{ backgroundColor: plan.color }}
+                                      >
+                                        -{discountPercent}%
+                                      </span>
+                                    </div>
+                                  )}
+
+                                  <div className="flex items-baseline gap-2">
+                                    <span className={`text-4xl font-bold ${isDark? `text-[#F5F0EB]`:`text-[#2a2420]`}`} style={{ color: theme.textPrimary }}>
+                                      R$ {displayPrice.toFixed(2).replace('.', ',')}
+                                    </span>
+                                    {plan.price > 0 && (
+                                      <span className={`${isDark? `text-[#B8AEA4]`:`text-[#4f6f64]`}`}>/mês</span>
+                                    )}
+                                  </div>
+
+                                  {/* Informações do plano anual */}
+                                  {isAnnual && plan.price > 0 && (
+                                    <div className="mt-3 space-y-2">
+                                      {/* Preço total anual */}
+                                      <div className={`text-sm ${isDark? `text-[#B8AEA4]`:`text-[#4f6f64]`}`} style={{ color: isDark?theme.textSecondary:'text-[#4f6f64]' }}>
+                                        <span className={`font-semibold`}>
+                                          R$ {totalAnnual.toFixed(2).replace('.', ',')}
+                                        </span>
+                                        {' '}cobrado anualmente
+                                      </div>
+
+                                      {/* Economia total */}
+                                      {Number(savings) > 0 && (
+                                        <div
+                                          className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold"
+                                          style={{ backgroundColor: `${plan.color}15`, color: plan.color }}
+                                        >
+                                          💰 Economize R$ {savings}/ano
+                                        </div>
+                                      )}
+                                    </div>
                                   )}
                                 </div>
 
@@ -1552,10 +1509,10 @@ export default function Cadastro() {
                           className={`${theme.cardBg} border ${theme.cardBorder} rounded-2xl p-6 transition-colors duration-300`}
                         >
                           <h4 className={`font-bold ${theme.textPrimary} mb-4 transition-colors duration-300`}>
-                            Recursos inclusos no plano {planos.find(p => p.id === selectedPlan)?.name}
+                            Recursos inclusos no plano {plans.find(p => p.id === selectedPlan)?.name}
                           </h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {planos.find(p => p.id === selectedPlan)?.features.map((feature: any, i: number) => (
+                            {plans.find(p => p.id === selectedPlan)?.features.map((feature: any, i: number) => (
                               <div key={i} className="flex items-start gap-2">
                                 {feature.included ? (
                                   <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isDark ? 'text-[#6B8F82]' : 'text-[#4f6f64]'}`} />
@@ -1745,27 +1702,27 @@ export default function Cadastro() {
                         {selectedPlan && (
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                              {planos.find(p => p.id === selectedPlan) && (
+                              {plans.find(p => p.id === selectedPlan) && (
                                 <>
                                   <div 
                                     className="w-12 h-12 rounded-xl flex items-center justify-center"
                                     style={{ 
-                                      background: `linear-gradient(135deg, ${planos.find(p => p.id === selectedPlan)?.color}20, ${planos.find(p => p.id === selectedPlan)?.color}40)`
+                                      background: `linear-gradient(135deg, ${plans.find(p => p.id === selectedPlan)?.color}20, ${plans.find(p => p.id === selectedPlan)?.color}40)`
                                     }}
                                   >
                                     {(() => {
-                                      const SelectedIcon = planos.find(p => p.id === selectedPlan)?.icon;
+                                      const SelectedIcon = plans.find(p => p.id === selectedPlan)?.icon;
                                       return SelectedIcon ? (
                                         <SelectedIcon
                                           className="w-6 h-6"
-                                          style={{ color: planos.find(p => p.id === selectedPlan)?.color }}
+                                          style={{ color: plans.find(p => p.id === selectedPlan)?.color }}
                                         />
                                       ) : null;
                                     })()}
                                   </div>
                                   <div>
                                     <p className={`${theme.textPrimary} font-bold text-lg transition-colors duration-300`}>
-                                      {planos.find(p => p.id === selectedPlan)?.name}
+                                      {plans.find(p => p.id === selectedPlan)?.name}
                                     </p>
                                     <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>
                                       {isAnnual ? "Plano Anual" : "Plano Mensal"}
@@ -1777,8 +1734,8 @@ export default function Cadastro() {
                             <div className="text-right">
                               <p className={`text-2xl font-bold ${theme.textPrimary} transition-colors duration-300`}>
                                 R$ {(isAnnual
-                                  ? planos.find(p => p.id === selectedPlan)?.priceAnnual
-                                  : planos.find(p => p.id === selectedPlan)?.price
+                                  ? plans.find(p => p.id === selectedPlan)?.priceAnnual
+                                  : plans.find(p => p.id === selectedPlan)?.price
                                 )?.toFixed(2).replace('.', ',')}
                               </p>
                               <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>/mês</p>
