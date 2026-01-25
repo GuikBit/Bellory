@@ -137,7 +137,7 @@ export function Hero() {
         {/* ====== MOCKUP DO IPHONE - TELAS GRANDES ====== */}
         <motion.div
           ref={mockupRef}
-          className="absolute left-0 top-1/2 -translate-y-1/2 hidden lg:block z-20 pointer-events-none"
+          className="absolute 2xl:left-60 lg:left-10 top-1/2 -translate-y-1/2 hidden lg:block z-20 pointer-events-none"
           style={{
             y: mockupY,
             rotate: mockupRotate,
@@ -150,7 +150,7 @@ export function Hero() {
         >
           {/* Container do mockup com efeitos */}
           <motion.div
-            className="relative"
+            className="relative "
             animate={isLoaded ? floatingAnimation : {}}
           >
             {/* Glow effect behind mockup */}
@@ -184,32 +184,12 @@ export function Hero() {
               }}
             />
 
-            {/* Edge fade gradient - LEFT (fades to background) */}
-            <div
-              className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
-              style={{
-                background: isDark
-                  ? "linear-gradient(to right, #0D0B0A 0%, #0D0B0A 20%, transparent 100%)"
-                  : "linear-gradient(to right, #faf8f6 0%, #faf8f6 20%, transparent 100%)"
-              }}
-            />
-
-            {/* Edge fade gradient - BOTTOM (subtle fade) */}
-            <div
-              className="absolute left-0 right-0 bottom-0 h-20 z-10 pointer-events-none"
-              style={{
-                background: isDark
-                  ? "linear-gradient(to top, rgba(13, 11, 10, 0.8) 0%, transparent 100%)"
-                  : "linear-gradient(to top, rgba(250, 248, 246, 0.8) 0%, transparent 100%)"
-              }}
-            />
-
             {/* Main mockup image */}
             <Image
               src={isDark ? "/mockup_dark.png" : "/mockup-white.png"}
               alt="Bellory App - Sistema de Agendamentos"
-              width={320}
-              height={650}
+              width={250}
+              height={0}
               className="relative z-0 drop-shadow-2xl"
               style={{
                 filter: isDark
@@ -258,30 +238,30 @@ export function Hero() {
             }}
           >
             {/* Simplified glow for md screens */}
-            <div
+            {/* <div
               className="absolute -inset-8 rounded-[50px] blur-2xl opacity-60"
               style={{
                 background: isDark
                   ? "radial-gradient(ellipse at center, rgba(224, 122, 98, 0.2) 0%, transparent 70%)"
                   : "radial-gradient(ellipse at center, rgba(219, 111, 87, 0.15) 0%, transparent 70%)"
               }}
-            />
+            /> */}
 
             {/* Edge fade - LEFT */}
-            <div
+            {/* <div
               className="absolute left-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
               style={{
                 background: isDark
                   ? "linear-gradient(to right, #0D0B0A 0%, transparent 100%)"
                   : "linear-gradient(to right, #faf8f6 0%, transparent 100%)"
               }}
-            />
+            /> */}
 
             <Image
               src={isDark ? "/mockup_dark.png" : "/mockup-white.png"}
               alt="Bellory App"
-              width={220}
-              height={450}
+              width={180}
+              height={0}
               className="relative z-0 drop-shadow-xl"
               style={{
                 filter: isDark
@@ -369,14 +349,14 @@ export function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-center md:text-left mb-5 mt-4"
+              className="text-center mb-5 mt-4 "
             >
               <h1 className="font-serif tracking-tight leading-[1.1] text-balance">
                 {/* Mobile: menor */}
-                <span className={`block text-3xl xs:text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl font-bold ${theme.headlineColor} transition-colors duration-500`}>
+                <span className={`block text-3xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl 2xl:text-6xl font-bold ${theme.headlineColor} transition-colors duration-500`}>
                   Transforme seu negocio
                 </span>
-                <span className={`block text-3xl xs:text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mt-1 ${theme.gradientText} bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]`}>
+                <span className={`block text-3xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl 2xl:text-6xl  font-bold mt-1 ${theme.gradientText} bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]`}>
                   em um imperio digital
                 </span>
               </h1>
@@ -387,7 +367,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className={`text-center md:text-left text-base sm:text-lg lg:text-xl text-balance max-w-2xl md:max-w-none mx-auto md:mx-0 mb-6 lg:mb-8 leading-relaxed font-light ${theme.subheadlineColor} transition-colors duration-500`}
+              className={`text-center text-base sm:text-lg lg:text-xl text-balance max-w-2xl md:max-w-none mx-auto md:mx-0 mb-6 lg:mb-8 leading-relaxed font-light ${theme.subheadlineColor} transition-colors duration-500`}
             >
               Gestao completa + site personalizado + agente de IA no WhatsApp.
               <br className="hidden sm:block" />
@@ -403,7 +383,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex flex-wrap justify-center md:justify-start gap-3 lg:gap-4 mb-8 lg:mb-10"
+              className="flex flex-wrap justify-center gap-3 lg:gap-4 mb-8 lg:mb-10 "
             >
               {benefits.map((benefit, index) => (
                 <motion.div
@@ -435,7 +415,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 lg:gap-4 mb-10 lg:mb-12"
+              className="flex flex-col sm:flex-row items-center justify-center gap-3 lg:gap-4 mb-10 lg:mb-12"
             >
               <Link href="/cadastro" className="w-full sm:w-auto">
                 <Button
@@ -467,7 +447,7 @@ export function Hero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className={`flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 lg:gap-6 text-xs lg:text-sm ${theme.socialText} transition-colors duration-500`}
+              className={`flex flex-col sm:flex-row items-center justify-center  gap-4 lg:gap-6 text-xs lg:text-sm ${theme.socialText} transition-colors duration-500`}
             >
               <div className="flex items-center gap-2">
                 <div className="flex">

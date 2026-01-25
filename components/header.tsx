@@ -385,7 +385,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
           ${isMobileMenuOpen ? (isDark ? 'bg-[#0D0B0A]' : 'bg-white') : 'bg-transparent'}
         `}
       >
-        <div className="container mx-auto px-3 sm:px-6 lg:px-8 ">
+        <div className="container mx-auto  ">
           <div className="flex items-center justify-between md:h-20 h-12">
             {/* Logo com efeito shimmer animado */}
             <Link href="/" className="flex items-center gap-2 group relative">
