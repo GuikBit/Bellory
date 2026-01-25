@@ -235,10 +235,10 @@ export function DemoSection() {
             {/* Antes */}
             <div className={`${theme.cardBg} rounded-3xl p-8 shadow-xl border-2 ${theme.cardBorder}`}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{background: isDark? '#460809':'#FFE2E2'}}>
                   <X className="w-6 h-6 text-[#d15847]" />
                 </div>
-                <h4 className={`text-2xl font-bold ${theme.textPrimary}`}>{beforeAfter.before.title}</h4>
+                <h4 className={`text-2xl font-bold`} style={{ color: theme.textPrimary }}>{beforeAfter.before.title}</h4>
               </div>
               <ul className="space-y-4">
                 {beforeAfter.before.problems.map((problem, index) => (
@@ -253,7 +253,7 @@ export function DemoSection() {
                       className="w-5 h-5 mt-0.5 flex-shrink-0"
                       style={{ color: problem.color }}
                     />
-                    <span className={`${theme.textSecondary} leading-relaxed`}>{problem.text}</span>
+                    <span className={`leading-relaxed`} style={{ color: theme.textSecondary }}>{problem.text}</span>
                   </motion.li>
                 ))}
               </ul>
@@ -296,10 +296,10 @@ export function DemoSection() {
         >
           <div className={`inline-flex flex-col sm:flex-row items-center gap-6 p-10 ${theme.cardBg} rounded-3xl shadow-2xl border ${theme.cardBorder}`}>
             <div className="text-left">
-              <h4 className={`text-2xl sm:text-3xl font-bold ${theme.textPrimary} mb-2`}>
+              <h4 className={`text-2xl sm:text-3xl font-bold mb-2`} style={{ color: theme.textPrimary }}>
                 Quer ver tudo funcionando ao vivo?
               </h4>
-              <p className={`${theme.textSecondary} text-lg`}>
+              <p className={`text-lg`} style={{ color: theme.textSecondary }}>
                 Agende uma demonstração personalizada de 15 minutos
               </p>
             </div>

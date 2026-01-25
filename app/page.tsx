@@ -25,7 +25,7 @@ export default function Home() {
       <ComparisonSection />
       <Pricing />
       <Contact />
-      <FinalCTA />
+      {/* <FinalCTA /> */}
       <Footer />
     </main>
 

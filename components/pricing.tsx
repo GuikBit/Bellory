@@ -18,6 +18,7 @@ import { Button } from "primereact/button"
 import { useRef, useState } from "react"
 import { useTheme } from "@/contexts/HeroThemeContext"
 import { themeConfig } from "@/utils/themes"
+import Link from "next/link"
 
 // Planos
 const plans = [
@@ -121,7 +122,7 @@ const plans = [
       { text: "Relatórios personalizados", included: true },
       { text: "SLA garantido", included: true },
     ],
-    cta: "Falar com especialista",
+    cta: "Experimentar 14 dias grátis",
     badge: "👑 Premium"
   }
 ]
@@ -162,12 +163,12 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro, theme, isDark }: a
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, delay: index * 0.1 }}
-      className={`relative group ${!isCadastro && plan.popular ? 'lg:-mt-6' : ''}`}
+      className={`relative group ${!isCadastro && plan.popular ? '' : ''}`}
     >
       {/* Badge popular */}
       {plan.badge && (
         <div 
-          className={`absolute ${!isCadastro && plan.popular? 'group-hover:-top-9':'group-hover:-top-6'}  -top-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full font-bold text-sm text-white shadow-xl z-10 transition-all duration-300`}
+          className={`absolute ${!isCadastro && plan.popular? 'group-hover:-top-14 -top-9':'group-hover:-top-6 -top-4'}  left-1/2 -translate-x-1/2 px-6 py-2 rounded-full font-bold text-sm text-white shadow-xl z-10 transition-all duration-300`}
           style={{ background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)` }}
         >
           {plan.badge}
@@ -177,7 +178,7 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro, theme, isDark }: a
       <Card
         className={`h-full p-8 rounded-3xl transition-all duration-300 ${
           plan.popular
-            ? `${theme.cardBg} border-2 ${theme.cardShadowHover} scale-100 hover:scale-105`
+            ? `${theme.cardBg} border-2 ${theme.cardShadowHover} scale-105 hover:scale-110 `
             : `${theme.cardBg} border ${theme.cardBorder} ${theme.cardShadow} ${theme.cardShadowHover} hover:-translate-y-2`
         }`}
         style={plan.popular ? { borderColor: plan.color } : {}}
@@ -247,22 +248,25 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro, theme, isDark }: a
 
         {/* CTA */}
         {!isCadastro && ( 
-          <Button
-            label={plan.cta}
-            icon={<ArrowRight className="mx-2" size={16} />}
-            iconPos="right"
-            className={`w-full mb-8 py-3 px-3 rounded-xl font-medium text-base transition-all duration-300 ${
-              plan.popular
-                ? 'bg-gradient-to-r text-white border-0 hover:scale-105 shadow-lg'
-                : 'bg-white border-2 hover:scale-105'
-            }`}
-            style={plan.popular ? { 
-              background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)` 
-            } : {
-              color: plan.color,
-              borderColor: plan.color
-            }}
-          />
+          <Link href={`/cadastro?plano=${plan.id}&recorrencia=${isAnnual?'anual':'mensal'}`}>
+            <Button
+              label={plan.cta}
+              icon={<ArrowRight className="mx-2" size={16} />}
+              iconPos="right"
+              className={`w-full mb-8 py-3 px-3 rounded-xl font-medium text-base transition-all duration-300 ${
+                plan.popular
+                  ? 'bg-gradient-to-r text-white border-0 hover:scale-105 shadow-lg'
+                  : ' border-2 hover:scale-105'
+              }`}
+              style={plan.popular ? { 
+                background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)` 
+              } : {
+                color: plan.color,
+                borderColor: plan.color,
+                background: theme.inputBg
+              }}
+            />
+          </Link>
         )}
         
 
@@ -371,7 +375,7 @@ export function Pricing() {
           {/* Toggle anual/mensal */}
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="w-[180px]"></div>
-            <span className={`font-semibold ${!isAnnual ? theme.textPrimary : theme.textSecondary}`}>
+            <span className={`font-semibold `} style={{color: !isAnnual ? theme.textPrimary : theme.textMuted2 }}>
               Mensal
             </span>
             <button
@@ -384,7 +388,7 @@ export function Pricing() {
                 style={{ transform: isAnnual ? 'translateX(32px)' : 'translateX(0)' }}
               />
             </button>
-            <span className={`font-semibold ${isAnnual ? theme.textPrimary : theme.textSecondary}`}>
+            <span className={`font-semibold `} style={{color: isAnnual ? theme.textPrimary : theme.textMuted2 }}>
               Anual
             </span>
             <div className="w-[180px]">
@@ -444,7 +448,7 @@ export function Pricing() {
               className={`${theme.cardBg} rounded-3xl p-8 mt-4 shadow-xl border ${theme.cardBorder}`}
             >
               <div className="mb-6">
-                <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2`}>
+                <label className={`block text-sm font-semibold mb-2`} style={{color: theme.textPrimary}}>
                   Qual seu faturamento mensal médio?
                 </label>
                 <input
@@ -469,19 +473,19 @@ export function Pricing() {
                   </h4>
                   <ul className="space-y-3 text-sm">
                     <li className="flex justify-between">
-                      <span className={theme.textSecondary}>Tempo economizado:</span>
-                      <span className={`font-bold ${theme.textPrimary}`}>R$ {roiData.timeSaved}</span>
+                      <span style={{color: theme.textSecondary}}>Tempo economizado:</span>
+                      <span className={`font-bold`} style={{color: theme.textPrimary}}>R$ {roiData.timeSaved}</span>
                     </li>
                     <li className="flex justify-between">
-                      <span className={theme.textSecondary}>Redução de faltas:</span>
-                      <span className={`font-bold ${theme.textPrimary}`}>R$ {roiData.noShowReduction}</span>
+                      <span style={{color: theme.textSecondary}}>Redução de faltas:</span>
+                      <span className={`font-bold`} style={{color: theme.textPrimary}}>R$ {roiData.noShowReduction}</span>
                     </li>
                     <li className="flex justify-between">
-                      <span className={theme.textSecondary}>Novos clientes:</span>
-                      <span className={`font-bold ${theme.textPrimary}`}>R$ {roiData.newCustomers}</span>
+                      <span style={{color: theme.textSecondary}}>Novos clientes:</span>
+                      <span className={`font-bold`} style={{color: theme.textPrimary}}>R$ {roiData.newCustomers}</span>
                     </li>
                     <li className={`flex justify-between pt-3 border-t ${theme.border}`}>
-                      <span className={`font-bold ${theme.textPrimary}`}>Total:</span>
+                      <span className={`font-bold`} style={{color: theme.textPrimary}}>Total:</span>
                       <span className="font-bold text-[#5a7a6e]">R$ {roiData.totalGain}</span>
                     </li>
                   </ul>
@@ -500,7 +504,7 @@ export function Pricing() {
                 </div>
               </div>
 
-              <p className={`text-center text-sm ${theme.textSecondary}`}>
+              <p className={`text-center text-sm`} style={{color: theme.textSecondary}}>
                 *Cálculo baseado em médias de clientes reais. Resultados podem variar.
               </p>
             </motion.div>
@@ -526,8 +530,8 @@ export function Pricing() {
                 <div className="flex items-start gap-3">
                   <HelpCircle className={`w-6 h-6 ${theme.badgeIcon} flex-shrink-0 mt-1`} />
                   <div>
-                    <h4 className={`font-bold text-lg ${theme.textPrimary} mb-2`}>{faq.question}</h4>
-                    <p className={`${theme.textSecondary} leading-relaxed`}>{faq.answer}</p>
+                    <h4 className={`font-bold text-lg mb-2`} style={{color: theme.textPrimary}}>{faq.question}</h4>
+                    <p className={`leading-relaxed`} style={{color: theme.textSecondary}}>{faq.answer}</p>
                   </div>
                 </div>
               </div>

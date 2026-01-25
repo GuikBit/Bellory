@@ -159,12 +159,12 @@ const TestimonialCard = ({ testimonial, index, theme }: any) => {
             style={{ borderColor: `${testimonial.color}40` }}
           />
           <div className="flex-1">
-            <h4 className={`font-bold text-lg ${theme.textPrimary}`}>{testimonial.name}</h4>
-            <p className={`text-sm ${theme.textSecondary}`}>{testimonial.role}</p>
+            <h4 className={`font-bold text-lg`} style={{ color: theme.textPrimary }}>{testimonial.name}</h4>
+            <p className={`text-sm `} style={{ color: theme.textSecondary }}>{testimonial.role}</p>
             <p className="text-sm font-semibold" style={{ color: testimonial.color }}>
               {testimonial.business}
             </p>
-            <p className={`text-xs ${theme.textSecondary} mt-1`}>{testimonial.location}</p>
+            <p className={`text-xs mt-1`} style={{ color: theme.textSecondary }}>{testimonial.location}</p>
           </div>
         </div>
 
@@ -180,7 +180,7 @@ const TestimonialCard = ({ testimonial, index, theme }: any) => {
         </div>
 
         {/* Depoimento */}
-        <p className={`${theme.textSecondary} leading-relaxed mb-6 italic`}>
+        <p className={`${theme.textMuted} leading-relaxed mb-6 italic`} >
           "{testimonial.content}"
         </p>
 
@@ -194,7 +194,7 @@ const TestimonialCard = ({ testimonial, index, theme }: any) => {
               >
                 {result.value}
               </div>
-              <div className={`text-xs ${theme.textSecondary}`}>{result.label}</div>
+              <div className={`text-xs ${theme.textMuted}`}>{result.label}</div>
             </div>
           ))}
         </div>
@@ -280,11 +280,12 @@ export function Benefits() {
               </div>
               <div
                 className="text-4xl font-bold mb-2"
-                style={{ color: metric.color }}
+                // style={{ color: metric.color }}
+                style={{ color: theme.textPrimary }}
               >
                 {metric.value}
               </div>
-              <div className={`text-sm ${theme.textSecondary}`}>{metric.label}</div>
+              <div className={`text-sm`} style={{ color: theme.textSecondary }}> {metric.label}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -308,8 +309,10 @@ export function Benefits() {
                 >
                   <benefit.icon className="w-8 h-8" style={{ color: benefit.color }} />
                 </div>
-                <h3 className={`text-xl font-bold mb-3 ${theme.textPrimary}`}>{benefit.title}</h3>
-                <p className={`${theme.textSecondary} leading-relaxed mb-6`}>{benefit.description}</p>
+                <div className="min-h-42">
+                  <h3 className={`text-xl font-bold mb-3`} style={{ color: theme.textPrimary }}>{benefit.title}</h3>
+                  <p className={`leading-relaxed mb-6`} style={{ color: theme.textSecondary }}>{benefit.description}</p>
+                </div>
 
                 {/* Estatística de destaque */}
                 <div className={`pt-4 border-t ${theme.border}`}>
@@ -319,7 +322,7 @@ export function Benefits() {
                   >
                     {benefit.stat}
                   </div>
-                  <div className={`text-sm ${theme.textSecondary}`}>{benefit.statLabel}</div>
+                  <div className={`text-sm ${theme.textMuted}`}>{benefit.statLabel}</div>
                 </div>
               </Card>
             </motion.div>
@@ -355,7 +358,7 @@ export function Benefits() {
         </div>
 
         {/* Badge de confiança */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 1 }}
@@ -393,7 +396,7 @@ export function Benefits() {
           <p className={`${theme.textSecondary} max-w-2xl mx-auto`}>
             Seus dados estão seguros conosco. Seguimos os mais altos padrões de segurança e privacidade da indústria.
           </p>
-        </motion.div>
+        </motion.div> */}
 
       </div>
     </section>

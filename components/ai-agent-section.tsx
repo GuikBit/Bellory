@@ -13,7 +13,7 @@ import {
   Sparkles,
   ArrowRight
 } from "lucide-react"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "primereact/button"
 import { useTheme } from "@/contexts/HeroThemeContext"
 import { themeConfig } from "@/utils/themes"
@@ -105,6 +105,10 @@ export function AIAgentSection() {
     return () => clearInterval(interval)
   })
 
+  useEffect(()=>{
+    console.log(isDark)
+  }, [isDark])
+
   return (
     <section
       id="ai-agent"
@@ -151,14 +155,14 @@ export function AIAgentSection() {
 
           <h2 className={`font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 ${theme.headlineColor} leading-[1.1]`}>
             Seu assistente virtual{" "}
-            <span className={`${theme.gradientText} bg-clip-text text-transparent`}>
+            <span className={`${theme.gradientTextAgent} bg-clip-text text-transparent`}>
               trabalhando 24/7
             </span>
           </h2>
 
           <p className={`text-xl sm:text-2xl ${theme.subheadlineColor} leading-relaxed mb-8`}>
             Atenda seus clientes automaticamente pelo WhatsApp.{" "}
-            <span className={`${theme.highlightColor} font-semibold`}>
+            <span className={`${theme.subheadlineColorAgent} font-semibold`}>
               Agende, confirme e gerencie tudo sem mover um dedo
             </span>.
           </p>
@@ -171,11 +175,11 @@ export function AIAgentSection() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-                className={`${theme.cardBg} rounded-2xl p-6 shadow-lg border ${theme.cardBorder}`}
+                className={`${theme.cardBgAgent} rounded-2xl p-6 shadow-lg border ${theme.cardBorder}`}
               >
-                <stat.icon className={`w-8 h-8 ${theme.badgeIcon} mx-auto mb-3`} />
-                <div className={`text-3xl font-bold ${theme.textPrimary} mb-1`}>{stat.value}</div>
-                <div className={`text-sm ${theme.textSecondary}`}>{stat.label}</div>
+                <stat.icon className={`w-8 h-8 ${theme.subheadlineColorAgent} mx-auto mb-3`} />
+                <div className={`text-3xl font-bold mb-1`} style={{ color: theme.textPrimary }}>{stat.value}</div>
+                <div className={`text-sm`} style={{ color: theme.textSecondary }}>{stat.label}</div>
               </motion.div>
             ))}
           </div>
@@ -271,7 +275,7 @@ export function AIAgentSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
-                className={`flex gap-4 p-6 ${theme.cardBg} ${theme.cardBgHover} rounded-2xl shadow-md ${theme.cardShadowHover} transition-all duration-300 border ${theme.cardBorder} group hover:-translate-y-1`}
+                className={`flex gap-4 p-6 ${theme.cardBgAgent} ${theme.cardBgHoverAgent} rounded-2xl shadow-md ${theme.cardShadowHover} transition-all duration-300 border ${theme.cardBorder} group hover:-translate-y-1`}
               >
                 <div
                   className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform"
@@ -283,8 +287,8 @@ export function AIAgentSection() {
                   <useCase.icon className="w-7 h-7" style={{ color: useCase.color }} />
                 </div>
                 <div>
-                  <h4 className={`font-bold text-lg ${theme.textPrimary} mb-2`}>{useCase.title}</h4>
-                  <p className={`${theme.textSecondary} leading-relaxed`}>{useCase.description}</p>
+                  <h4 className={`font-bold text-lg mb-2`} style={{ color: theme.textPrimary }}>{useCase.title}</h4>
+                  <p className={`leading-relaxed`}style={{ color: theme.textSecondary }}>{useCase.description}</p>
                 </div>
               </motion.div>
             ))}

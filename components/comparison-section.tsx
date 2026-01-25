@@ -178,7 +178,7 @@ export function ComparisonSection() {
       return <Check className="w-6 h-6 text-[#5a7a6e] mx-auto" />
     }
     if (value === false) {
-      return <X className="w-6 h-6 text-gray-300 mx-auto" />
+      return <X className="w-6 h-6 text-[#d9402c] mx-auto" />
     }
     if (value === "Parcial") {
       return <span className="text-sm text-[#e8a055]">Parcial</span>
@@ -250,23 +250,23 @@ export function ComparisonSection() {
                 className={`${theme.cardBg} ${theme.cardBgHover} rounded-3xl p-8 shadow-xl border-2`}
                 style={{ borderColor: result.color + '30' }}
               >
-                <div className="text-center">
+                <div className="flex flex-col items-center justify-between text-center h-full">
                   <div 
                     className="text-5xl font-bold mb-3"
                     style={{ color: result.color }}
                   >
                     {result.bellory}
                   </div>
-                  <div className={`${theme.textPrimary} font-semibold mb-4`}>
+                  <div className={`font-semibold mb-4`} style={{ color: theme.textPrimary }}>
                     {result.metric}
                   </div>
-                  <div className={`text-sm ${theme.textSecondary} space-y-1`}>
+                  <div className={`text-sm space-y-1`} style={{ color: theme.textSecondary }}>
                     <div className="flex justify-between">
-                      <span>Concorrentes:</span>
+                      <span>Concorrentes: &nbsp;</span>
                       <span className="font-medium">{result.competitors}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Tradicional:</span>
+                      <span>Tradicional: &nbsp;</span>
                       <span className="font-medium">{result.traditional}</span>
                     </div>
                   </div>
@@ -301,7 +301,7 @@ export function ComparisonSection() {
             {comparisonTable.categories.map((category, catIndex) => (
               <div key={category.name}>
                 {/* Nome da categoria */}
-                <div className={`${theme.sectionBg} px-6 py-4 font-bold ${theme.textPrimary} text-lg border-t ${theme.border}`}>
+                <div className={`${theme.sectionBg} px-6 py-4 font-bold text-lg border-t ${theme.border}`} style={{ color: theme.textPrimary }}>
                   {category.name}
                 </div>
                 
@@ -312,9 +312,9 @@ export function ComparisonSection() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.5, delay: 0.6 + catIndex * 0.2 + featIndex * 0.1 }}
-                    className={`grid grid-cols-4 p-6 border-t ${theme.border} ${theme.cardBgHover} transition-colors`}
+                    className={`grid grid-cols-4 p-6 border-t ${theme.cardBg} ${theme.border} ${theme.cardBgHover} transition-colors`}
                   >
-                    <div className={theme.textSecondary}>{feature.name}</div>
+                    <div style={{ color: theme.textSecondary }}>{feature.name}</div>
                     <div className="text-center font-semibold">
                       {renderCell(feature.bellory)}
                     </div>

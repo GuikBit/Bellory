@@ -127,7 +127,7 @@ const headerThemeConfig = {
     // Theme toggle
     toggleBg: "bg-[#1A1715]/90 backdrop-blur-sm",
     toggleBorder: "border-[#2D2925]",
-    toggleIcon: "text-[#D4AF37]",
+    toggleIcon: "text-[#E07A62]",
     toggleHover: "hover:bg-[#242120]",
     toggleText: "text-[#F5F0EB]",
 
@@ -909,10 +909,12 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Button
-                    label="Aproveitar"
-                    className={`${theme.promoBtnBg} ${theme.promoBtnText} border-0 transition-all px-4 py-1 rounded-lg font-bold text-xs shadow-lg hover:shadow-xl`}
-                  />
+                  <Link href="/cadastro?recorrencia=anual">
+                    <Button
+                      label="Aproveitar"
+                      className={`${theme.promoBtnBg} ${theme.promoBtnText} border-0 transition-all px-4 py-1 rounded-lg font-bold text-xs shadow-lg hover:shadow-xl`}
+                    />
+                  </Link>
                 </motion.div>
               </div>
             </motion.div>

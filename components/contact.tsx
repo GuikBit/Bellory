@@ -162,14 +162,14 @@ export function Contact() {
                   <Send className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <h3 className={`text-2xl font-bold ${theme.textPrimary}`}>Envie uma mensagem</h3>
-                  <p className={`text-sm ${theme.textSecondary}`}>Responderemos em breve</p>
+                  <h3 className={`text-2xl font-bold`} style={{color: theme.textPrimary}}>Envie uma mensagem</h3>
+                  <p className={`text-sm `} style={{color: theme.textSecondary}}>Responderemos em breve</p>
                 </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="name" className={`block text-sm font-semibold ${theme.textPrimary} mb-2`}>
+                  <label htmlFor="name" className={`block text-sm font-semibold mb-2`} style={{color: theme.textPrimary}}>
                     Nome completo <span className="text-[#d15847]">*</span>
                   </label>
                   <InputText
@@ -184,7 +184,7 @@ export function Contact() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="email" className={`block text-sm font-semibold ${theme.textPrimary} mb-2`}>
+                    <label htmlFor="email" className={`block text-sm font-semibold mb-2`} style={{color: theme.textPrimary}}>
                       E-mail <span className="text-[#d15847]">*</span>
                     </label>
                     <InputText
@@ -199,7 +199,7 @@ export function Contact() {
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className={`block text-sm font-semibold ${theme.textPrimary} mb-2`}>
+                    <label htmlFor="phone" className={`block text-sm font-semibold mb-2`} style={{color: theme.textPrimary}}>
                       Telefone <span className="text-[#d15847]">*</span>
                     </label>
                     <InputText
@@ -215,7 +215,7 @@ export function Contact() {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className={`block text-sm font-semibold ${theme.textPrimary} mb-2`}>
+                  <label htmlFor="message" className={`block text-sm font-semibold mb-2`} style={{color: theme.textPrimary}}>
                     Mensagem <span className="text-[#d15847]">*</span>
                   </label>
                   <InputTextarea
@@ -232,12 +232,12 @@ export function Contact() {
                 <Button
                   type="submit"
                   label="Enviar mensagem"
-                  icon={<Send className="ml-2 w-5 h-5" />}
+                  icon={<Send size={20} className="ml-10" />}
                   iconPos="right"
                   className="w-full bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 hover:scale-105 transition-all py-4 rounded-xl font-bold text-lg shadow-lg"
                 />
 
-                <p className={`text-center text-sm ${theme.textSecondary}`}>
+                <p className={`text-center text-sm`} style={{color: theme.textMuted2}}>
                   Ao enviar, você concorda com nossa política de privacidade
                 </p>
               </form>
@@ -286,12 +286,12 @@ export function Contact() {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
-                              <h4 className={`font-bold text-lg ${theme.textPrimary}`}>{method.title}</h4>
+                              <h4 className={`font-bold text-lg`} style={{color: theme.textPrimary}}>{method.title}</h4>
                               <span className="text-xs px-3 py-1 rounded-full bg-[#5a7a6e]/10 text-[#5a7a6e] font-semibold">
                                 {method.available}
                               </span>
                             </div>
-                            <p className={`text-sm ${theme.textSecondary} mb-2`}>{method.description}</p>
+                            <p className={`text-sm mb-2`} style={{color: theme.textSecondary}}>{method.description}</p>
                             <p 
                               className="font-semibold text-base group-hover:underline"
                               style={{ color: method.color }}
@@ -334,14 +334,13 @@ export function Contact() {
           </motion.div>
         </div>
 
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 1.2 }}
           className="mt-20 text-center max-w-4xl mx-auto space-y-8"
         >
 
-          {/* Benefícios */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -362,14 +361,13 @@ export function Contact() {
               </Card>
             </motion.div>
 
-            {/* CTA Final */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 1.1 }}
             >
               <Card className="p-8 bg-gradient-to-br from-[#8b3d35] via-[#db6f57] to-[#8b3d35] border-0 shadow-2xl rounded-3xl relative overflow-hidden">
-                {/* Padrão decorativo */}
+  
                 <div className="absolute inset-0 opacity-10"
                   style={{
                     backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -399,7 +397,7 @@ export function Contact() {
                 </div>
               </Card>
             </motion.div>
-        </motion.div>
+        </motion.div> */}
         
 
         {/* FAQ Rápido */}
@@ -415,24 +413,24 @@ export function Contact() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className={`p-6 ${theme.cardBg} ${theme.cardBgHover} border ${theme.cardBorder} rounded-2xl shadow-md ${theme.cardShadowHover} transition-all`}>
               <Clock className={`w-8 h-8 ${theme.badgeIcon} mx-auto mb-3`} />
-              <h4 className={`font-semibold ${theme.textPrimary} mb-2`}>Quanto tempo leva?</h4>
-              <p className={`text-sm ${theme.textSecondary}`}>
+              <h4 className={`font-semibold mb-2`} style={{color: theme.textPrimary}}>Quanto tempo leva?</h4>
+              <p className={`text-sm`} style={{color: theme.textSecondary}}>
                 Você pode começar em menos de 5 minutos
               </p>
             </Card>
 
             <Card className={`p-6 ${theme.cardBg} ${theme.cardBgHover} border ${theme.cardBorder} rounded-2xl shadow-md ${theme.cardShadowHover} transition-all`}>
               <CheckCircle2 className={`w-8 h-8 ${theme.badgeIcon} mx-auto mb-3`} />
-              <h4 className={`font-semibold ${theme.textPrimary} mb-2`}>Preciso de cartão?</h4>
-              <p className={`text-sm ${theme.textSecondary}`}>
+              <h4 className={`font-semibold mb-2`} style={{color: theme.textPrimary}}>Preciso de cartão?</h4>
+              <p className={`text-sm`} style={{color: theme.textSecondary}}>
                 Não! Teste grátis sem informar cartão
               </p>
             </Card>
 
             <Card className={`p-6 ${theme.cardBg} ${theme.cardBgHover} border ${theme.cardBorder} rounded-2xl shadow-md ${theme.cardShadowHover} transition-all`}>
               <HeadphonesIcon className={`w-8 h-8 ${theme.highlightColor} mx-auto mb-3`} />
-              <h4 className={`font-semibold ${theme.textPrimary} mb-2`}>Tem suporte?</h4>
-              <p className={`text-sm ${theme.textSecondary}`}>
+              <h4 className={`font-semibold mb-2`} style={{color: theme.textPrimary}}>Tem suporte?</h4>
+              <p className={`text-sm`} style={{color: theme.textSecondary}}>
                 Sim! Suporte completo via WhatsApp
               </p>
             </Card>

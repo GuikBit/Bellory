@@ -193,9 +193,9 @@ export function FeaturesExternal() {
             Escolha o tema perfeito para sua marca
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {themeArray.map((theme, index) => (
+            {themeArray.map((themeSystem, index) => (
               <motion.div
-                key={theme.name}
+                key={themeSystem.name}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
@@ -205,8 +205,8 @@ export function FeaturesExternal() {
               >
               
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-[#2a2420]'}`}>{theme.name}</h4>
-                  {theme.isDark ? (
+                  <h4 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-[#2a2420]'}`}>{themeSystem.name}</h4>
+                  {themeSystem.isDark ? (
                     <Moon className="w-5 h-5 text-[#4f6f64]" />
                   ) : (
                     <Sun className="w-5 h-5 text-[#db6f57]" />
@@ -215,15 +215,15 @@ export function FeaturesExternal() {
                 <div className="flex gap-2 mb-4">
                   <div className="flex items-center justify-center gap-2">
                     {[
-                      { color: theme.colors.primary, label: 'Primária' },
-                      { color: theme.colors.secondary, label: 'Secundária' },
-                      { color: theme.colors.accent, label: 'Destaque' },
-                      { color: theme.colors.background, label: 'Fundo' }
+                      { color: themeSystem.colors.primary, label: 'Primária' },
+                      { color: themeSystem.colors.secondary, label: 'Secundária' },
+                      { color: themeSystem.colors.accent, label: 'Destaque' },
+                      { color: themeSystem.colors.background, label: 'Fundo' }
                     ].map((item, idx) => (
                       <div key={idx} className="relative group">
                         <motion.div
                           whileHover={{ scale: 1.2 }}
-                          className="w-8 h-8 rounded-full shadow-md ring-2 ring-white transition-all"
+                          className="w-8 h-8 rounded-full shadow-md  transition-all"
                           style={{ backgroundColor: item.color }}
                         />
                         {showDetails && (
@@ -242,14 +242,14 @@ export function FeaturesExternal() {
                   className={`mt-4 pt-4 border-t ${isDark ? 'border-gray-600' : 'border-[#d8ccc4]'} overflow-hidden`}
                 >
                   <div className="flex items-center justify-between text-xs">
-                    <span className={`${isDark ? 'text-gray-400' : 'text-[#4f6f64]'}`}>Fonte Título: <span className="font-bold">{theme.fonts?.heading}</span></span>
-                    <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#2a2420]'}`} style={{ fontFamily: theme.fonts?.heading }}>
+                    <span className={`${isDark ? 'text-gray-400' : 'text-[#4f6f64]'}`}>Fonte Título: <span className="font-bold">{themeSystem.fonts?.heading}</span></span>
+                    <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#2a2420]'}`} style={{ fontFamily: themeSystem.fonts?.heading }}>
                       Aa
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-xs mt-2">
-                    <span className={`${isDark ? 'text-gray-400' : 'text-[#4f6f64]'}`}>Fonte Corpo: <span className="font-bold">{theme.fonts?.body}</span></span>
-                    <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#2a2420]'}`} style={{ fontFamily: theme.fonts?.body }}>
+                    <span className={`${isDark ? 'text-gray-400' : 'text-[#4f6f64]'}`}>Fonte Corpo: <span className="font-bold">{themeSystem.fonts?.body}</span></span>
+                    <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#2a2420]'}`} style={{ fontFamily: themeSystem.fonts?.body }}>
                       Aa
                     </span>
                   </div>
@@ -291,17 +291,17 @@ export function FeaturesExternal() {
                 </div>
 
                 {/* Conteúdo */}
-                <h3 className={`text-2xl font-bold mb-3 ${theme.textPrimary} group-hover:${theme.highlightColor} transition-colors`}>
+                <h3 className={`text-2xl font-bold mb-6 group-hover:${theme.highlightColor} transition-colors`} style={{ color: theme.textPrimary }}>
                   {feature.title}
                 </h3>
-                <p className={`${theme.textSecondary} leading-relaxed mb-6`}>
+                <p className={`leading-relaxed mb-6`} style={{ color: theme.textSecondary }}>
                   {feature.description}
                 </p>
 
                 {/* Lista de benefícios */}
                 <ul className="space-y-2">
                   {feature.benefits.map((benefit, i) => (
-                    <li key={i} className={`flex items-start gap-2 text-sm ${theme.textSecondary}`}>
+                    <li key={i} className={`flex items-start gap-2 text-sm ${theme.textMuted}`}>
                       <Check className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: feature.color }} />
                       <span>{benefit}</span>
                     </li>

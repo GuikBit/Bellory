@@ -1422,8 +1422,10 @@ export const themeConfig = {
     sectionBg: "bg-gradient-to-b from-[#faf8f6] via-white to-[#faf8f6]",
     sectionBgAlt: "bg-gradient-to-b from-white via-[#faf8f6] to-white",
     cardBg: "bg-white",
+    cardBgAgent: "bg-[#FAFFFA]",
     cardBgHover: "hover:bg-gradient-to-br hover:from-white hover:to-[#faf8f6]",
-
+    cardBgHoverAgent: "hover:bg-green-50",
+    
     // Blobs decorativos
     blob1: "bg-gradient-to-br from-[#db6f57]/20 to-[#8b3d35]/20",
     blob2: "bg-gradient-to-tr from-[#4f6f64]/20 to-[#db6f57]/20",
@@ -1435,12 +1437,15 @@ export const themeConfig = {
     // Textos
     headlineColor: "text-[#2a2420]",
     gradientText: "bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57]",
+    gradientTextAgent: "bg-gradient-to-r from-[#4f6f64] to-[#3d574f] bg-clip-text text-transparent",
+    subheadlineColorAgent: "text-[#4f6f64]",
     subheadlineColor: "text-[#4f6f64]",
     highlightColor: "text-[#8b3d35]",
     textPrimary: "#2a2420",
     textSecondary: "#4f6f64",
     textTertiary: "#8b3d35",
     textMuted: "text-gray-400",
+    textMuted2: "#99A1AF",
 
     // Beneficios
     benefitCard: "bg-white border-[#d8ccc4]",
@@ -1493,8 +1498,9 @@ export const themeConfig = {
     sectionBg: "bg-gradient-to-b from-[#0D0B0A] via-[#141210] to-[#0D0B0A]",
     sectionBgAlt: "bg-gradient-to-b from-[#141210] via-[#1A1715] to-[#141210]",
     cardBg: "bg-[#1A1715]",
+    cardBgAgent: "bg-[#1B201B]",
     cardBgHover: "hover:bg-[#242120]",
-
+    cardBgHoverAgent: "hover:bg-[#242120]",
     // Blobs decorativos - com cores vibrantes mas sutis
     blob1: "",
     blob1Style: { background: "linear-gradient(135deg, rgba(224, 122, 98, 0.2) 0%, rgba(168, 82, 74, 0.15) 100%)" },
@@ -1508,12 +1514,15 @@ export const themeConfig = {
     // Textos
     headlineColor: "text-[#F5F0EB]",
     gradientText: "bg-gradient-to-r from-[#E07A62] via-[#D4AF37] to-[#E07A62]",
+    gradientTextAgent: "bg-gradient-to-r from-[#4f6f64] to-[#3d574f] bg-clip-text text-transparent",
+    subheadlineColorAgent: "text-[#4f6f64]",
     subheadlineColor: "text-[#B8AEA4]",
     highlightColor: "text-[#E07A62]",
     textPrimary: "#F5F0EB",
     textSecondary: "#B8AEA4",
     textTertiary: "#E07A62",
     textMuted: "text-[#7A716A]",
+    textMuted2: "#7A716A",
 
     // Beneficios
     benefitCard: "bg-[#1A1715]/80 backdrop-blur-sm border-[#2D2925]",

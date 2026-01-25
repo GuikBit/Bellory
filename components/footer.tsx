@@ -99,13 +99,22 @@ export function Footer() {
               <p className="text-white/70 text-lg mb-8">
                 Receba dicas de gestão, novidades do produto e ofertas exclusivas
               </p>
-              <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                <InputText
+              <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto">
+                {/* <InputText
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Seu melhor e-mail"
-                  className={`flex-1 px-6 py-4 rounded-xl border-2 ${isDark ? 'border-gray-600 bg-gray-800' : 'border-white/20 bg-white/10'} text-white placeholder:text-white/50`}
+                  className={`flex-1 px-6 py-4 rounded-xl border-2 ${isDark ? '!border-gray-600 !bg-gray-800' : 'border-white/20 bg-white/10'} text-white placeholder:text-white/50`}
+                  required
+                /> */}
+                <InputText
+                  id="email"
+                  type="email"
+                  placeholder="Seu melhor e-mail"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`flex-1 px-6 py-4 rounded-xl border-2 ${theme.inputBorder} rounded-xl ${theme.inputFocus} ${theme.inputBg} ${theme.inputText} transition-all`}
                   required
                 />
                 <Button
@@ -246,7 +255,7 @@ export function Footer() {
                 <div className="text-xs text-white/60">100% Compliance</div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
                 <Shield className="w-6 h-6 text-[#5a7a6e]" />
               </div>
@@ -254,7 +263,7 @@ export function Footer() {
                 <div className="font-bold text-sm">ISO 27001</div>
                 <div className="text-xs text-white/60">Certificado</div>
               </div>
-            </div>
+            </div> */}
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
                 <Award className="w-6 h-6 text-[#5a7a6e]" />
@@ -270,7 +279,7 @@ export function Footer() {
         {/* Redes sociais e copyright */}
         <div className="py-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2 text-sm text-white/60">
-            <span>© 2025 Bellory. Todos os direitos reservados.</span>
+            <span>© 2026 Bellory. Todos os direitos reservados.</span>
             <span className="hidden md:inline">•</span>
             <span className="flex items-center gap-1">
               Feito com <Heart className="w-4 h-4 text-[#db6f57] fill-current" /> no Brasil
