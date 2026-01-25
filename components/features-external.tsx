@@ -1,10 +1,10 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { 
-  Palette, 
-  Layout, 
-  ShoppingBag, 
+import {
+  Palette,
+  Layout,
+  ShoppingBag,
   Smartphone,
   Globe,
   Search,
@@ -19,6 +19,8 @@ import { Card } from "primereact/card"
 import { useRef, useState } from "react"
 import { Button } from "primereact/button"
 import { Theme, themes } from "@/utils/themes"
+import { useTheme } from "@/contexts/HeroThemeContext"
+import { themeConfig } from "@/utils/themes"
 
 const features = [
   {
@@ -126,6 +128,8 @@ const features = [
 // ]
 
 export function FeaturesExternal() {
+  const { isDark } = useTheme()
+  const theme = isDark ? themeConfig.dark : themeConfig.light
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
 
@@ -134,15 +138,16 @@ export function FeaturesExternal() {
   
 
   return (
-    <section 
+    <section
       ref={sectionRef}
-      id="personalizacao" 
-      className="py-32 relative overflow-hidden bg-gradient-to-b from-[#faf8f6] via-white to-[#faf8f6]"
+      id="personalizacao"
+      className={`py-32 relative overflow-hidden ${theme.sectionBg}`}
     >
       {/* Background decorativo */}
-      <div className="absolute inset-0 opacity-[0.02]"
+      <div className="absolute inset-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23db6f57' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(theme.patternColor)}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          opacity: parseFloat(theme.patternOpacity),
         }}
       />
 
@@ -155,23 +160,23 @@ export function FeaturesExternal() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto mb-20"
         >
-          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-[#db6f57]/10 to-[#8b3d35]/10 border border-[#db6f57]/20 mb-8">
-            <Heart className="w-5 h-5 text-[#db6f57]" />
-            <span className="font-bold text-[#8b3d35] uppercase tracking-wide text-sm">
+          <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full ${theme.badge} border mb-8`}>
+            <Heart className={`w-5 h-5 ${theme.badgeIcon}`} />
+            <span className={`font-bold ${theme.badgeText} uppercase tracking-wide text-sm`}>
               Presença Digital Profissional
             </span>
           </div>
 
-          <h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-[#2a2420] leading-[1.1]">
+          <h2 className={`font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 ${theme.headlineColor} leading-[1.1]`}>
             Seu negócio{" "}
-            <span className="bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent">
+            <span className={`${theme.gradientText} bg-clip-text text-transparent`}>
               com presença digital única
             </span>
           </h2>
 
-          <p className="text-xl sm:text-2xl text-[#4f6f64] leading-relaxed">
+          <p className={`text-xl sm:text-2xl ${theme.subheadlineColor} leading-relaxed`}>
             Site personalizado + e-commerce + agendamento online.{" "}
-            <span className="text-[#8b3d35] font-semibold">
+            <span className={`${theme.highlightColor} font-semibold`}>
               Tudo integrado ao seu sistema de gestão
             </span>.
           </p>
@@ -184,7 +189,7 @@ export function FeaturesExternal() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mb-20"
         >
-          <h3 className="text-center text-2xl font-bold text-[#2a2420] mb-8">
+          <h3 className={`text-center text-2xl font-bold ${theme.headlineColor} mb-8`}>
             Escolha o tema perfeito para sua marca
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
@@ -194,13 +199,13 @@ export function FeaturesExternal() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                className="bg-white rounded-2xl p-6 shadow-lg border border-[#d8ccc4] hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
+                className={`${theme.cardBg} ${theme.cardBgHover} rounded-2xl p-6 shadow-lg border ${theme.cardBorder} ${theme.cardShadowHover} hover:-translate-y-2 transition-all duration-300`}
                 onMouseEnter={() => setShowDetails(true)}
                 onMouseLeave={() => setShowDetails(false)}
               >
               
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-bold text-lg text-[#2a2420]">{theme.name}</h4>
+                  <h4 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-[#2a2420]'}`}>{theme.name}</h4>
                   {theme.isDark ? (
                     <Moon className="w-5 h-5 text-[#4f6f64]" />
                   ) : (
@@ -222,7 +227,7 @@ export function FeaturesExternal() {
                           style={{ backgroundColor: item.color }}
                         />
                         {showDetails && (
-                          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#2a2420] text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                          <div className={`absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 ${isDark ? 'bg-white text-[#2a2420]' : 'bg-[#2a2420] text-white'} text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10`}>
                             {item.label}
                           </div>
                         )}
@@ -234,17 +239,17 @@ export function FeaturesExternal() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="mt-4 pt-4 border-t border-[#d8ccc4] overflow-hidden"
+                  className={`mt-4 pt-4 border-t ${isDark ? 'border-gray-600' : 'border-[#d8ccc4]'} overflow-hidden`}
                 >
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-[#4f6f64]">Fonte Título: <span className="font-bold">{theme.fonts?.heading}</span></span>
-                    <span className="font-semibold text-[#2a2420]" style={{ fontFamily: theme.fonts?.heading }}>
+                    <span className={`${isDark ? 'text-gray-400' : 'text-[#4f6f64]'}`}>Fonte Título: <span className="font-bold">{theme.fonts?.heading}</span></span>
+                    <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#2a2420]'}`} style={{ fontFamily: theme.fonts?.heading }}>
                       Aa
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-xs mt-2">
-                    <span className="text-[#4f6f64]">Fonte Corpo: <span className="font-bold">{theme.fonts?.body}</span></span>
-                    <span className="font-semibold text-[#2a2420]" style={{ fontFamily: theme.fonts?.body }}>
+                    <span className={`${isDark ? 'text-gray-400' : 'text-[#4f6f64]'}`}>Fonte Corpo: <span className="font-bold">{theme.fonts?.body}</span></span>
+                    <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#2a2420]'}`} style={{ fontFamily: theme.fonts?.body }}>
                       Aa
                     </span>
                   </div>
@@ -264,7 +269,7 @@ export function FeaturesExternal() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
             >
-              <Card className="group relative p-8 h-full bg-white hover:bg-gradient-to-br hover:from-white hover:to-[#faf8f6] border border-[#d8ccc4] hover:border-[#db6f57]/30 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 overflow-hidden">
+              <Card className={`group relative p-8 h-full ${theme.cardBg} ${theme.cardBgHover} border ${theme.cardBorder} ${theme.borderHover} rounded-2xl transition-all duration-300 ${theme.cardShadowHover} hover:-translate-y-2 overflow-hidden`}>
                 {/* Decoração de fundo */}
                 <div 
                   className="absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-full blur-3xl"
@@ -286,17 +291,17 @@ export function FeaturesExternal() {
                 </div>
 
                 {/* Conteúdo */}
-                <h3 className="text-2xl font-bold mb-3 text-[#2a2420] group-hover:text-[#8b3d35] transition-colors">
+                <h3 className={`text-2xl font-bold mb-3 ${theme.textPrimary} group-hover:${theme.highlightColor} transition-colors`}>
                   {feature.title}
                 </h3>
-                <p className="text-[#4f6f64] leading-relaxed mb-6">
+                <p className={`${theme.textSecondary} leading-relaxed mb-6`}>
                   {feature.description}
                 </p>
 
                 {/* Lista de benefícios */}
                 <ul className="space-y-2">
                   {feature.benefits.map((benefit, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-[#4f6f64]">
+                    <li key={i} className={`flex items-start gap-2 text-sm ${theme.textSecondary}`}>
                       <Check className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: feature.color }} />
                       <span>{benefit}</span>
                     </li>

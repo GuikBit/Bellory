@@ -1,9 +1,9 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { 
-  MessageCircle, 
-  Mail, 
+import {
+  MessageCircle,
+  Mail,
   Phone,
   MapPin,
   Send,
@@ -18,8 +18,12 @@ import { InputText } from "primereact/inputtext"
 import { InputTextarea } from "primereact/inputtextarea"
 import { useRef, useState } from "react"
 import Link from "next/link"
+import { useTheme } from "@/contexts/HeroThemeContext"
+import { themeConfig } from "@/utils/themes"
 
 export function Contact() {
+  const { isDark } = useTheme()
+  const theme = isDark ? themeConfig.dark : themeConfig.light
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
   const [formData, setFormData] = useState({
@@ -85,15 +89,16 @@ export function Contact() {
   ]
 
   return (
-    <section 
+    <section
       ref={sectionRef}
-      id="contato" 
-      className="py-32 relative overflow-hidden bg-gradient-to-b from-white via-[#faf8f6] to-white"
+      id="contato"
+      className={`py-32 relative overflow-hidden ${theme.sectionBgAlt}`}
     >
       {/* Background decorativo */}
-      <div className="absolute inset-0 opacity-[0.02]"
+      <div className="absolute inset-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23db6f57' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(theme.patternColor)}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          opacity: parseFloat(theme.patternOpacity),
         }}
       />
 
@@ -120,23 +125,23 @@ export function Contact() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto mb-20"
         >
-          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-[#db6f57]/10 to-[#8b3d35]/10 border border-[#db6f57]/20 mb-8">
-            <HeadphonesIcon className="w-5 h-5 text-[#db6f57]" />
-            <span className="font-bold text-[#8b3d35] uppercase tracking-wide text-sm">
+          <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full ${theme.badge} border mb-8`}>
+            <HeadphonesIcon className={`w-5 h-5 ${theme.badgeIcon}`} />
+            <span className={`font-bold ${theme.badgeText} uppercase tracking-wide text-sm`}>
               Fale Conosco
             </span>
           </div>
 
-          <h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-[#2a2420] leading-[1.1]">
+          <h2 className={`font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 ${theme.headlineColor} leading-[1.1]`}>
             Pronto para{" "}
-            <span className="bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent">
+            <span className={`${theme.gradientText} bg-clip-text text-transparent`}>
               começar
             </span>?
           </h2>
 
-          <p className="text-xl sm:text-2xl text-[#4f6f64] leading-relaxed">
+          <p className={`text-xl sm:text-2xl ${theme.subheadlineColor} leading-relaxed`}>
             Entre em contato e descubra como o Bellory pode{" "}
-            <span className="text-[#8b3d35] font-semibold">
+            <span className={`${theme.highlightColor} font-semibold`}>
               transformar seu negócio
             </span>
           </p>
@@ -151,35 +156,35 @@ export function Contact() {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <Card className="p-8 lg:p-10 bg-white border-2 border-[#d8ccc4] shadow-2xl rounded-3xl hover:shadow-3xl transition-all duration-300">
-              <div className="flex items-center gap-3 mb-8 pb-6 border-b border-[#d8ccc4]">
+            <Card className={`p-8 lg:p-10 ${theme.cardBg} border-2 ${theme.cardBorder} shadow-2xl rounded-3xl hover:shadow-3xl transition-all duration-300`}>
+              <div className={`flex items-center gap-3 mb-8 pb-6 border-b ${theme.border}`}>
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#db6f57] to-[#c55a42] flex items-center justify-center shadow-lg">
                   <Send className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-[#2a2420]">Envie uma mensagem</h3>
-                  <p className="text-sm text-[#4f6f64]">Responderemos em breve</p>
+                  <h3 className={`text-2xl font-bold ${theme.textPrimary}`}>Envie uma mensagem</h3>
+                  <p className={`text-sm ${theme.textSecondary}`}>Responderemos em breve</p>
                 </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-semibold text-[#2a2420] mb-2">
+                  <label htmlFor="name" className={`block text-sm font-semibold ${theme.textPrimary} mb-2`}>
                     Nome completo <span className="text-[#d15847]">*</span>
                   </label>
-                  <InputText 
-                    id="name" 
+                  <InputText
+                    id="name"
                     placeholder="Seu nome completo"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-[#d8ccc4] rounded-xl focus:border-[#db6f57] transition-all"
+                    className={`w-full px-4 py-3 border-2 ${theme.inputBorder} rounded-xl ${theme.inputFocus} ${theme.inputBg} ${theme.inputText} transition-all`}
                     required
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="email" className="block text-sm font-semibold text-[#2a2420] mb-2">
+                    <label htmlFor="email" className={`block text-sm font-semibold ${theme.textPrimary} mb-2`}>
                       E-mail <span className="text-[#d15847]">*</span>
                     </label>
                     <InputText
@@ -188,13 +193,13 @@ export function Contact() {
                       placeholder="seu@email.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-[#d8ccc4] rounded-xl focus:border-[#db6f57] transition-all"
+                      className={`w-full px-4 py-3 border-2 ${theme.inputBorder} rounded-xl ${theme.inputFocus} ${theme.inputBg} ${theme.inputText} transition-all`}
                       required
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-semibold text-[#2a2420] mb-2">
+                    <label htmlFor="phone" className={`block text-sm font-semibold ${theme.textPrimary} mb-2`}>
                       Telefone <span className="text-[#d15847]">*</span>
                     </label>
                     <InputText
@@ -203,14 +208,14 @@ export function Contact() {
                       placeholder="(00) 00000-0000"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-[#d8ccc4] rounded-xl focus:border-[#db6f57] transition-all"
+                      className={`w-full px-4 py-3 border-2 ${theme.inputBorder} rounded-xl ${theme.inputFocus} ${theme.inputBg} ${theme.inputText} transition-all`}
                       required
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-semibold text-[#2a2420] mb-2">
+                  <label htmlFor="message" className={`block text-sm font-semibold ${theme.textPrimary} mb-2`}>
                     Mensagem <span className="text-[#d15847]">*</span>
                   </label>
                   <InputTextarea
@@ -218,7 +223,7 @@ export function Contact() {
                     placeholder="Conte-nos sobre seu negócio e como podemos ajudar..."
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-[#d8ccc4] rounded-xl focus:border-[#db6f57] transition-all resize-none"
+                    className={`w-full px-4 py-3 border-2 ${theme.inputBorder} rounded-xl ${theme.inputFocus} ${theme.inputBg} ${theme.inputText} transition-all resize-none`}
                     rows={5}
                     required
                   />
@@ -232,7 +237,7 @@ export function Contact() {
                   className="w-full bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 hover:scale-105 transition-all py-4 rounded-xl font-bold text-lg shadow-lg"
                 />
 
-                <p className="text-center text-sm text-[#4f6f64]">
+                <p className={`text-center text-sm ${theme.textSecondary}`}>
                   Ao enviar, você concorda com nossa política de privacidade
                 </p>
               </form>
@@ -248,7 +253,7 @@ export function Contact() {
           >
             {/* Métodos de contato */}
             <div>
-              <h3 className="text-2xl font-bold text-[#2a2420] mb-6">
+              <h3 className={`text-2xl font-bold ${theme.headlineColor} mb-6`}>
                 Outras formas de contato
               </h3>
               <div className="space-y-4">
@@ -265,7 +270,7 @@ export function Contact() {
                       rel="noopener noreferrer"
                       className="block"
                     >
-                      <Card className="p-6 bg-white border-2 border-[#d8ccc4] hover:border-[#db6f57]/50 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl group hover:-translate-y-1">
+                      <Card className={`p-6 ${theme.cardBg} ${theme.cardBgHover} border-2 ${theme.cardBorder} ${theme.borderHover} shadow-md ${theme.cardShadowHover} transition-all duration-300 rounded-2xl group hover:-translate-y-1`}>
                         <div className="flex items-start gap-4">
                           <div 
                             className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform shadow-md"
@@ -281,12 +286,12 @@ export function Contact() {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
-                              <h4 className="font-bold text-lg text-[#2a2420]">{method.title}</h4>
+                              <h4 className={`font-bold text-lg ${theme.textPrimary}`}>{method.title}</h4>
                               <span className="text-xs px-3 py-1 rounded-full bg-[#5a7a6e]/10 text-[#5a7a6e] font-semibold">
                                 {method.available}
                               </span>
                             </div>
-                            <p className="text-sm text-[#4f6f64] mb-2">{method.description}</p>
+                            <p className={`text-sm ${theme.textSecondary} mb-2`}>{method.description}</p>
                             <p 
                               className="font-semibold text-base group-hover:underline"
                               style={{ color: method.color }}
@@ -342,15 +347,15 @@ export function Contact() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 1 }}
             >
-              <Card className="p-8 bg-white border-2 border-[#d8ccc4] rounded-2xl shadow-lg">
-                <h4 className="font-bold text-xl text-[#2a2420] mb-6">
+              <Card className={`p-8 ${theme.cardBg} border-2 ${theme.cardBorder} rounded-2xl shadow-lg`}>
+                <h4 className={`font-bold text-xl ${theme.textPrimary} mb-6`}>
                   Por que entrar em contato?
                 </h4>
                 <ul className="space-y-4 mb-6">
                   {benefits.map((benefit, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <benefit.icon className="w-5 h-5 text-[#5a7a6e] mt-0.5 flex-shrink-0" />
-                      <span className="text-[#4f6f64] leading-relaxed">{benefit.text}</span>
+                      <span className={`${theme.textSecondary} leading-relaxed`}>{benefit.text}</span>
                     </li>
                   ))}
                 </ul>
@@ -404,30 +409,30 @@ export function Contact() {
           transition={{ duration: 0.8, delay: 1.2 }}
           className="mt-20 text-center max-w-4xl mx-auto"
         >
-          <h3 className="text-2xl font-bold text-[#2a2420] mb-6">
+          <h3 className={`text-2xl font-bold ${theme.headlineColor} mb-6`}>
             Dúvidas Frequentes
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="p-6 bg-white border border-[#d8ccc4] rounded-2xl shadow-md hover:shadow-lg transition-all">
-              <Clock className="w-8 h-8 text-[#db6f57] mx-auto mb-3" />
-              <h4 className="font-semibold text-[#2a2420] mb-2">Quanto tempo leva?</h4>
-              <p className="text-sm text-[#4f6f64]">
+            <Card className={`p-6 ${theme.cardBg} ${theme.cardBgHover} border ${theme.cardBorder} rounded-2xl shadow-md ${theme.cardShadowHover} transition-all`}>
+              <Clock className={`w-8 h-8 ${theme.badgeIcon} mx-auto mb-3`} />
+              <h4 className={`font-semibold ${theme.textPrimary} mb-2`}>Quanto tempo leva?</h4>
+              <p className={`text-sm ${theme.textSecondary}`}>
                 Você pode começar em menos de 5 minutos
               </p>
             </Card>
 
-            <Card className="p-6 bg-white border border-[#d8ccc4] rounded-2xl shadow-md hover:shadow-lg transition-all">
-              <CheckCircle2 className="w-8 h-8 text-[#4f6f64] mx-auto mb-3" />
-              <h4 className="font-semibold text-[#2a2420] mb-2">Preciso de cartão?</h4>
-              <p className="text-sm text-[#4f6f64]">
+            <Card className={`p-6 ${theme.cardBg} ${theme.cardBgHover} border ${theme.cardBorder} rounded-2xl shadow-md ${theme.cardShadowHover} transition-all`}>
+              <CheckCircle2 className={`w-8 h-8 ${theme.badgeIcon} mx-auto mb-3`} />
+              <h4 className={`font-semibold ${theme.textPrimary} mb-2`}>Preciso de cartão?</h4>
+              <p className={`text-sm ${theme.textSecondary}`}>
                 Não! Teste grátis sem informar cartão
               </p>
             </Card>
 
-            <Card className="p-6 bg-white border border-[#d8ccc4] rounded-2xl shadow-md hover:shadow-lg transition-all">
-              <HeadphonesIcon className="w-8 h-8 text-[#8b3d35] mx-auto mb-3" />
-              <h4 className="font-semibold text-[#2a2420] mb-2">Tem suporte?</h4>
-              <p className="text-sm text-[#4f6f64]">
+            <Card className={`p-6 ${theme.cardBg} ${theme.cardBgHover} border ${theme.cardBorder} rounded-2xl shadow-md ${theme.cardShadowHover} transition-all`}>
+              <HeadphonesIcon className={`w-8 h-8 ${theme.highlightColor} mx-auto mb-3`} />
+              <h4 className={`font-semibold ${theme.textPrimary} mb-2`}>Tem suporte?</h4>
+              <p className={`text-sm ${theme.textSecondary}`}>
                 Sim! Suporte completo via WhatsApp
               </p>
             </Card>

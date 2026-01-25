@@ -1,12 +1,12 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { 
-  Calendar, 
-  Users, 
-  Briefcase, 
-  Scissors, 
-  DollarSign, 
+import {
+  Calendar,
+  Users,
+  Briefcase,
+  Scissors,
+  DollarSign,
   BarChart3,
   Clock,
   TrendingUp,
@@ -21,6 +21,8 @@ import {
 } from "lucide-react"
 import { Card } from "primereact/card"
 import { useRef } from "react"
+import { useTheme } from "@/contexts/HeroThemeContext"
+import { themeConfig } from "@/utils/themes"
 
 // Benefícios principais organizados por problema que resolvem
 const benefitSections = [
@@ -147,7 +149,7 @@ const benefitSections = [
 ]
 
 // Card de feature individual
-const FeatureCard = ({ feature, color, index }: any) => {
+const FeatureCard = ({ feature, color, index, theme }: any) => {
   const cardRef = useRef(null)
   const isInView = useInView(cardRef, { once: true, margin: "-100px" })
 
@@ -158,7 +160,7 @@ const FeatureCard = ({ feature, color, index }: any) => {
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
     >
-      <Card className="group relative p-8 h-full bg-white hover:bg-gradient-to-br hover:from-white hover:to-[#faf8f6] border border-[#d8ccc4] hover:border-[#c55a42]/30 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden">
+      <Card className={`group relative p-8 h-full ${theme.cardBg} ${theme.cardBgHover} border ${theme.cardBorder} ${theme.borderHover} rounded-2xl transition-all duration-300 ${theme.cardShadowHover} hover:-translate-y-2 overflow-hidden`}>
         {/* Decoração de fundo */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-full blur-3xl"
           style={{ backgroundColor: color }}
@@ -186,10 +188,10 @@ const FeatureCard = ({ feature, color, index }: any) => {
         </div>
 
         {/* Conteúdo */}
-        <h3 className="text-2xl font-bold mb-3 text-[#2a2420] group-hover:text-[#8b3d35] transition-colors">
+        <h3 className={`text-2xl font-bold mb-3 ${theme.headlineColor} group-hover:${theme.highlightColor} transition-colors`} style={{ color: theme.textPrimary }}>
           {feature.title}
         </h3>
-        <p className="text-[#4f6f64] leading-relaxed mb-4 text-base">
+        <p className={`${theme.subheadlineColor} leading-relaxed mb-4 text-base`}>
           {feature.description}
         </p>
 
@@ -210,7 +212,7 @@ const FeatureCard = ({ feature, color, index }: any) => {
 }
 
 // Seção de benefícios
-const BenefitSection = ({ section, index }: any) => {
+const BenefitSection = ({ section, index, theme }: any) => {
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-50px" })
 
@@ -229,13 +231,13 @@ const BenefitSection = ({ section, index }: any) => {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="inline-flex items-center gap-2 px-6 py-2 rounded-full mb-6 shadow-lg"
-          style={{ 
+          style={{
             backgroundColor: `${section.color}15`,
             border: `2px solid ${section.color}30`
           }}
         >
           <CheckCircle2 className="w-5 h-5" style={{ color: section.color }} />
-          <span className="font-bold text-[#2a2420] uppercase tracking-wide text-sm">
+          <span className={`font-bold ${theme.headlineColor} uppercase tracking-wide text-sm`} style={{ color: theme.textPrimary }}>
             {section.category}
           </span>
         </motion.div>
@@ -244,7 +246,7 @@ const BenefitSection = ({ section, index }: any) => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4 text-[#2a2420]"
+          className={`font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4 ${theme.headlineColor}`}
         >
           {section.tagline}
         </motion.h2>
@@ -261,11 +263,12 @@ const BenefitSection = ({ section, index }: any) => {
       {/* Grid de features */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {section.features.map((feature: any, idx: number) => (
-          <FeatureCard 
-            key={feature.title} 
-            feature={feature} 
+          <FeatureCard
+            key={feature.title}
+            feature={feature}
             color={section.color}
             index={idx}
+            theme={theme}
           />
         ))}
       </div>
@@ -274,15 +277,16 @@ const BenefitSection = ({ section, index }: any) => {
 }
 
 export function FeaturesInternal() {
+  const { isDark } = useTheme()
+  const theme = isDark ? themeConfig.dark : themeConfig.light
+
   return (
-    <section id="funcionalidades" className="py-32 relative overflow-hidden">
-      {/* Background decorativo */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#faf8f6] via-white to-[#faf8f6]" />
-      
+    <section id="funcionalidades" className={`py-32 relative overflow-hidden ${theme.sectionBg}`}>
       {/* Padrão de fundo */}
-      <div className="absolute inset-0 opacity-[0.02]"
+      <div className="absolute inset-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b3d35' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(theme.patternColor)}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          opacity: parseFloat(theme.patternOpacity),
         }}
       />
 
@@ -296,29 +300,29 @@ export function FeaturesInternal() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto mb-24"
         >
-          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#db6f57]/10 to-[#8b3d35]/10 border border-[#db6f57]/20 mb-8">
-            <Zap className="w-5 h-5 text-[#db6f57]" />
-            <span className="font-bold text-[#8b3d35] uppercase tracking-wide text-sm">
+          <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full ${theme.badge} border mb-8`}>
+            <Zap className={`w-5 h-5 ${theme.badgeIcon}`} />
+            <span className={`font-bold ${theme.badgeText} uppercase tracking-wide text-sm`}>
               Funcionalidades que transformam
             </span>
           </div>
 
-          <h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-[#2a2420] leading-[1.1]">
+          <h2 className={`font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 ${theme.headlineColor} leading-[1.1]`}>
             Foque no que importa:{" "}
-            <span className="bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent">
+            <span className={`${theme.gradientText} bg-clip-text text-transparent`}>
               seus clientes
             </span>
           </h2>
 
-          <p className="text-xl sm:text-2xl text-[#4f6f64] leading-relaxed">
+          <p className={`text-xl sm:text-2xl ${theme.subheadlineColor} leading-relaxed`}>
             Deixe a tecnologia cuidar da gestão. Nós automatizamos o chato,{" "}
-            <span className="text-[#8b3d35] font-semibold">você cuida do que ama</span>.
+            <span className={`${theme.highlightColor} font-semibold`}>você cuida do que ama</span>.
           </p>
         </motion.div>
 
         {/* Seções de benefícios */}
         {benefitSections.map((section, index) => (
-          <BenefitSection key={section.category} section={section} index={index} />
+          <BenefitSection key={section.category} section={section} index={index} theme={theme} />
         ))}
 
         {/* CTA final */}
@@ -327,7 +331,7 @@ export function FeaturesInternal() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mt-24 p-12 rounded-3xl bg-gradient-to-br from-[#db6f57] to-[#8b3d35] relative overflow-hidden"
+          className={`text-center mt-24 p-12 rounded-3xl ${isDark ? 'bg-gradient-to-br from-[#E07A62] via-[#DB6F57] to-[#A8524A]' : 'bg-gradient-to-br from-[#db6f57] to-[#8b3d35]'} relative overflow-hidden`}
         >
           {/* Padrão decorativo */}
           <div className="absolute inset-0 opacity-10"
@@ -347,7 +351,7 @@ export function FeaturesInternal() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-3 px-10 py-5 bg-white text-[#8b3d35] rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300"
+              className={`inline-flex items-center gap-3 px-10 py-5 bg-white ${isDark ? 'text-[#E07A62]' : 'text-[#8b3d35]'} rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300`}
             >
               Teste grátis por 14 dias
               <ArrowRight className="w-6 h-6" />

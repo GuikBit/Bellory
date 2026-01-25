@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useInView } from "framer-motion"
-import { 
+import {
   Monitor,
   Smartphone,
   ChevronLeft,
@@ -17,6 +17,8 @@ import {
 import { useRef, useState } from "react"
 import { Button } from "primereact/button"
 import { ImageCompareDemo } from "./imageCompareDemo"
+import { useTheme } from "@/contexts/HeroThemeContext"
+import { themeConfig } from "@/utils/themes"
 
 // Screenshots do sistema
 const screenshots = [
@@ -77,6 +79,8 @@ const beforeAfter = {
 }
 
 export function DemoSection() {
+  const { isDark } = useTheme()
+  const theme = isDark ? themeConfig.dark : themeConfig.light
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -90,15 +94,16 @@ export function DemoSection() {
   }
 
   return (
-    <section 
+    <section
       ref={sectionRef}
-      id="demonstracao" 
-      className="py-32 relative overflow-hidden bg-gradient-to-b from-[#faf8f6] via-[#e6d9d4]/20 to-[#faf8f6]"
+      id="demonstracao"
+      className={`py-32 relative overflow-hidden ${theme.sectionBgAlt}`}
     >
       {/* Background decorativo */}
-      <div className="absolute inset-0 opacity-[0.03]"
+      <div className="absolute inset-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b3d35' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(theme.patternColor)}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          opacity: parseFloat(theme.patternOpacity),
         }}
       />
 
@@ -111,23 +116,23 @@ export function DemoSection() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto mb-20"
         >
-          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-[#db6f57]/10 to-[#8b3d35]/10 border border-[#db6f57]/20 mb-8">
-            <Monitor className="w-5 h-5 text-[#db6f57]" />
-            <span className="font-bold text-[#8b3d35] uppercase tracking-wide text-sm">
+          <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full ${theme.badge} border mb-8`}>
+            <Monitor className={`w-5 h-5 ${theme.badgeIcon}`} />
+            <span className={`font-bold ${theme.badgeText} uppercase tracking-wide text-sm`}>
               Veja o Bellory em ação
             </span>
           </div>
 
-          <h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-[#2a2420] leading-[1.1]">
+          <h2 className={`font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 ${theme.headlineColor} leading-[1.1]`}>
             Interface{" "}
-            <span className="bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent">
+            <span className={`${theme.gradientText} bg-clip-text text-transparent`}>
               intuitiva e poderosa
             </span>
           </h2>
 
-          <p className="text-xl sm:text-2xl text-[#4f6f64] leading-relaxed">
+          <p className={`text-xl sm:text-2xl ${theme.subheadlineColor} leading-relaxed`}>
             Design moderno e fácil de usar.{" "}
-            <span className="text-[#8b3d35] font-semibold">
+            <span className={`${theme.highlightColor} font-semibold`}>
               Desenvolvido para você economizar tempo
             </span>.
           </p>
@@ -218,22 +223,22 @@ export function DemoSection() {
           className="max-w-7xl mx-auto"
         >
           <div className="text-center mb-16">
-            <h3 className="font-serif text-4xl sm:text-5xl font-bold text-[#2a2420] mb-4">
-              Veja a <span className="text-[#db6f57]">transformação</span>
+            <h3 className={`font-serif text-4xl sm:text-5xl font-bold ${theme.headlineColor} mb-4`}>
+              Veja a <span className={theme.highlightColor}>transformação</span>
             </h3>
-            <p className="text-xl text-[#4f6f64]">
+            <p className={`text-xl ${theme.subheadlineColor}`}>
               Compare como era antes e como fica depois do Bellory
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* Antes */}
-            <div className="bg-white rounded-3xl p-8 shadow-xl border-2 border-[#d8ccc4]">
+            <div className={`${theme.cardBg} rounded-3xl p-8 shadow-xl border-2 ${theme.cardBorder}`}>
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
                   <X className="w-6 h-6 text-[#d15847]" />
                 </div>
-                <h4 className="text-2xl font-bold text-[#2a2420]">{beforeAfter.before.title}</h4>
+                <h4 className={`text-2xl font-bold ${theme.textPrimary}`}>{beforeAfter.before.title}</h4>
               </div>
               <ul className="space-y-4">
                 {beforeAfter.before.problems.map((problem, index) => (
@@ -244,11 +249,11 @@ export function DemoSection() {
                     transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
                     className="flex items-start gap-3"
                   >
-                    <problem.icon 
-                      className="w-5 h-5 mt-0.5 flex-shrink-0" 
-                      style={{ color: problem.color }} 
+                    <problem.icon
+                      className="w-5 h-5 mt-0.5 flex-shrink-0"
+                      style={{ color: problem.color }}
                     />
-                    <span className="text-[#4f6f64] leading-relaxed">{problem.text}</span>
+                    <span className={`${theme.textSecondary} leading-relaxed`}>{problem.text}</span>
                   </motion.li>
                 ))}
               </ul>
@@ -289,12 +294,12 @@ export function DemoSection() {
           transition={{ duration: 0.8, delay: 1 }}
           className="text-center mt-20"
         >
-          <div className="inline-flex flex-col sm:flex-row items-center gap-6 p-10 bg-white rounded-3xl shadow-2xl border border-[#d8ccc4]">
+          <div className={`inline-flex flex-col sm:flex-row items-center gap-6 p-10 ${theme.cardBg} rounded-3xl shadow-2xl border ${theme.cardBorder}`}>
             <div className="text-left">
-              <h4 className="text-2xl sm:text-3xl font-bold text-[#2a2420] mb-2">
+              <h4 className={`text-2xl sm:text-3xl font-bold ${theme.textPrimary} mb-2`}>
                 Quer ver tudo funcionando ao vivo?
               </h4>
-              <p className="text-[#4f6f64] text-lg">
+              <p className={`${theme.textSecondary} text-lg`}>
                 Agende uma demonstração personalizada de 15 minutos
               </p>
             </div>
