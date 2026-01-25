@@ -396,7 +396,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
               >
                 Bellory
                 {/* Efeito shimmer */}
-                <motion.div
+                {/* <motion.div
                   className={`absolute inset-0 bg-gradient-to-r from-transparent ${theme.logoShimmer} to-transparent`}
                   initial={{ x: "-100%" }}
                   animate={{ x: "200%" }}
@@ -410,7 +410,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                     transform: "skewX(-20deg)",
                     filter: "blur(2px)"
                   }}
-                />
+                /> */}
               </motion.div>
             </Link>
 
