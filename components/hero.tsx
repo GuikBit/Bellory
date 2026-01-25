@@ -151,7 +151,7 @@ export function Hero() {
           {/* Container do mockup com efeitos */}
           <motion.div
             className="relative "
-            animate={isLoaded ? floatingAnimation : {}}
+            // animate={isLoaded ? floatingAnimation : {}}
           >
             {/* Glow effect behind mockup */}
             <motion.div
@@ -186,11 +186,11 @@ export function Hero() {
 
             {/* Main mockup image */}
             <Image
-              src={isDark ? "/mockup_dark.png" : "/mockup-white.png"}
+              src={isDark ? "/mockup_dark1.png" : "/mockup_white1.png"}
               alt="Bellory App - Sistema de Agendamentos"
               width={250}
               height={0}
-              className="relative z-0 drop-shadow-2xl"
+              className={`relative z-0 drop-shadow-2xl !-contrast-140`}
               style={{
                 filter: isDark
                   ? "drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5)) drop-shadow(0 10px 20px rgba(224, 122, 98, 0.15))"
@@ -258,7 +258,7 @@ export function Hero() {
             /> */}
 
             <Image
-              src={isDark ? "/mockup_dark.png" : "/mockup-white.png"}
+              src={isDark ? "/mockup_dark1.png" : "/mockup_white1.png"}
               alt="Bellory App"
               width={180}
               height={0}
@@ -273,7 +273,7 @@ export function Hero() {
         </motion.div>
 
         {/* Efeito de brilho superior (apenas dark) */}
-        {isDark && (
+        {/* {isDark && (
           <motion.div
             className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full blur-3xl"
             style={{ background: "radial-gradient(ellipse at center, rgba(224, 122, 98, 0.08) 0%, transparent 70%)" }}
@@ -286,7 +286,7 @@ export function Hero() {
               ease: "easeInOut"
             }}
           />
-        )}
+        )} */}
 
         {/* Blobs decorativos com gradientes */}
         <motion.div
