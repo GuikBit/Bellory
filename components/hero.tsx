@@ -1,20 +1,61 @@
 "use client"
 
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion"
 import { ArrowRight, Sparkles, CheckCircle2, TrendingUp, Users, Zap, Star } from "lucide-react"
 import { Button } from "primereact/button"
 import Link from "next/link"
-import { useRef, useMemo } from "react"
+import { useRef, useMemo, useEffect, useState } from "react"
 import { useTheme } from "@/contexts/HeroThemeContext"
 import { themeConfig } from "@/utils/themes"
-import Image from "next/image";
+import Image from "next/image"
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const mockupRef = useRef<HTMLDivElement>(null)
   const { isDark } = useTheme()
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Scroll animations
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"]
+  })
+
+  // Spring configs for smoother animations
+  const springConfig = { stiffness: 100, damping: 30, restDelta: 0.001 }
+
+  // Parallax transforms for mockup
+  const mockupY = useSpring(
+    useTransform(scrollYProgress, [0, 1], [0, 150]),
+    springConfig
+  )
+  const mockupRotate = useSpring(
+    useTransform(scrollYProgress, [0, 1], [0, -5]),
+    springConfig
+  )
+  const mockupScale = useSpring(
+    useTransform(scrollYProgress, [0, 0.5], [1, 0.9]),
+    springConfig
+  )
+  const mockupOpacity = useSpring(
+    useTransform(scrollYProgress, [0, 0.6], [1, 0]),
+    springConfig
+  )
+
+  // Content parallax (moves slower than mockup for depth)
+  const contentY = useSpring(
+    useTransform(scrollYProgress, [0, 1], [0, 50]),
+    springConfig
+  )
 
   // Seleciona o tema atual
   const theme = isDark ? themeConfig.dark : themeConfig.light
+
+  // Set loaded state after mount
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoaded(true), 100)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Beneficios com cores dinamicas
   const benefits = useMemo(() => [
@@ -30,11 +71,58 @@ export function Hero() {
     opacity: parseFloat(theme.patternOpacity),
   }), [theme.patternColor, theme.patternOpacity])
 
+  // Complex entrance animations for mockup
+  const mockupContainerVariants = {
+    hidden: {
+      opacity: 0,
+      x: -100,
+      scale: 0.8,
+      rotateY: -15,
+      rotateZ: -5
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      scale: 1,
+      rotateY: 0,
+      rotateZ: 0,
+      transition: {
+        duration: 1.2,
+        ease: [0.25, 0.46, 0.45, 0.94] as const,
+        delay: 0.3,
+      }
+    }
+  }
+
+  // Floating animation for mockup
+  const floatingAnimation = {
+    y: [0, -15, 0],
+    rotateZ: [-1, 1, -1],
+    transition: {
+      duration: 6,
+      ease: "easeInOut" as const,
+      repeat: Infinity,
+      repeatType: "loop" as const
+    }
+  }
+
+  // Glow pulse animation
+  const glowAnimation = {
+    opacity: [0.4, 0.8, 0.4],
+    scale: [1, 1.05, 1],
+    transition: {
+      duration: 4,
+      ease: "easeInOut" as const,
+      repeat: Infinity,
+      repeatType: "loop" as const
+    }
+  }
+
   return (
     <>
       <motion.section
         ref={containerRef}
-        className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-16 lg:pt-28 lg:pb-20"
         style={theme.backgroundStyle}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -45,28 +133,164 @@ export function Hero() {
           className="absolute inset-0 transition-opacity duration-500"
           style={patternStyle}
         />
-        {isDark? (
-          <Image
-            src="/mockup_dark.png"
-            alt="teste"
-            width={270}
-            height={100}
-            className="absolute left-0 2xl:left-30 md:block hidden"
-            style={{filter: "drop-shadow(2px 2px 2px #11111140)"}}
-            
-          />
-        ):(
-          <Image
-            src="/mockup-white.png"
-            alt="teste"
-            width={270}
-            height={100}
-            className="absolute left-0 2xl:left-30 md:block hidden"
-            style={{filter: "drop-shadow(2px 2px 2px #11111140)"}}
-            
-          />
-        )}
-        
+
+        {/* ====== MOCKUP DO IPHONE - TELAS GRANDES ====== */}
+        <motion.div
+          ref={mockupRef}
+          className="absolute left-0 top-1/2 -translate-y-1/2 hidden lg:block z-20 pointer-events-none"
+          style={{
+            y: mockupY,
+            rotate: mockupRotate,
+            scale: mockupScale,
+            opacity: mockupOpacity,
+          }}
+          variants={mockupContainerVariants}
+          initial="hidden"
+          animate={isLoaded ? "visible" : "hidden"}
+        >
+          {/* Container do mockup com efeitos */}
+          <motion.div
+            className="relative"
+            animate={isLoaded ? floatingAnimation : {}}
+          >
+            {/* Glow effect behind mockup */}
+            <motion.div
+              className="absolute -inset-10 rounded-[60px] blur-3xl"
+              style={{
+                background: isDark
+                  ? "radial-gradient(ellipse at center, rgba(224, 122, 98, 0.3) 0%, rgba(212, 175, 55, 0.1) 40%, transparent 70%)"
+                  : "radial-gradient(ellipse at center, rgba(219, 111, 87, 0.25) 0%, rgba(139, 61, 53, 0.1) 40%, transparent 70%)"
+              }}
+              animate={glowAnimation}
+            />
+
+            {/* Reflection/shine effect */}
+            <motion.div
+              className="absolute -top-5 -right-5 w-40 h-40 rounded-full blur-2xl"
+              style={{
+                background: isDark
+                  ? "radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 60%)"
+                  : "radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 60%)"
+              }}
+              animate={{
+                opacity: [0.3, 0.6, 0.3],
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration: 5,
+                ease: "easeInOut",
+                repeat: Infinity,
+                delay: 1
+              }}
+            />
+
+            {/* Edge fade gradient - LEFT (fades to background) */}
+            <div
+              className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
+              style={{
+                background: isDark
+                  ? "linear-gradient(to right, #0D0B0A 0%, #0D0B0A 20%, transparent 100%)"
+                  : "linear-gradient(to right, #faf8f6 0%, #faf8f6 20%, transparent 100%)"
+              }}
+            />
+
+            {/* Edge fade gradient - BOTTOM (subtle fade) */}
+            <div
+              className="absolute left-0 right-0 bottom-0 h-20 z-10 pointer-events-none"
+              style={{
+                background: isDark
+                  ? "linear-gradient(to top, rgba(13, 11, 10, 0.8) 0%, transparent 100%)"
+                  : "linear-gradient(to top, rgba(250, 248, 246, 0.8) 0%, transparent 100%)"
+              }}
+            />
+
+            {/* Main mockup image */}
+            <Image
+              src={isDark ? "/mockup_dark.png" : "/mockup-white.png"}
+              alt="Bellory App - Sistema de Agendamentos"
+              width={320}
+              height={650}
+              className="relative z-0 drop-shadow-2xl"
+              style={{
+                filter: isDark
+                  ? "drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5)) drop-shadow(0 10px 20px rgba(224, 122, 98, 0.15))"
+                  : "drop-shadow(0 25px 50px rgba(0, 0, 0, 0.15)) drop-shadow(0 10px 20px rgba(139, 61, 53, 0.1))"
+              }}
+              priority
+            />
+
+            {/* Subtle screen glow */}
+            <motion.div
+              className="absolute top-16 left-4 right-4 bottom-16 rounded-[35px] z-0"
+              style={{
+                background: isDark
+                  ? "linear-gradient(145deg, rgba(224, 122, 98, 0.05) 0%, rgba(107, 143, 130, 0.03) 100%)"
+                  : "linear-gradient(145deg, rgba(219, 111, 87, 0.03) 0%, rgba(79, 111, 100, 0.02) 100%)"
+              }}
+              animate={{
+                opacity: [0.5, 0.8, 0.5]
+              }}
+              transition={{
+                duration: 3,
+                ease: "easeInOut",
+                repeat: Infinity
+              }}
+            />
+          </motion.div>
+        </motion.div>
+
+        {/* ====== MOCKUP - TELAS MEDIAS (md) ====== */}
+        <motion.div
+          className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:block lg:hidden z-20 pointer-events-none"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          <motion.div
+            className="relative"
+            animate={{
+              y: [0, -10, 0],
+            }}
+            transition={{
+              duration: 5,
+              ease: "easeInOut",
+              repeat: Infinity,
+            }}
+          >
+            {/* Simplified glow for md screens */}
+            <div
+              className="absolute -inset-8 rounded-[50px] blur-2xl opacity-60"
+              style={{
+                background: isDark
+                  ? "radial-gradient(ellipse at center, rgba(224, 122, 98, 0.2) 0%, transparent 70%)"
+                  : "radial-gradient(ellipse at center, rgba(219, 111, 87, 0.15) 0%, transparent 70%)"
+              }}
+            />
+
+            {/* Edge fade - LEFT */}
+            <div
+              className="absolute left-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
+              style={{
+                background: isDark
+                  ? "linear-gradient(to right, #0D0B0A 0%, transparent 100%)"
+                  : "linear-gradient(to right, #faf8f6 0%, transparent 100%)"
+              }}
+            />
+
+            <Image
+              src={isDark ? "/mockup_dark.png" : "/mockup-white.png"}
+              alt="Bellory App"
+              width={220}
+              height={450}
+              className="relative z-0 drop-shadow-xl"
+              style={{
+                filter: isDark
+                  ? "drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4))"
+                  : "drop-shadow(0 15px 30px rgba(0, 0, 0, 0.1))"
+              }}
+            />
+          </motion.div>
+        </motion.div>
 
         {/* Efeito de brilho superior (apenas dark) */}
         {isDark && (
@@ -132,24 +356,27 @@ export function Hero() {
           />
         )}
 
+        {/* ====== CONTEUDO PRINCIPAL ====== */}
         <motion.div
           className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
+          style={{ y: contentY }}
         >
-          <div className="max-w-7xl mx-auto">
-            
+          {/* Offset para compensar o mockup em telas grandes */}
+          <div className="max-w-7xl mx-auto md:ml-auto md:mr-0 lg:ml-auto lg:mr-0 md:w-[75%] lg:w-[70%] xl:w-[65%]">
+
             {/* Headline principal */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-center mb-6 mt-4"
+              className="text-center md:text-left mb-5 mt-4"
             >
-              <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] text-balance">
-                <span className={`${theme.headlineColor} transition-colors duration-500`}>
+              <h1 className="font-serif tracking-tight leading-[1.1] text-balance">
+                {/* Mobile: menor */}
+                <span className={`block text-3xl xs:text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl font-bold ${theme.headlineColor} transition-colors duration-500`}>
                   Transforme seu negocio
                 </span>
-                <br />
-                <span className={`${theme.gradientText} bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]`}>
+                <span className={`block text-3xl xs:text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mt-1 ${theme.gradientText} bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]`}>
                   em um imperio digital
                 </span>
               </h1>
@@ -160,10 +387,11 @@ export function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className={`text-center text-xl sm:text-2xl text-balance max-w-4xl mx-auto mb-8 leading-relaxed font-light ${theme.subheadlineColor} transition-colors duration-500`}
+              className={`text-center md:text-left text-base sm:text-lg lg:text-xl text-balance max-w-2xl md:max-w-none mx-auto md:mx-0 mb-6 lg:mb-8 leading-relaxed font-light ${theme.subheadlineColor} transition-colors duration-500`}
             >
               Gestao completa + site personalizado + agente de IA no WhatsApp.
-              <br />
+              <br className="hidden sm:block" />
+              <span className="sm:hidden"> </span>
               <span className={`${theme.highlightColor} font-medium transition-colors duration-500`}>
                 Tudo em uma unica plataforma
               </span>{" "}
@@ -175,7 +403,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex flex-wrap justify-center gap-6 mb-12"
+              className="flex flex-wrap justify-center md:justify-start gap-3 lg:gap-4 mb-8 lg:mb-10"
             >
               {benefits.map((benefit, index) => (
                 <motion.div
@@ -185,17 +413,17 @@ export function Hero() {
                   transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
                   whileHover={{ scale: 1.05, y: -2 }}
                   className={`
-                    flex items-center gap-2 px-4 py-2 rounded-full shadow-md border
+                    flex items-center gap-2 px-3 py-1.5 lg:px-4 lg:py-2 rounded-full shadow-md border
                     transition-all duration-300
                     ${theme.benefitCard}
                     ${isDark ? "hover:border-[#E07A62]/40 hover:shadow-[0_0_20px_rgba(224,122,98,0.15)]" : ""}
                   `}
                 >
                   <benefit.icon
-                    className="w-5 h-5 transition-colors duration-300"
+                    className="w-4 h-4 lg:w-5 lg:h-5 transition-colors duration-300"
                     style={{ color: theme.benefitColors[benefit.colorIndex] }}
                   />
-                  <span className={`text-sm font-medium ${theme.benefitText} transition-colors duration-500`}>
+                  <span className={`text-xs lg:text-sm font-medium ${theme.benefitText} transition-colors duration-500`}>
                     {benefit.text}
                   </span>
                 </motion.div>
@@ -207,7 +435,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+              className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 lg:gap-4 mb-10 lg:mb-12"
             >
               <Link href="/cadastro" className="w-full sm:w-auto">
                 <Button
@@ -216,7 +444,7 @@ export function Hero() {
                   iconPos="right"
                   className={`
                     w-full sm:w-auto group relative overflow-hidden
-                    border-0 text-base px-10 py-4 rounded-xl font-semibold
+                    border-0 text-sm lg:text-base px-6 lg:px-10 py-3 lg:py-4 rounded-xl font-semibold
                     transition-all duration-300 hover:scale-105
                     ${theme.primaryButton}
                   `}
@@ -226,7 +454,7 @@ export function Hero() {
               <Button
                 label="Agende uma demonstracao"
                 className={`
-                  w-full sm:w-auto text-base px-10 py-4 rounded-xl font-semibold
+                  w-full sm:w-auto text-sm lg:text-base px-6 lg:px-10 py-3 lg:py-4 rounded-xl font-semibold
                   transition-all duration-300
                   ${theme.secondaryButton}
                 `}
@@ -239,14 +467,14 @@ export function Hero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className={`flex flex-col sm:flex-row items-center justify-center gap-6 mb-12 text-sm ${theme.socialText} transition-colors duration-500`}
+              className={`flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 lg:gap-6 text-xs lg:text-sm ${theme.socialText} transition-colors duration-500`}
             >
               <div className="flex items-center gap-2">
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className="w-5 h-5 transition-colors duration-300"
+                      className="w-4 h-4 lg:w-5 lg:h-5 transition-colors duration-300"
                       style={{ fill: theme.starFill, color: theme.starFill }}
                     />
                   ))}
@@ -257,7 +485,7 @@ export function Hero() {
                 <span>127 avaliacoes</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className={`w-5 h-5 ${theme.checkIcon} transition-colors duration-300`} />
+                <CheckCircle2 className={`w-4 h-4 lg:w-5 lg:h-5 ${theme.checkIcon} transition-colors duration-300`} />
                 <span>Sem cartao de credito - Cancele quando quiser</span>
               </div>
             </motion.div>
