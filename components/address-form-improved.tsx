@@ -10,7 +10,7 @@ import { useTheme } from "@/contexts/HeroThemeContext"
 import { cadastroThemeConfig } from "@/app/cadastro/page"
 import dynamic from "next/dynamic"
 
-// Importa o MapaCaptura dinamicamente para evitar erro de SSR
+  // Importa o MapaCaptura dinamicamente para evitar erro de SSR
 const MapaCaptura = dynamic(() => import("@/components/MapaCaptura"), {
   ssr: false,
   loading: () => (
@@ -20,7 +20,7 @@ const MapaCaptura = dynamic(() => import("@/components/MapaCaptura"), {
         <span>Carregando Mapa...</span>
       </div>
     </div>
-  ),
+  )
 })
 
 interface AddressFormProps {
@@ -406,7 +406,8 @@ export const AddressForm = ({ control, errors, setValue, watch }: AddressFormPro
             <Button
               type="button"
               onClick={() => setShowMapModal(true)}
-              className={`${colors.primaryBtn} border-0 px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-all`}
+              className={`${colors.primaryBtn} ${!numero && 'opacity-60'} border-0 px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-all`}
+              disabled={!numero?true:false}
             >
               <MapIcon className="w-4 h-4 mr-2" />
               Abrir Mapa
@@ -554,6 +555,8 @@ const InteractiveMapModal = ({ visible, onHide, currentLocation, endereco, onLoc
     setSelectedLocation({ lat, lng })
   }
 
+
+
   return (
     <Dialog
       modal
@@ -606,6 +609,7 @@ const InteractiveMapModal = ({ visible, onHide, currentLocation, endereco, onLoc
                 lngInicial={selectedLocation?.lng}
                 aoSelecionar={handleMapClick}
                 isDark={isDark}
+                endereco={endereco}
               />
             </div>
 

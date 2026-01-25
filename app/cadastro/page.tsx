@@ -235,7 +235,7 @@ export default function Cadastro() {
   const theme = isDark ? cadastroThemeConfig.dark : cadastroThemeConfig.light
   const searchParams = useSearchParams()
 
-  const [activeStep, setActiveStep] = useState(1)
+  const [activeStep, setActiveStep] = useState(0)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfPassword, setShowConfPassword] = useState(false)

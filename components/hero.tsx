@@ -7,6 +7,7 @@ import Link from "next/link"
 import { useRef, useMemo } from "react"
 import { useTheme } from "@/contexts/HeroThemeContext"
 import { themeConfig } from "@/utils/themes"
+import Image from "next/image";
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -44,6 +45,28 @@ export function Hero() {
           className="absolute inset-0 transition-opacity duration-500"
           style={patternStyle}
         />
+        {isDark? (
+          <Image
+            src="/mockup_dark.png"
+            alt="teste"
+            width={270}
+            height={100}
+            className="absolute left-0 2xl:left-30 md:block hidden"
+            style={{filter: "drop-shadow(2px 2px 2px #11111140)"}}
+            
+          />
+        ):(
+          <Image
+            src="/mockup-white.png"
+            alt="teste"
+            width={270}
+            height={100}
+            className="absolute left-0 2xl:left-30 md:block hidden"
+            style={{filter: "drop-shadow(2px 2px 2px #11111140)"}}
+            
+          />
+        )}
+        
 
         {/* Efeito de brilho superior (apenas dark) */}
         {isDark && (
@@ -121,7 +144,7 @@ export function Hero() {
               transition={{ duration: 0.8, delay: 0.1 }}
               className="text-center mb-6 mt-4"
             >
-              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.1] text-balance">
+              <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] text-balance">
                 <span className={`${theme.headlineColor} transition-colors duration-500`}>
                   Transforme seu negocio
                 </span>

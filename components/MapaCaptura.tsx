@@ -39,16 +39,17 @@ interface MapaCapturaProps {
   lngInicial?: number | string;
   aoSelecionar: (lat: number, lng: number) => void;
   isDark?: boolean;
+  endereco?: string;
 }
 
-export default function MapaCaptura({ latInicial, lngInicial, aoSelecionar, isDark = false }: MapaCapturaProps) {
+export default function MapaCaptura({ latInicial, lngInicial, aoSelecionar,endereco, isDark = false }: MapaCapturaProps) {
   // Posição inicial (Se não tiver, usa o centro do Brasil ou SP)
   const [posicao, setPosicao] = useState({
     lat: Number(latInicial) || -23.55052,
     lng: Number(lngInicial) || -46.63330
   });
 
-  const [busca, setBusca] = useState('');
+  const [busca, setBusca] = useState(endereco??'');
   const [carregando, setCarregando] = useState(false);
 
   // Atualiza posição interna se o pai mandar novos props

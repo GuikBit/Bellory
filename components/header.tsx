@@ -8,10 +8,6 @@ import { Button } from "primereact/button"
 import { useRouter } from 'next/navigation'
 import { useTheme } from "@/contexts/HeroThemeContext"
 
-// ============================================================================
-// CONFIGURAÇÃO DOS TEMAS DO HEADER
-// ============================================================================
-
 const headerThemeConfig = {
   light: {
     // Header background
@@ -107,7 +103,7 @@ const headerThemeConfig = {
     dropdownTitleHover: "group-hover:text-[#E07A62]",
     dropdownDescText: "text-[#B8AEA4]",
     dropdownArrow: "text-[#E07A62]",
-    dropdownBadgeBg: "bg-gradient-to-r from-[#D4AF37] to-[#E6C65A]",
+    dropdownBadgeBg: "bg-gradient-to-r from-[#db6f57] to-[#E8937E]",
     dropdownFooterBorder: "border-[#2D2925]",
     dropdownFooterText: "text-[#E07A62] hover:text-[#E8937E]",
 
@@ -899,7 +895,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                   transition={{ delay: 0.3 }}
                   className="font-semibold"
                 >
-                  Oferta especial: 14 dias gratis + 20% de desconto no plano anual
+                  Oferta especial: 14 dias gratis + até 15% de desconto no plano anual
                 </motion.span>
 
                 <motion.div
