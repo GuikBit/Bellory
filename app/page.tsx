@@ -30,14 +30,14 @@ export default function Home() {
       <Header isMenu={true} isCadastro={true}/>
       <Hero />
       <FeaturesInternal />
-      <AIAgentSection />
-      <FeaturesExternal />
-      <DemoSection />
+      {/* <AIAgentSection /> */}
+      {/* <FeaturesExternal /> */}
+      {/* <DemoSection /> */}
       <Benefits />
       <ComparisonSection />
       <Pricing />
       <Contact />
-      <FinalCTA />
+      {/* <FinalCTA /> */}
       <Footer />
     </main>
 

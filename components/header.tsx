@@ -15,7 +15,7 @@ import { useTheme } from "@/contexts/HeroThemeContext"
 const headerThemeConfig = {
   light: {
     // Header background
-    headerBg: "bg-white/95 backdrop-blur-md",
+    headerBg: "bg-white/90 backdrop-blur-md",
     headerBgTransparent: "bg-transparent",
     headerBorder: "border-[#e6d9d4]/50",
     headerShadow: "shadow-xl",
@@ -139,7 +139,7 @@ const headerThemeConfig = {
     // Promo bar
     promoBgGradient: "from-[#1A1715] via-[#E07A62]/20 to-[#1A1715]",
     promoText: "text-[#F5F0EB]",
-    promoBtnBg: "bg-gradient-to-r from-[#E07A62] to-[#D4AF37]",
+    promoBtnBg: "bg-gradient-to-r from-[#E07A62] to-[#A8524A]",
     promoBtnText: "text-white",
   }
 }
@@ -201,7 +201,14 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
           title: "Automacoes",
           description: "Lembretes e confirmacoes automaticas",
           href: "#automacoes"
+        },
+        {
+          icon: Palette,
+          title: "Personalizacao",
+          description: "Personalise o tema do site externo",
+          href: "#personalizacao"
         }
+
       ]
     },
     agenteIA: {
@@ -302,9 +309,10 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
     { label: "Funcionalidades",  href:'#funcionalidades', key: "funcionalidades", hasDropdown: true },
     { label: "Agente IA", href: "#ai-agent", key: "agenteIA", hasDropdown: true },
     { label: "Publico-Alvo", key: "publicoAlvo", hasDropdown: true },
-    { label: "Personalizacao", href: "#personalizacao" },
-    { label: "Beneficios", href: "#beneficios" },
+    // { label: "Personalizacao", href: "#personalizacao" },
+    // { label: "Beneficios", href: "#beneficios" },
     { label: "Planos", key: "planos", hasDropdown: true },
+    { label: "Sobre nos", key: "sobre"}
   ]
 
   // Animacoes do dropdown com efeito cascata
@@ -375,7 +383,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
         }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled
-            ? `md:${theme.headerBg} ${theme.headerShadow} md:border-b md:${theme.headerBorder}`
+            ? `md:${theme.headerBg} ${theme.headerShadow} md:${theme.headerBorder}`
             : theme.headerBgTransparent
           }
           ${isMobileMenuOpen ? (isDark ? 'bg-[#0D0B0A]' : 'bg-white') : 'bg-transparent'}
@@ -582,8 +590,8 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
               <motion.button
                 onClick={toggleTheme}
                 className={`
-                  flex items-center gap-2 px-3 py-2
-                  rounded-full border
+                  flex items-center gap-2 px-3 py-3
+                  rounded-xl border-2 cursor-pointer
                   transition-all duration-300
                   ${theme.toggleBg} ${theme.toggleBorder} ${theme.toggleHover}
                 `}
@@ -617,7 +625,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                   onClick={() => router.push('https://app.bellory.com.br')}
                   className={`
                     relative group flex items-center gap-2 px-5 py-2.5 rounded-xl
-                    font-semibold text-sm
+                    font-semibold text-sm cursor-pointer
                     border-2 transition-all duration-300
                     ${theme.enterBtnBg} ${theme.enterBtnText} ${theme.enterBtnBorder}
                     ${theme.enterBtnHoverBorder} ${theme.enterBtnHoverText} ${theme.enterBtnGlow}
@@ -648,7 +656,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                     <button
                       className={`
                         relative flex items-center gap-2 px-6 py-2.5 rounded-xl
-                        font-semibold text-sm
+                        font-semibold text-sm cursor-pointer
                         bg-gradient-to-r ${theme.ctaBtnGradient}
                         ${theme.ctaBtnText} ${theme.ctaBtnShadow}
                         transition-all duration-300
@@ -689,7 +697,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
 
                       {/* Icone de sparkle decorativo */}
                       <motion.div
-                        className="absolute -top-1 -right-1"
+                        className="absolute top-1 right-2"
                         animate={{
                           rotate: [0, 15, -15, 0],
                           scale: [1, 1.2, 1]

@@ -6,104 +6,7 @@ import { Button } from "primereact/button"
 import Link from "next/link"
 import { useRef, useMemo } from "react"
 import { useTheme } from "@/contexts/HeroThemeContext"
-
-// ============================================================================
-// CONFIGURACAO DOS TEMAS - Light (Elegante) e Dark (Luxuoso)
-// ============================================================================
-
-const themeConfig = {
-  light: {
-    // Backgrounds
-    background: "bg-gradient-to-br from-[#faf8f6] via-[#e6d9d4]/30 to-[#faf8f6]",
-    backgroundStyle: { background: "linear-gradient(to bottom right, #faf8f6, rgba(230, 217, 212, 0.3), #faf8f6)" },
-
-    // Blobs decorativos
-    blob1: "bg-gradient-to-br from-[#db6f57]/20 to-[#8b3d35]/20",
-    blob2: "bg-gradient-to-tr from-[#4f6f64]/20 to-[#db6f57]/20",
-
-    // Pattern de fundo
-    patternColor: "#8b3d35",
-    patternOpacity: "0.03",
-
-    // Textos
-    headlineColor: "text-[#2a2420]",
-    gradientText: "bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57]",
-    subheadlineColor: "text-[#4f6f64]",
-    highlightColor: "text-[#8b3d35]",
-    textPrimary: "#2a2420",
-    textSecondary: "#4f6f64",
-    textTertiary: "#8b3d35",
-
-    // Beneficios
-    benefitCard: "bg-white border-[#d8ccc4]",
-    benefitText: "text-[#2a2420]",
-    benefitColors: ["#4f6f64", "#db6f57", "#8b3d35", "#4f6f64"],
-
-    // Botoes
-    primaryButton: "bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white hover:shadow-xl",
-    secondaryButton: "bg-white text-[#8b3d35] border-2 border-[#8b3d35] hover:bg-[#8b3d35] hover:text-white",
-
-    // Badge
-    badge: "bg-gradient-to-r from-[#db6f57]/10 via-[#8b3d35]/10 to-[#db6f57]/10 border-[#db6f57]/20",
-    badgeIcon: "text-[#db6f57]",
-    badgeText: "text-[#8b3d35]",
-
-    // Prova social
-    starFill: "#db6f57",
-    ratingText: "text-[#2a2420]",
-    socialText: "text-[#4f6f64]",
-    checkIcon: "text-[#4f6f64]",
-  },
-
-  dark: {
-    // Backgrounds - tons escuros sofisticados
-    background: "",
-    backgroundStyle: { background: "linear-gradient(180deg, #0D0B0A 0%, #141210 50%, #1A1715 100%)" },
-
-    // Blobs decorativos - com cores vibrantes mas sutis
-    blob1: "",
-    blob1Style: { background: "linear-gradient(135deg, rgba(224, 122, 98, 0.2) 0%, rgba(168, 82, 74, 0.15) 100%)" },
-    blob2: "",
-    blob2Style: { background: "linear-gradient(135deg, rgba(107, 143, 130, 0.15) 0%, rgba(224, 122, 98, 0.1) 100%)" },
-
-    // Pattern de fundo
-    patternColor: "#E07A62",
-    patternOpacity: "0.02",
-
-    // Textos
-    headlineColor: "text-[#F5F0EB]",
-    gradientText: "bg-gradient-to-r from-[#E07A62] via-[#D4AF37] to-[#E07A62]",
-    subheadlineColor: "text-[#B8AEA4]",
-    highlightColor: "text-[#E07A62]",
-    textPrimary: "#F5F0EB",
-    textSecondary: "#B8AEA4",
-    textTertiary: "#E07A62",
-
-    // Beneficios
-    benefitCard: "bg-[#1A1715]/80 backdrop-blur-sm border-[#2D2925]",
-    benefitText: "text-[#F5F0EB]",
-    benefitColors: ["#6B8F82", "#E07A62", "#D4AF37", "#6B8F82"],
-
-    // Botoes
-    primaryButton: "bg-gradient-to-r from-[#E07A62] via-[#DB6F57] to-[#A8524A] text-white hover:shadow-[0_0_30px_rgba(224,122,98,0.4)]",
-    secondaryButton: "bg-transparent text-[#E07A62] border-2 border-[#E07A62] hover:bg-[#E07A62]/10 hover:border-[#E8937E]",
-
-    // Badge
-    badge: "bg-[#1A1715]/60 backdrop-blur-md border-[#E07A62]/30",
-    badgeIcon: "text-[#D4AF37]",
-    badgeText: "text-[#E07A62]",
-
-    // Prova social
-    starFill: "#D4AF37",
-    ratingText: "text-[#F5F0EB]",
-    socialText: "text-[#B8AEA4]",
-    checkIcon: "text-[#6B8F82]",
-  },
-}
-
-// ============================================================================
-// COMPONENTE PRINCIPAL HERO
-// ============================================================================
+import { themeConfig } from "@/utils/themes"
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -210,23 +113,7 @@ export function Hero() {
           className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
         >
           <div className="max-w-7xl mx-auto">
-            {/* Badge de destaque (opcional - descomentado para dark) */}
-            {isDark && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="flex justify-center mb-8"
-              >
-                <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full border backdrop-blur-sm shadow-lg ${theme.badge}`}>
-                  <Sparkles className={`w-5 h-5 ${theme.badgeIcon}`} />
-                  <span className={`text-sm font-semibold tracking-wide ${theme.badgeText}`}>
-                    Experimente o tema Dark Luxuoso
-                  </span>
-                </div>
-              </motion.div>
-            )}
-
+            
             {/* Headline principal */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -351,23 +238,6 @@ export function Hero() {
                 <span>Sem cartao de credito - Cancele quando quiser</span>
               </div>
             </motion.div>
-
-            {/* Indicador visual do tema (apenas dark) */}
-            {isDark && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.8 }}
-                className="flex justify-center"
-              >
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30">
-                  <div className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
-                  <span className="text-xs font-medium text-[#D4AF37]">
-                    Tema Dark Elegante Ativo
-                  </span>
-                </div>
-              </motion.div>
-            )}
           </div>
         </motion.div>
 

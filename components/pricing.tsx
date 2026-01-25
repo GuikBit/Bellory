@@ -48,8 +48,9 @@ const plans = [
     id: "basico",
     name: "Básico",
     tagline: "Para começar a crescer",
-    price: 79.90,
-    priceAnnual: 64.90,
+    price: 69.90,
+    priceAnnual: 63.90,
+    desconto: 10,
     icon: Zap,
     color: "#db6f57",
     gradient: "from-[#db6f57] to-[#c55a42]",
@@ -73,8 +74,9 @@ const plans = [
     id: "plus",
     name: "Plus",
     tagline: "Tudo que você precisa",
-    price: 129.90,
-    priceAnnual: 99.90,
+    price: 139.90,
+    priceAnnual: 119.90,
+    desconto: 15,
     icon: Sparkles,
     color: "#8b3d35",
     gradient: "from-[#8b3d35] to-[#a8524a]",
@@ -83,13 +85,13 @@ const plans = [
       { text: "Tudo do Básico +", included: true },
       { text: "Usuários ilimitados", included: true },
       { text: "Agente virtual no WhatsApp", included: true },
-      { text: "Site personalizado completo", included: true },
-      { text: "Mini e-commerce integrado", included: true },
+      { text: "Site padrao", included: true },      
       { text: "Relatórios avançados", included: true },
       { text: "Programa de fidelidade", included: true },
       { text: "Suporte prioritário", included: true },
       { text: "Treinamento da equipe", included: true },
-      { text: "Domínio personalizado", included: true },
+      { text: "Domínio personalizado", included: false },
+      { text: "E-commerce integrado", included: false },
     ],
     cta: "Experimentar 14 dias grátis",
     badge: "🔥 Mais popular"
@@ -98,8 +100,9 @@ const plans = [
     id: "premium",
     name: "Premium",
     tagline: "Para quem quer o máximo",
-    price: 199.90,
-    priceAnnual: 159.90,
+    price: 299.90,
+    priceAnnual: 254.90,
+    deconto: 15,
     icon: Crown,
     color: "#db6f57",
     gradient: "from-[#db6f57] to-[#e88c76]",
@@ -362,7 +365,7 @@ export function Pricing() {
 
           {/* Toggle anual/mensal */}
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="w-[130px]"></div>
+            <div className="w-[180px]"></div>
             <span className={`font-semibold ${!isAnnual ? 'text-[#2a2420]' : 'text-[#4f6f64]'}`}>
               Mensal
             </span>
@@ -379,10 +382,10 @@ export function Pricing() {
             <span className={`font-semibold ${isAnnual ? 'text-[#2a2420]' : 'text-[#4f6f64]'}`}>
               Anual
             </span>
-            <div className="w-[130px]">
+            <div className="w-[180px]">
               {isAnnual && (
                 <span className="px-3 py-1 bg-[#5a7a6e] text-white text-sm font-bold rounded-full">
-                  Economize 20%
+                  Economize até 15%
                 </span>
               )}
             </div>
