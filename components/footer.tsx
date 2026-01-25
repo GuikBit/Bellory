@@ -1,10 +1,10 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { 
-  Facebook, 
-  Instagram, 
-  Linkedin, 
+import {
+  Facebook,
+  Instagram,
+  Linkedin,
   Twitter,
   Mail,
   Phone,
@@ -18,8 +18,12 @@ import Link from "next/link"
 import { Button } from "primereact/button"
 import { InputText } from "primereact/inputtext"
 import { useState } from "react"
+import { useTheme } from "@/contexts/HeroThemeContext"
+import { themeConfig } from "@/utils/themes"
 
 export function Footer() {
+  const { isDark } = useTheme()
+  const theme = isDark ? themeConfig.dark : themeConfig.light
   const [email, setEmail] = useState("")
 
   const footerLinks = {
@@ -67,7 +71,7 @@ export function Footer() {
   }
 
   return (
-    <footer className="relative bg-gradient-to-b from-[#2a2420] to-[#1a1510] text-white overflow-hidden">
+    <footer className={`relative ${isDark ? 'bg-gradient-to-b from-gray-900 to-black' : 'bg-gradient-to-b from-[#2a2420] to-[#1a1510]'} text-white overflow-hidden`}>
       {/* Padrão decorativo */}
       <div className="absolute inset-0 opacity-5"
         style={{
@@ -101,7 +105,7 @@ export function Footer() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Seu melhor e-mail"
-                  className="flex-1 px-6 py-4 rounded-xl border-2 border-white/20 bg-white/10 text-white placeholder:text-white/50"
+                  className={`flex-1 px-6 py-4 rounded-xl border-2 ${isDark ? 'border-gray-600 bg-gray-800' : 'border-white/20 bg-white/10'} text-white placeholder:text-white/50`}
                   required
                 />
                 <Button
