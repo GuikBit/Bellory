@@ -2,6 +2,7 @@
 
 import { Header } from "@/components/header"
 import { useEffect, useRef, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "primereact/button"
 import { Card } from "primereact/card"
 import { InputText } from "primereact/inputtext"
@@ -231,6 +232,7 @@ const steps = [
 export default function Cadastro() {
   const { isDark } = useTheme()
   const theme = isDark ? cadastroThemeConfig.dark : cadastroThemeConfig.light
+  const searchParams = useSearchParams()
 
   const [activeStep, setActiveStep] = useState(0)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -494,6 +496,25 @@ export default function Cadastro() {
       badge: "👑 Premium"
     }
   ]
+
+  // Efeito para ler parâmetros da URL e pré-selecionar plano e recorrência
+  useEffect(() => {
+    const planoParam = searchParams.get('plano')
+    const recorrenciaParam = searchParams.get('recorrencia')
+
+    // Verifica se o plano passado na URL existe nos planos disponíveis
+    if (planoParam) {
+      const planoEncontrado = planos.find(p => p.id === planoParam.toLowerCase())
+      if (planoEncontrado) {
+        setSelectedPlan(planoEncontrado.id)
+      }
+    }
+
+    // Define a recorrência baseado no parâmetro da URL
+    if (recorrenciaParam) {
+      setIsAnnual(recorrenciaParam.toLowerCase() === 'anual')
+    }
+  }, [searchParams])
 
   const handleNext = async () => {
     let fieldsToValidate: (keyof FormData)[] = []
@@ -1225,24 +1246,24 @@ export default function Cadastro() {
                                 <InputText
                                   {...field}
                                   placeholder="Escolha um nome de usuário (mínimo 6 caracteres)"
-                                  className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${
-                                    errors.login 
-                                      ? "border-[#d15847]" 
+                                  className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${theme.textSecondary} ${
+                                    errors.login
+                                      ? "border-[#d15847]"
                                       : usernameValid && usernameFound
-                                      ? "border-green-500"
+                                      ? isDark ? "border-[#5a7a6e]" : "border-green-500"
                                       : usernameFound && !usernameValid
                                       ? "border-[#d15847]"
-                                      : "border-[#d8ccc4] ${theme.inputFocus}"
+                                      : `${theme.inputBorder} ${theme.inputFocus}`
                                   }`}
                                   // Removido o disabled para não perder foco
                                 />
                                 {/* Indicador sempre visível no canto direito */}
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
                                   {isPendingUsername && (
-                                    <div className="w-5 h-5 border-2 border-[#8b3d35] border-t-transparent rounded-full animate-spin" />
+                                    <div className={`w-5 h-5 border-2 ${isDark ? 'border-[#A8524A]' : 'border-[#8b3d35]'} border-t-transparent rounded-full animate-spin`} />
                                   )}
                                   {!isPendingUsername && usernameFound && usernameValid && (
-                                    <Check className="w-5 h-5 text-green-500" />
+                                    <Check className={`w-5 h-5 ${isDark ? 'text-[#5a7a6e]' : 'text-green-500'}`} />
                                   )}
                                   {!isPendingUsername && usernameFound && !usernameValid && (
                                     <X className="w-5 h-5 text-[#d15847]" />
@@ -1252,13 +1273,13 @@ export default function Cadastro() {
                             )}
                           />
                           {isPendingUsername && (
-                            <small className="${theme.textSecondary} text-sm mt-1 block flex items-center gap-2">
-                              <div className="w-3 h-3 border-2 border-[#4f6f64] border-t-transparent rounded-full animate-spin" />
+                            <small className={`${theme.textSecondary} text-sm mt-1 block flex items-center gap-2`}>
+                              <div className={`w-3 h-3 border-2 ${isDark ? 'border-[#6B8F82]' : 'border-[#4f6f64]'} border-t-transparent rounded-full animate-spin`} />
                               Validando username...
                             </small>
                           )}
                           {usernameError && usernameFound && !isPendingUsername && (
-                            <small className={`text-sm mt-1 block ${usernameValid ? "text-green-600" : "text-[#d15847]"}`}>
+                            <small className={`text-sm mt-1 block ${usernameValid ? (isDark ? 'text-[#5a7a6e]' : 'text-green-600') : "text-[#d15847]"}`}>
                               {usernameError}
                             </small>
                           )}
@@ -1287,8 +1308,8 @@ export default function Cadastro() {
                                   {...field}
                                   type={showPassword ? "text" : "password"}
                                   placeholder="Mínimo 6 caracteres"
-                                  className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${
-                                    errors.senha ? "border-[#d15847]" : "border-[#d8ccc4] ${theme.inputFocus}"
+                                  className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${theme.textSecondary} ${
+                                    errors.senha ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
                                   }`}
                                 />
                               )}
@@ -1296,7 +1317,7 @@ export default function Cadastro() {
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute right-4 top-1/2 -translate-y-1/2 ${theme.textSecondary} hover:text-[#8b3d35]"
+                              className={`absolute right-4 top-1/2 -translate-y-1/2 ${theme.textSecondary} ${isDark ? 'hover:text-[#A8524A]' : 'hover:text-[#8b3d35]'}`}
                             >
                               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
@@ -1324,8 +1345,8 @@ export default function Cadastro() {
                                   {...field}
                                   type={showConfPassword ? "text" : "password"}
                                   placeholder="Digite a senha novamente"
-                                  className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${
-                                    errors.confSenha ? "border-[#d15847]" : "border-[#d8ccc4] ${theme.inputFocus}"
+                                  className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${theme.textSecondary} ${
+                                    errors.confSenha ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
                                   }`}
                                 />
                               )}
@@ -1333,7 +1354,7 @@ export default function Cadastro() {
                             <button
                               type="button"
                               onClick={() => setShowConfPassword(!showConfPassword)}
-                              className="absolute right-4 top-1/2 -translate-y-1/2 ${theme.textSecondary} hover:text-[#8b3d35]"
+                              className={`absolute right-4 top-1/2 -translate-y-1/2 ${theme.textSecondary} ${isDark ? 'hover:text-[#A8524A]' : 'hover:text-[#8b3d35]'}`}
                             >
                               {showConfPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
@@ -1617,16 +1638,16 @@ export default function Cadastro() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                           <div>
-                            <p className="${theme.textSecondary} mb-1">Nome</p>
-                            <p className="text-[#2a2420] font-semibold">{getValues("nomeResponsavel")}</p>
+                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Nome</p>
+                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("nomeResponsavel")}</p>
                           </div>
                           <div>
-                            <p className="${theme.textSecondary} mb-1">Email</p>
-                            <p className="text-[#2a2420] font-semibold">{getValues("emailResponsavel")}</p>
+                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Email</p>
+                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("emailResponsavel")}</p>
                           </div>
                           <div>
-                            <p className="${theme.textSecondary} mb-1">Telefone</p>
-                            <p className="text-[#2a2420] font-semibold">{getValues("telefoneResponsavel")}</p>
+                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Telefone</p>
+                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("telefoneResponsavel")}</p>
                           </div>
                         </div>
                       </div>
@@ -1641,22 +1662,22 @@ export default function Cadastro() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                           <div className="md:col-span-2">
-                            <p className="${theme.textSecondary} mb-1">Logradouro</p>
-                            <p className="text-[#2a2420] font-semibold">
+                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Logradouro</p>
+                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>
                               {getValues("rua")}, {getValues("numero")} {getValues("complemento") && `- ${getValues("complemento")}`}
                             </p>
                           </div>
                           <div>
-                            <p className="${theme.textSecondary} mb-1">Bairro</p>
-                            <p className="text-[#2a2420] font-semibold">{getValues("bairro")}</p>
+                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Bairro</p>
+                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("bairro")}</p>
                           </div>
                           <div>
-                            <p className="${theme.textSecondary} mb-1">Cidade/Estado</p>
-                            <p className="text-[#2a2420] font-semibold">{getValues("cidade")} - {getValues("estado")}</p>
+                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Cidade/Estado</p>
+                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("cidade")} - {getValues("estado")}</p>
                           </div>
                           <div>
-                            <p className="${theme.textSecondary} mb-1">CEP</p>
-                            <p className="text-[#2a2420] font-semibold">{getValues("cep")}</p>
+                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>CEP</p>
+                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("cep")}</p>
                           </div>
                         </div>
                       </div>
