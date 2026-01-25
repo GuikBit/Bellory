@@ -57,7 +57,7 @@ const cadastroThemeConfig = {
     // Text
     headingColor: "text-[#2a2420]",
     textPrimary: "text-[#2a2420]",
-    textSecondary: "${theme.textSecondary}",
+    textSecondary: `text-[#B8AEA4]`,
     textMuted: "text-[#6b5d57]",
 
     // Inputs
@@ -77,7 +77,7 @@ const cadastroThemeConfig = {
 
     // Buttons
     btnSecondaryBg: "bg-white",
-    btnSecondaryText: "${theme.textSecondary}",
+    btnSecondaryText: `#B8AEA4`,
     btnSecondaryBorder: "border-[#d8ccc4]",
     btnSecondaryHover: "hover:border-[#4f6f64]",
 
@@ -100,7 +100,7 @@ const cadastroThemeConfig = {
     mainBg: "bg-gradient-to-b from-[#0D0B0A] to-[#141210]",
     cardBg: "bg-[#1A1715]/95 backdrop-blur-md",
     cardBorder: "border-[#2D2925]",
-    inputBg: "bg-[#141210]",
+    inputBg: "bg-[#1A1715]",
 
     // Text
     headingColor: "text-[#F5F0EB]",
@@ -109,7 +109,7 @@ const cadastroThemeConfig = {
     textMuted: "text-[#7A716A]",
 
     // Inputs
-    inputBorder: "border-[#2D2925]",
+    inputBorder: "!border-[#2D2925]",
     inputFocus: "focus:border-[#E07A62]",
 
     // Patterns & decorations
@@ -684,7 +684,7 @@ export default function Cadastro() {
                 Cadastro Realizado!
               </h1>
 
-              <p className={`text-lg ${theme.textSecondary} mb-8 leading-relaxed transition-colors duration-300`}>
+              <p className={`text-lg  mb-8 leading-relaxed transition-colors duration-300`} style={{color: theme.textSecondary }}>
                 Seu cadastro foi realizado com sucesso!<br />
                 Em breve você receberá um email com as instruções para acessar sua conta.
               </p>
@@ -768,7 +768,7 @@ export default function Cadastro() {
                           className={`absolute top-5 md:top-7 md:left-4/5 left-10/11 md:w-4/11 w-2/12 h-1 rounded-full transition-all duration-300 ${
                             isCompleted
                               ? "bg-gradient-to-r from-[#5a7a6e] to-[#4f6f64]"
-                              : "bg-[#e6d9d4]"
+                              : "bg-[#e6d9d4]/20"
                           }`}
                         />
                       )}
@@ -781,7 +781,7 @@ export default function Cadastro() {
                             ? "bg-gradient-to-br from-[#5a7a6e] to-[#4f6f64] text-white shadow-lg"
                             : isActive
                             ? "border-2 text-white shadow-xl"
-                            : "bg-[#e6d9d4] ${theme.textSecondary}"
+                            : `bg-[#e6d9d4]/20 ${theme.textSecondary}`
                         }`}
                         style={
                           isActive && !isCompleted
@@ -802,7 +802,7 @@ export default function Cadastro() {
                       {/* Label */}
                       <span
                         className={`hidden md:block text-xs mt-3 font-semibold transition-colors duration-300 ${
-                          isActive ? theme.textPrimary : theme.textSecondary
+                          isActive ? theme.textPrimary : theme.textMuted
                         }`}
                       >
                         {step.label}
@@ -833,7 +833,7 @@ export default function Cadastro() {
                         </div>
                         <div>
                           <h3 className={`text-xl font-bold ${theme.textPrimary} transition-colors duration-300`}>Informações da Empresa</h3>
-                          <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>Dados legais do estabelecimento</p>
+                          <p className={`text-sm ${theme.textMuted} transition-colors duration-300`}>Dados legais do estabelecimento</p>
                         </div>
                       </div>
 
@@ -859,14 +859,14 @@ export default function Cadastro() {
                                   {...field}
                                   mask="99.999.999/9999-99"
                                   placeholder="00.000.000/0000-00"
-                                  className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
+                                  className={`w-full ${theme.textSecondary} px-4 py-3 border-2 rounded-xl transition-all ${
                                     errors.cnpj 
                                       ? "border-[#d15847]" 
                                       : cnpjValid && cnpjFound
-                                      ? "border-green-500"
+                                      ? isDark?'border-[#5a7a6e]':"border-green-500"
                                       : cnpjFound && !cnpjValid
                                       ? "border-[#d15847]"
-                                      : "${theme.inputBorder} ${theme.inputFocus}"
+                                      : `${theme.inputBorder} ${theme.inputFocus}`
                                   }`}
                                   disabled={isPending}
                                 />
@@ -877,7 +877,7 @@ export default function Cadastro() {
                                 )}
                                 {cnpjFound && cnpjValid && (
                                   <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    <Check className="w-5 h-5 text-green-500" />
+                                    <Check className={`w-5 h-5 ${isDark? `text-[#5a7a6e]`:`text-green-500`}`} />
                                   </div>
                                 )}
                                 {cnpjFound && !cnpjValid && (
@@ -889,13 +889,13 @@ export default function Cadastro() {
                             )}
                           />
                           {isPending && (
-                            <small className="${theme.textSecondary} text-sm mt-1 block flex items-center gap-2">
+                            <small className={`${theme.textSecondary} text-sm mt-1 block flex items-center gap-2`}>
                               <div className="w-3 h-3 border-2 border-[#4f6f64] border-t-transparent rounded-full animate-spin" />
                               Validando CNPJ...
                             </small>
                           )}
                           {cnpjError && cnpjFound && (
-                            <small className={`text-sm mt-1 block ${cnpjValid ? "text-green-600" : "text-[#d15847]"}`}>
+                            <small className={`text-sm mt-1 block ${cnpjValid ? `${isDark? `text-[#5a7a6e]`:`text-green-600`}` : "text-[#d15847]"}`}>
                               {cnpjError}
                             </small>
                           )}
@@ -915,7 +915,7 @@ export default function Cadastro() {
                               <InputText
                                 {...field}
                                 placeholder="Opcional"
-                                className="w-full px-4 py-3 border-2 border-[#d8ccc4] rounded-xl focus:border-[#db6f57] transition-all"
+                                className={`w-full ${theme.textSecondary} px-4 py-3 border-2 rounded-xl focus:border-[#db6f57] transition-all  ${theme.inputBorder} ${theme.inputFocus}`}
                               />
                             )}
                           />
@@ -933,8 +933,8 @@ export default function Cadastro() {
                               <InputText
                                 {...field}
                                 placeholder="Nome legal da empresa"
-                                className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.razaoSocial ? "border-[#d15847]" : "${theme.inputBorder} ${theme.inputFocus}"
+                                className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
+                                  errors.razaoSocial ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
                                 }`}
                               />
                             )}
@@ -956,8 +956,8 @@ export default function Cadastro() {
                               <InputText
                                 {...field}
                                 placeholder="Como seu negócio é conhecido"
-                                className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.nomeFantasia ? "border-[#d15847]" : "${theme.inputBorder} ${theme.inputFocus}"
+                                className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
+                                  errors.nomeFantasia ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
                                 }`}
                               />
                             )}
@@ -982,8 +982,8 @@ export default function Cadastro() {
                                 optionLabel="name"
                                 optionValue="code"
                                 placeholder="Selecione o público alvo"
-                                className={`w-full border-2 rounded-xl transition-all ${
-                                  errors.publicoAlvo ? "border-[#d15847]" : "${theme.inputBorder} ${theme.inputFocus}"
+                                className={`${theme.textSecondary} w-full border-2 rounded-xl transition-all ${theme.inputBg} ${
+                                  errors.publicoAlvo ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
                                 }`}
                                 pt={{
                                   input: { className: "px-4 py-3" }
@@ -1025,14 +1025,14 @@ export default function Cadastro() {
                                   {...field}
                                   type="email"
                                   placeholder="contato@empresa.com"
-                                  className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
+                                  className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
                                     errors.email 
                                       ? "border-[#d15847]" 
                                       : emailValid && emailFound
-                                      ? "border-green-500"
+                                      ? isDark?'border-[#5a7a6e]':"border-green-500"
                                       : emailFound && !emailValid
                                       ? "border-[#d15847]"
-                                      : "${theme.inputBorder} ${theme.inputFocus}"
+                                      : `${theme.inputBorder} ${theme.inputFocus}`
                                   }`}
                                   disabled={isPendingEmail}
                                 />
@@ -1043,7 +1043,7 @@ export default function Cadastro() {
                                 )}
                                 {emailFound && emailValid && (
                                   <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    <Check className="w-5 h-5 text-green-500" />
+                                    <Check className={`w-5 h-5 ${isDark? `text-[#5a7a6e]`:`text-green-500`}`} />
                                   </div>
                                 )}
                                 {emailFound && !emailValid && (
@@ -1055,13 +1055,13 @@ export default function Cadastro() {
                             )}
                           />
                           {isPendingEmail && (
-                            <small className="${theme.textSecondary} text-sm mt-1 block flex items-center gap-2">
+                            <small className={`${theme.textSecondary} text-sm mt-1 block flex items-center gap-2`}>
                               <div className="w-3 h-3 border-2 border-[#4f6f64] border-t-transparent rounded-full animate-spin" />
                               Validando email...
                             </small>
                           )}
                           {emailError && emailFound && (
-                            <small className={`text-sm mt-1 block ${emailValid ? "text-green-600" : "text-[#d15847]"}`}>
+                            <small className={`text-sm mt-1 block ${emailValid ? `${isDark? `text-[#5a7a6e]`:`text-green-600`}` : "text-[#d15847]"}`}>
                               {emailError}
                             </small>
                           )}
@@ -1083,8 +1083,8 @@ export default function Cadastro() {
                                 {...field}
                                 mask="(99) 99999-9999"
                                 placeholder="(00) 00000-0000"
-                                className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.telefone ? "border-[#d15847]" : "${theme.inputBorder} ${theme.inputFocus}"
+                                className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
+                                  errors.telefone ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
                                 }`}
                               />
                             )}
@@ -1106,8 +1106,8 @@ export default function Cadastro() {
                               <InputText
                                 {...field}
                                 placeholder="Nome completo do responsável"
-                                className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.nomeResponsavel ? "border-[#d15847]" : "${theme.inputBorder} ${theme.inputFocus}"
+                                className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
+                                  errors.nomeResponsavel ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
                                 }`}
                               />
                             )}
@@ -1136,8 +1136,8 @@ export default function Cadastro() {
                                 {...field}
                                 type="email"
                                 placeholder="responsavel@email.com"
-                                className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.emailResponsavel ? "border-[#d15847]" : "${theme.inputBorder} ${theme.inputFocus}"
+                                className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
+                                  errors.emailResponsavel ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
                                 }`}
                               />
                             )}
@@ -1160,8 +1160,8 @@ export default function Cadastro() {
                                 {...field}
                                 mask="(99) 99999-9999"
                                 placeholder="(00) 00000-0000"
-                                className={`w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.telefoneResponsavel ? "border-[#d15847]" : "${theme.inputBorder} ${theme.inputFocus}"
+                                className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
+                                  errors.telefoneResponsavel ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
                                 }`}
                               />
                             )}

@@ -1520,7 +1520,7 @@ export const themeConfig = {
     highlightColor: "text-[#E07A62]",
     textPrimary: "#F5F0EB",
     textSecondary: "#B8AEA4",
-    textTertiary: "#E07A62",
+    textTertiary: " #E07A62",
     textMuted: "text-[#7A716A]",
     textMuted2: "#7A716A",
 
