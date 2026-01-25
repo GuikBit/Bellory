@@ -14,30 +14,18 @@ import { ComparisonSection } from "@/components/comparison-section"
 
 export default function Home() {
   return (
-    // <main className="min-h-screen ">
-    //   <Header />
-    //   <Hero />
-    //   <FeaturesInternal />
-    //   <FeaturesExternal />
-    //   <DemoSection />
-    //   <Benefits />
-    //   <Pricing />
-    //   <Contact />
-    //   <Footer />
-    //   <FinalCTA />
-    // </main>
     <main className="min-h-screen overflow-x-hidden">
       <Header isMenu={true} isCadastro={true}/>
       <Hero />
       <FeaturesInternal />
-      {/* <AIAgentSection /> */}
-      {/* <FeaturesExternal /> */}
-      {/* <DemoSection /> */}
+      <AIAgentSection />
+      <FeaturesExternal />
+      <DemoSection />
       <Benefits />
       <ComparisonSection />
       <Pricing />
       <Contact />
-      {/* <FinalCTA /> */}
+      <FinalCTA />
       <Footer />
     </main>
 
