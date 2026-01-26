@@ -354,10 +354,10 @@ export function Hero() {
               <h1 className="font-serif tracking-tight leading-[1.1] text-balance">
                 {/* Mobile: menor */}
                 <span className={`block text-3xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl 2xl:text-6xl font-bold ${theme.headlineColor} transition-colors duration-500`}>
-                  Transforme seu negocio
+                  Transforme seu negócio
                 </span>
                 <span className={`block text-3xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl 2xl:text-6xl  font-bold mt-1 ${theme.gradientText} bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]`}>
-                  em um imperio digital
+                  em um império digital
                 </span>
               </h1>
             </motion.div>
@@ -369,13 +369,13 @@ export function Hero() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className={`text-center text-base sm:text-lg lg:text-xl text-balance max-w-2xl md:max-w-none mx-auto md:mx-0 mb-6 lg:mb-8 leading-relaxed font-light ${theme.subheadlineColor} transition-colors duration-500`}
             >
-              Gestao completa + site personalizado + agente de IA no WhatsApp.
+              Gestão completa + site personalizado + agente de IA no WhatsApp.
               <br className="hidden sm:block" />
               <span className="sm:hidden"> </span>
               <span className={`${theme.highlightColor} font-medium transition-colors duration-500`}>
-                Tudo em uma unica plataforma
+                Tudo em uma única plataforma
               </span>{" "}
-              para voce focar no que importa: seus clientes.
+              para você focar no que importa: seus clientes.
             </motion.p>
 
             {/* Beneficios rapidos */}
@@ -419,7 +419,7 @@ export function Hero() {
             >
               <Link href="/cadastro" className="w-full sm:w-auto">
                 <Button
-                  label="Comece gratis por 14 dias"
+                  label="Comece grátis por 14 dias"
                   icon={<ArrowRight className="mr-2" size={16} />}
                   iconPos="right"
                   className={`
@@ -432,7 +432,7 @@ export function Hero() {
               </Link>
 
               <Button
-                label="Agende uma demonstracao"
+                label="Agende uma demonstração"
                 className={`
                   w-full sm:w-auto text-sm lg:text-base px-6 lg:px-10 py-3 lg:py-4 rounded-xl font-semibold
                   transition-all duration-300
@@ -462,11 +462,11 @@ export function Hero() {
                 <span className={`font-semibold ${theme.ratingText} transition-colors duration-500`}>
                   4.9/5
                 </span>
-                <span>127 avaliacoes</span>
+                <span>127 avaliações</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className={`w-4 h-4 lg:w-5 lg:h-5 ${theme.checkIcon} transition-colors duration-300`} />
-                <span>Sem cartao de credito - Cancele quando quiser</span>
+                <span>Sem cartão de crédito - Cancele quando quiser</span>
               </div>
             </motion.div>
           </div>

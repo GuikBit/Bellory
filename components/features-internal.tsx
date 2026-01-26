@@ -246,7 +246,7 @@ const BenefitSection = ({ section, index, theme }: any) => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className={`font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4 ${theme.headlineColor}`}
+          className={`font-serif text-3xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 ${theme.headlineColor}`}
         >
           {section.tagline}
         </motion.h2>
@@ -293,7 +293,7 @@ export function FeaturesInternal() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Header principal */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -318,7 +318,7 @@ export function FeaturesInternal() {
             Deixe a tecnologia cuidar da gestão. Nós automatizamos o chato,{" "}
             <span className={`${theme.highlightColor} font-semibold`}>você cuida do que ama</span>.
           </p>
-        </motion.div>
+        </motion.div> */}
 
         {/* Seções de benefícios */}
         {benefitSections.map((section, index) => (

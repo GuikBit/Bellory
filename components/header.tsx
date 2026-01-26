@@ -171,37 +171,37 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
         {
           icon: MessageSquare,
           title: "WhatsApp Integrado",
-          description: "Comunicacao direta e automatica",
+          description: "Comunicação direta e automática",
           href: "#whatsapp"
         },
         {
           icon: BarChart3,
-          title: "Relatorios Inteligentes",
-          description: "Analises e insights do seu negocio",
+          title: "Relatórios Inteligentes",
+          description: "Análises e insights do seu negócio",
           href: "#relatorios"
         },
         {
           icon: CreditCard,
-          title: "Gestao Financeira",
+          title: "Gestão Financeira",
           description: "Controle completo de pagamentos",
           href: "#financeiro"
         },
         {
           icon: Users,
-          title: "Gestao de Clientes",
-          description: "Historico e preferencias organizados",
+          title: "Gestão de Clientes",
+          description: "Histórico e preferências organizados",
           href: "#clientes"
         },
         {
           icon: Zap,
-          title: "Automacoes",
-          description: "Lembretes e confirmacoes automaticas",
+          title: "Automações",
+          description: "Lembretes e confirmações automáticas",
           href: "#automacoes"
         },
         {
           icon: Palette,
-          title: "Personalizacao",
-          description: "Personalise o tema do site externo",
+          title: "Personalização",
+          description: "Personalize o tema do site externo",
           href: "#personalizacao"
         }
 
@@ -212,19 +212,19 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
         {
           icon: Bot,
           title: "Assistente Virtual 24/7",
-          description: "Atendimento automatico inteligente",
+          description: "Atendimento automático inteligente",
           href: "#assistente"
         },
         {
           icon: Brain,
-          title: "Recomendacoes Personalizadas",
-          description: "Sugestoes baseadas em historico",
+          title: "Recomendações Personalizadas",
+          description: "Sugestões baseadas em histórico",
           href: "#recomendacoes"
         },
         {
           icon: Target,
-          title: "Otimizacao de Agenda",
-          description: "IA que organiza seus horarios",
+          title: "Otimização de Agenda",
+          description: "IA que organiza seus horários",
           href: "#otimizacao"
         }
       ]
@@ -233,26 +233,26 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
       items: [
         {
           icon: Scissors,
-          title: "Saloes de Beleza",
-          description: "Solucao completa para saloes",
+          title: "Salões de Beleza",
+          description: "Solução completa para salões",
           href: "#saloes"
         },
         {
           icon: Scissors,
           title: "Barbearias",
-          description: "Gestao moderna para barbeiros",
+          description: "Gestão moderna para barbeiros",
           href: "#barbearias"
         },
         {
           icon: Sparkle,
-          title: "Clinicas de Estetica",
+          title: "Clínicas de Estética",
           description: "Controle profissional de procedimentos",
           href: "#estetica"
         },
         {
           icon: Building2,
           title: "Studios",
-          description: "Perfeito para espacos compartilhados",
+          description: "Perfeito para espaços compartilhados",
           href: "#studios"
         },
         {
@@ -264,7 +264,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
         {
           icon: Sparkle,
           title: "Spas & Massagens",
-          description: "Gestao para ambientes de relaxamento",
+          description: "Gestão para ambientes de relaxamento",
           href: "#spas"
         }
       ]
@@ -274,27 +274,27 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
         {
           icon: Gift,
           title: "Plano Gratuito",
-          description: "Ideal para comecar",
+          description: "Ideal para começar",
           href: "#planos",
           badge: "Gratis"
         },
         {
           icon: Zap,
-          title: "Plano Basico",
-          description: "Para comecar a crescer",
+          title: "Plano Básico",
+          description: "Para começar a crescer",
           href: "#planos",
         },
         {
           icon: Sparkles,
           title: "Plano Profissional",
-          description: "O plano que voce precisa",
+          description: "O plano que você precisa",
           href: "#planos",
           badge: "Popular"
         },
         {
           icon: Crown,
           title: "Plano Premium",
-          description: "Solucao completa para estabelecimentos",
+          description: "Solução completa para estabelecimentos",
           href: "#planos"
         }
       ]
@@ -304,11 +304,11 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
   const navItems = [
     { label: "Funcionalidades",  href:'#funcionalidades', key: "funcionalidades", hasDropdown: true },
     { label: "Agente IA", href: "#ai-agent", key: "agenteIA", hasDropdown: true },
-    { label: "Publico-Alvo", key: "publicoAlvo", hasDropdown: true },
+    { label: "Público-Alvo", key: "publicoAlvo", hasDropdown: true },
     // { label: "Personalizacao", href: "#personalizacao" },
     // { label: "Beneficios", href: "#beneficios" },
     { label: "Planos", key: "planos", hasDropdown: true },
-    { label: "Sobre nos", key: "sobre"}
+    { label: "Sobre nós", key: "sobre"}
   ]
 
   // Animacoes do dropdown com efeito cascata
@@ -834,7 +834,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                         relative z-10
                       `}
                     >
-                      <span>Comece gratis</span>
+                      <span>Comece grátis</span>
                       <ArrowRight size={16} />
                     </button>
                   </motion.div>
