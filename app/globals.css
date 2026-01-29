@@ -5,7 +5,7 @@
 @import 'primereact/resources/themes/lara-light-blue/theme.css' layer(primereact);
 
 /* 3. Importe o CSS do Leaflet para o mapa */
-@import 'leaflet/dist/leaflet.css';
+/* @import 'leaflet/dist/leaflet.css'; */
 
 /* 4. Importe o Tailwind e outras folhas de estilo */
 @import "tailwindcss";

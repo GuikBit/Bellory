@@ -186,7 +186,7 @@ export function Hero() {
 
             {/* Main mockup image */}
             <Image
-              src={isDark ? "/mockup_dark1.png" : "/mockup_white1.png"}
+              src={isDark ? "/mockup_dark1.webp" : "/mockup_white1.png"}
               alt="Bellory App - Sistema de Agendamentos"
               width={250}
               height={0}
