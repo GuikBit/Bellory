@@ -19,6 +19,7 @@ import { useRef, useState } from "react"
 import { useTheme } from "@/contexts/HeroThemeContext"
 import { themeConfig } from "@/utils/themes"
 import Link from "next/link"
+import { useInteractionTracker, useConversionTracker } from "@/hooks/tracking"
 
 // Planos
 export const plans = [
@@ -151,6 +152,7 @@ const planFAQs = [
 export const PlanCard = ({ plan, isAnnual, index, isCadastro, theme, isDark }: any) => {
   const cardRef = useRef(null)
   const isInView = useInView(cardRef, { once: true, margin: "-50px" })
+  const { trackPlanClick } = useInteractionTracker()
 
   const displayPrice = isAnnual ? plan.priceAnnual : plan.price
   const savings = plan.price > 0 ? ((plan.price - plan.priceAnnual) * 12).toFixed(0) : 0
@@ -247,8 +249,8 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro, theme, isDark }: a
         </div>
 
         {/* CTA */}
-        {!isCadastro && ( 
-          <Link href={`/cadastro?plano=${plan.id}&recorrencia=${isAnnual?'anual':'mensal'}`}>
+        {!isCadastro && (
+          <Link href={`/cadastro?plano=${plan.id}&recorrencia=${isAnnual?'anual':'mensal'}`} onClick={() => trackPlanClick(plan.id, plan.name, isAnnual ? 'annual' : 'monthly')}>
             <Button
               label={plan.cta}
               icon={<ArrowRight className="mx-2" size={16} />}
@@ -305,6 +307,7 @@ export function Pricing() {
   const [isAnnual, setIsAnnual] = useState(false)
   const [showROI, setShowROI] = useState(false)
   const [monthlyRevenue, setMonthlyRevenue] = useState(10000)
+  const { trackInteraction } = useInteractionTracker()
 
   // Cálculo simplificado de ROI
   const calculateROI = () => {
@@ -379,7 +382,7 @@ export function Pricing() {
               Mensal
             </span>
             <button
-              onClick={() => setIsAnnual(!isAnnual)}
+              onClick={() => { const next = !isAnnual; setIsAnnual(next); trackInteraction(next ? 'plan_toggle_annual' : 'plan_toggle_monthly', 'pricing-billing-toggle', { section: 'pricing' }) }}
               className="relative w-16 h-8 rounded-full transition-colors duration-300"
               style={{ backgroundColor: isAnnual ? '#db6f57' : isDark ? '#4a5568' : '#d8ccc4' }}
             >
@@ -424,7 +427,7 @@ export function Pricing() {
           className="max-w-4xl mx-auto mb-20"
         >
           <button
-            onClick={() => setShowROI(!showROI)}
+            onClick={() => { const next = !showROI; setShowROI(next); if (next) trackInteraction('roi_calculator_open', 'roi-calculator', { section: 'pricing' }) }}
             className="w-full bg-gradient-to-r from-[#4f6f64] to-[#3d574f] text-white rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1"
           >
             <div className="flex items-center justify-between">

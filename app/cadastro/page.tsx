@@ -43,6 +43,7 @@ import { ThemeSelector } from "@/components/theme-selector-improved"
 import { useMutationPostOrganizacao, useMutationValidaCNPJ, useMutationValidaEmail, useMutationValidaUsername } from "@/service/Querys/Organizacao"
 import { useTheme } from "@/contexts/HeroThemeContext"
 import { plans } from "@/components/pricing"
+import { useConversionTracker, useInteractionTracker } from "@/hooks/tracking"
 
 // ============================================================================
 // CONFIGURAÇÃO DOS TEMAS DO CADASTRO
@@ -234,6 +235,8 @@ export default function Cadastro() {
   const { isDark } = useTheme()
   const theme = isDark ? cadastroThemeConfig.dark : cadastroThemeConfig.light
   const searchParams = useSearchParams()
+  const { trackCadastroStarted, trackCadastroStep, trackCadastroCompleted, trackCadastroAbandoned, trackPlanSelected } = useConversionTracker()
+  const cadastroTracked = useRef(false)
 
   const [activeStep, setActiveStep] = useState(0)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -422,6 +425,31 @@ export default function Cadastro() {
     }
   }, [searchParams])
 
+  // Rastrear inicio do cadastro
+  useEffect(() => {
+    if (!cadastroTracked.current) {
+      cadastroTracked.current = true
+      const planoParam = searchParams.get('plano')
+      const recorrenciaParam = searchParams.get('recorrencia')
+      trackCadastroStarted(
+        planoParam || undefined,
+        planoParam ? plans.find(p => p.id === planoParam)?.name : undefined,
+        recorrenciaParam === 'anual' ? 'annual' : 'monthly'
+      )
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Rastrear abandono ao sair da pagina
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (!isSubmitted && activeStep < 5) {
+        trackCadastroAbandoned(activeStep, steps[activeStep]?.label || 'unknown')
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [activeStep, isSubmitted, trackCadastroAbandoned])
+
   const handleNext = async () => {
     let fieldsToValidate: (keyof FormData)[] = []
 
@@ -459,6 +487,7 @@ export default function Cadastro() {
       if (!completedSteps.includes(activeStep)) {
         setCompletedSteps([...completedSteps, activeStep])
       }
+      trackCadastroStep(activeStep, steps[activeStep]?.label || 'unknown')
       setActiveStep(activeStep + 1)
     }
   }
@@ -542,6 +571,11 @@ export default function Cadastro() {
     postOrganizacao(finalData).then((response)=>{
       console.log(response)
       setIsSubmitted(true)
+      trackCadastroCompleted(
+        selectedPlan,
+        plans.find(p => p.id === selectedPlan)?.name,
+        isAnnual ? 'annual' : 'monthly'
+      )
     }).catch((error)=>{
       console.log(error)
     })
