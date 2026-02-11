@@ -20,12 +20,16 @@ import { useRef, useState } from "react"
 import Link from "next/link"
 import { useTheme } from "@/contexts/HeroThemeContext"
 import { themeConfig } from "@/utils/themes"
+import { useInteractionTracker, useConversionTracker } from "@/hooks/tracking"
 
 export function Contact() {
   const { isDark } = useTheme()
   const theme = isDark ? themeConfig.dark : themeConfig.light
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
+  const { trackFormStart, trackFormSubmit, trackInteraction } = useInteractionTracker()
+  const { trackContactFormSubmitted } = useConversionTracker()
+  const formStarted = useRef(false)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -33,8 +37,17 @@ export function Contact() {
     message: ""
   })
 
+  const handleFormFocus = () => {
+    if (!formStarted.current) {
+      formStarted.current = true
+      trackFormStart("contact-form", "contato")
+    }
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    trackFormSubmit("contact-form", "contato")
+    trackContactFormSubmitted()
     console.log("Form submitted:", formData)
     // Implementar lógica de envio
   }
@@ -167,7 +180,7 @@ export function Contact() {
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} onFocus={handleFormFocus} className="space-y-6">
                 <div>
                   <label htmlFor="name" className={`block text-sm font-semibold mb-2`} style={{color: theme.textPrimary}}>
                     Nome completo <span className="text-[#d15847]">*</span>
@@ -269,6 +282,7 @@ export function Contact() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block"
+                      onClick={() => trackInteraction("contact_method_click", `contact-${method.title.toLowerCase()}`, { elementLabel: method.title, section: "contato" })}
                     >
                       <Card className={`p-6 ${theme.cardBg} ${theme.cardBgHover} border-2 ${theme.cardBorder} ${theme.borderHover} shadow-md ${theme.cardShadowHover} transition-all duration-300 rounded-2xl group hover:-translate-y-1`}>
                         <div className="flex items-start gap-4">

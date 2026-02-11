@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Button } from "primereact/button"
 import { useRouter } from 'next/navigation'
 import { useTheme } from "@/contexts/HeroThemeContext"
+import { useInteractionTracker } from "@/hooks/tracking"
 
 const headerThemeConfig = {
   light: {
@@ -147,6 +148,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
 
   const { isDark, toggleTheme } = useTheme()
   const theme = isDark ? headerThemeConfig.dark : headerThemeConfig.light
+  const { trackClick, trackInteraction } = useInteractionTracker()
 
   const router = useRouter()
 
@@ -618,7 +620,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                 transition={{ duration: 0.2 }}
               >
                 <button
-                  onClick={() => router.push('https://app.bellory.com.br')}
+                  onClick={() => { trackClick("btn-header-entrar", "Entrar", "header"); router.push('https://app.bellory.com.br') }}
                   className={`
                     relative group flex items-center gap-2 px-5 py-2.5 rounded-xl
                     font-semibold text-sm cursor-pointer
@@ -642,7 +644,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
 
               {/* Botao Cadastro/Comece Gratis - Premium */}
               {isCadastro && (
-                <Link href="/cadastro">
+                <Link href="/cadastro" onClick={() => trackClick("cta-header-comece-gratis", "Comece gratis", "header")}>
                   <motion.div
                     whileHover={{ scale: 1.03, y: -2 }}
                     whileTap={{ scale: 0.97 }}
@@ -905,7 +907,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Link href="/cadastro?recorrencia=anual">
+                  <Link href="/cadastro?recorrencia=anual" onClick={() => trackInteraction("promo_bar_click", "promo-bar-aproveitar", { elementLabel: "Aproveitar oferta anual", section: "promo-bar" })}>
                     <Button
                       label="Aproveitar"
                       className={`${theme.promoBtnBg} ${theme.promoBtnText} border-0 transition-all px-4 py-1 rounded-lg font-bold text-xs shadow-lg hover:shadow-xl`}

@@ -8,12 +8,14 @@ import { useRef, useMemo, useEffect, useState } from "react"
 import { useTheme } from "@/contexts/HeroThemeContext"
 import { themeConfig } from "@/utils/themes"
 import Image from "next/image"
+import { useInteractionTracker, useConversionTracker } from "@/hooks/tracking"
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
   const mockupRef = useRef<HTMLDivElement>(null)
   const { isDark } = useTheme()
   const [isLoaded, setIsLoaded] = useState(false)
+  const { trackClick } = useInteractionTracker()
 
   // Scroll animations
   const { scrollYProgress } = useScroll({
@@ -417,7 +419,7 @@ export function Hero() {
               transition={{ duration: 0.8, delay: 0.5 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-3 lg:gap-4 mb-10 lg:mb-12"
             >
-              <Link href="/cadastro" className="w-full sm:w-auto">
+              <Link href="/cadastro" className="w-full sm:w-auto" onClick={() => trackClick("cta-hero-comece-gratis", "Comece gratis por 14 dias", "hero")}>
                 <Button
                   label="Comece grátis por 14 dias"
                   icon={<ArrowRight className="mr-2" size={16} />}
@@ -439,6 +441,7 @@ export function Hero() {
                   ${theme.secondaryButton}
                 `}
                 outlined
+                onClick={() => trackClick("cta-hero-agende-demo", "Agende uma demonstracao", "hero")}
               />
             </motion.div>
 

@@ -13,6 +13,8 @@ import { Loader2Icon } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 import StructuredData from "@/components/structured-data"
 import { ThemeProvider } from "@/contexts/HeroThemeContext"
+import { TrackingProvider } from "@/contexts/TrackingContext"
+import { TrackingSetup } from "@/components/tracking"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -112,13 +114,16 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased ">
         <Suspense fallback={<Spinner />}>
-          <ThemeProvider>
-            <ReactQueryProvider>
-              <PrimeProvider>
-                {children}
-              </PrimeProvider>
-            </ReactQueryProvider>
-          </ThemeProvider>
+          <TrackingProvider>
+            <TrackingSetup />
+            <ThemeProvider>
+              <ReactQueryProvider>
+                <PrimeProvider>
+                  {children}
+                </PrimeProvider>
+              </ReactQueryProvider>
+            </ThemeProvider>
+          </TrackingProvider>
           <Analytics />
         </Suspense>
       </body>
