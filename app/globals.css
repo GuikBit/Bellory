@@ -1,8 +1,8 @@
 /* 1. Importe o CSS principal do PrimeReact */
-@import 'primereact/resources/primereact.min.css';
+@import '../node_modules/primereact/resources/primereact.min.css';
 
 /* 2. Importe o tema desejado */
-@import 'primereact/resources/themes/lara-light-blue/theme.css' layer(primereact);
+@import '../node_modules/primereact/resources/themes/lara-light-blue/theme.css' layer(primereact);
 
 /* 3. Importe o CSS do Leaflet para o mapa */
 /* @import 'leaflet/dist/leaflet.css'; */
