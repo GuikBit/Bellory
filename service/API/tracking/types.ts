@@ -248,7 +248,7 @@ export interface TrackingConfig {
 }
 
 export const DEFAULT_TRACKING_CONFIG: TrackingConfig = {
-  apiUrl: 'https://api.bellory.com.br/api/tracking',
+  apiUrl: 'https://api-dev.bellory.com.br/api/tracking',
   flushInterval: 10000,
   maxBatchSize: 20,
   enabled: true,

@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Menu, X, ArrowRight, Sparkles, LogIn, ChevronDown, Scissors, Sparkle, Building2, Palette, Smartphone, Users, Calendar, MessageSquare, BarChart3, CreditCard, Zap, Bot, Brain, Target, Gift, Crown, Moon, Sun } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion"
 import Link from "next/link"
 import { Button } from "primereact/button"
 import { useRouter } from 'next/navigation'
@@ -142,7 +142,8 @@ const headerThemeConfig = {
 }
 
 export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boolean}) {
-  const [isScrolled, setIsScrolled] = useState(true)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
 
@@ -151,14 +152,17 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
   const { trackClick, trackInteraction } = useInteractionTracker()
 
   const router = useRouter()
+  const { scrollY } = useScroll()
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
+  useMotionValueEvent(scrollY, "change", (current) => {
+    const previous = scrollY.getPrevious() ?? 0
+    setIsScrolled(current > 20)
+    if (current > previous && current > 150) {
+      setHidden(true)
+    } else {
+      setHidden(false)
     }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  })
 
   // Dados dos menus dropdown
   const menuData = {
@@ -313,60 +317,88 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
     { label: "Sobre nós", key: "sobre"}
   ]
 
-  // Animacoes do dropdown com efeito cascata
+  // Animacoes do dropdown - container principal
   const dropdownVariants = {
     hidden: {
       opacity: 0,
-      y: -10,
-      scale: 0.95,
+      y: -8,
+      scale: 0.96,
+      filter: "blur(8px)",
     },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
+      filter: "blur(0px)",
       transition: {
-        duration: 0.3,
-        ease: [0.22, 1, 0.36, 1],
-        staggerChildren: 0.05,
-        delayChildren: 0.1,
+        duration: 0.4,
+        ease: "easeOut" as const,
+        staggerChildren: 0.06,
+        delayChildren: 0.08,
+        filter: { duration: 0.3 },
       }
     },
     exit: {
       opacity: 0,
-      y: -10,
+      y: -6,
       scale: 0.98,
+      filter: "blur(6px)",
       transition: {
-        duration: 0.2,
-        ease: "easeInOut",
+        duration: 0.25,
+        ease: "easeInOut" as const,
         staggerChildren: 0.03,
         staggerDirection: -1,
+        filter: { duration: 0.15 },
       }
     }
   }
 
-  // Animacao de cada item do dropdown - cascata vertical
+  // Animacao de cada item do dropdown - slide lateral com blur
   const dropdownItemVariants = {
     hidden: {
       opacity: 0,
-      y: -20,
-      x: 0,
+      x: -20,
+      filter: "blur(4px)",
     },
     visible: {
       opacity: 1,
-      y: 0,
       x: 0,
+      filter: "blur(0px)",
       transition: {
-        duration: 0.4,
-        ease: [0.22, 1, 0.36, 1],
+        type: "spring" as const,
+        stiffness: 300,
+        damping: 24,
+        mass: 0.8,
+        filter: { duration: 0.3, ease: "easeOut" as const },
       }
     },
     exit: {
       opacity: 0,
-      y: -15,
+      x: -12,
+      filter: "blur(3px)",
       transition: {
-        duration: 0.2,
-        ease: "easeIn",
+        duration: 0.15,
+        ease: "easeIn" as const,
       }
+    }
+  }
+
+  // Animacao da linha decorativa no topo do dropdown
+  const topLineVariants = {
+    hidden: { scaleX: 0, opacity: 0 },
+    visible: {
+      scaleX: 1,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut" as const,
+        delay: 0.1,
+      }
+    },
+    exit: {
+      scaleX: 0,
+      opacity: 0,
+      transition: { duration: 0.2 }
     }
   }
 
@@ -374,12 +406,15 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
     <>
       <motion.header
         initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{
-          duration: 0.8,
-          ease: [0.22, 1, 0.36, 1]
+        animate={{
+          y: hidden ? "-100%" : 0,
+          opacity: hidden ? 0 : 1,
         }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        transition={{
+          duration: 0.35,
+          ease: "easeInOut",
+        }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-4 ${
           isScrolled
             ? `md:${theme.headerBg} ${theme.headerShadow} md:${theme.headerBorder}`
             : theme.headerBgTransparent
@@ -466,7 +501,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                       </motion.a>
                     )}
 
-                    {/* Dropdown Menu com animacao cascata */}
+                    {/* Dropdown Menu com animacoes premium */}
                     <AnimatePresence>
                       {item.hasDropdown && activeDropdown === item.key && (
                         <motion.div
@@ -476,18 +511,44 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                           exit="exit"
                           className={`absolute top-full left-1/2 -translate-x-1/2 mt-4 w-[400px] ${theme.dropdownBg} rounded-2xl border ${theme.dropdownBorder} p-6 overflow-hidden`}
                           style={{
-                            boxShadow: theme.dropdownShadow
+                            boxShadow: theme.dropdownShadow,
+                            transformOrigin: "top center",
                           }}
                         >
+                          {/* Linha decorativa animada no topo */}
+                          <motion.div
+                            variants={topLineVariants}
+                            className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${theme.navUnderline}`}
+                            style={{ transformOrigin: "left center" }}
+                          />
+
                           {/* Gradiente decorativo de fundo */}
-                          <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${theme.dropdownGradient} rounded-full blur-3xl`} />
+                          <motion.div
+                            className={`absolute top-0 right-0 w-40 h-40 bg-gradient-to-br ${theme.dropdownGradient} rounded-full blur-3xl`}
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.6, delay: 0.15 }}
+                          />
 
                           {/* Efeito de brilho superior para dark mode */}
                           {isDark && (
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-[#E07A62]/30 to-transparent blur-sm" />
+                            <motion.div
+                              className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-[#E07A62]/30 to-transparent blur-sm"
+                              initial={{ opacity: 0, scaleX: 0 }}
+                              animate={{ opacity: 1, scaleX: 1 }}
+                              transition={{ duration: 0.5, delay: 0.1 }}
+                            />
                           )}
 
-                          <div className="grid gap-2 relative z-10">
+                          {/* Shimmer sweep de entrada */}
+                          <motion.div
+                            className={`absolute inset-0 bg-gradient-to-r from-transparent ${isDark ? 'via-[#E07A62]/5' : 'via-[#db6f57]/5'} to-transparent pointer-events-none`}
+                            initial={{ x: "-100%" }}
+                            animate={{ x: "200%" }}
+                            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                          />
+
+                          <div className="grid gap-1 relative z-10">
                             {menuData[item.key as keyof typeof menuData]?.items.map((dropdownItem, index) => {
                               const Icon = dropdownItem.icon
                               return (
@@ -496,26 +557,30 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                   href={dropdownItem.href}
                                   variants={dropdownItemVariants}
                                   whileHover={{
-                                    scale: 1.02,
-                                    x: 4,
-                                    transition: { duration: 0.2 }
+                                    x: 6,
+                                    backgroundColor: isDark ? "rgba(224, 122, 98, 0.08)" : "rgba(219, 111, 87, 0.06)",
+                                    transition: {
+                                      type: "spring",
+                                      stiffness: 400,
+                                      damping: 25,
+                                    }
                                   }}
-                                  className={`flex items-start gap-4 p-3 rounded-xl transition-all duration-300 group relative overflow-hidden border-r-0 ${theme.dropdownItemHover} hover:border-r-4`}
+                                  className="flex items-start gap-4 p-3 rounded-xl group relative overflow-hidden cursor-pointer"
                                 >
-                                  {/* Efeito de brilho no hover */}
+                                  {/* Borda lateral animada no hover */}
                                   <motion.div
-                                    className={`absolute inset-0 bg-gradient-to-r from-transparent ${theme.dropdownItemShimmer} to-transparent`}
-                                    initial={{ x: "-100%" }}
-                                    whileHover={{ x: "100%" }}
-                                    transition={{ duration: 0.6 }}
+                                    className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-gradient-to-b ${theme.navUnderline}`}
+                                    initial={{ height: 0, opacity: 0 }}
+                                    whileHover={{ height: "60%", opacity: 1 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
                                   />
 
                                   <motion.div
                                     whileHover={{
-                                      rotate: [0, -10, 10, 0],
-                                      scale: 1.15
+                                      scale: 1.12,
+                                      rotate: -8,
                                     }}
-                                    transition={{ duration: 0.5 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
                                     className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${theme.dropdownIconBg} flex items-center justify-center ${theme.dropdownIconText} shadow-lg relative z-10`}
                                   >
                                     <Icon className="w-5 h-5" />
@@ -528,10 +593,15 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                       </h5>
                                       {'badge' in dropdownItem && dropdownItem.badge && (
                                         <motion.span
-                                          initial={{ scale: 0.8, opacity: 0 }}
+                                          initial={{ scale: 0, opacity: 0 }}
                                           animate={{ scale: 1, opacity: 1 }}
-                                          transition={{ delay: index * 0.05 + 0.2 }}
-                                          whileHover={{ scale: 1.1 }}
+                                          transition={{
+                                            type: "spring",
+                                            stiffness: 500,
+                                            damping: 15,
+                                            delay: index * 0.06 + 0.3,
+                                          }}
+                                          whileHover={{ scale: 1.15 }}
                                           className={`text-xs px-2 py-0.5 rounded-full ${theme.dropdownBadgeBg} text-white font-semibold shadow-sm`}
                                         >
                                           {dropdownItem.badge}
@@ -544,10 +614,10 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                   </div>
 
                                   <motion.div
-                                    initial={{ opacity: 0, x: -10 }}
-                                    whileHover={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.2 }}
                                     className="flex-shrink-0 mt-1 relative z-10"
+                                    initial={{ opacity: 0, x: -8 }}
+                                    whileHover={{ opacity: 1, x: 0 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
                                   >
                                     <ArrowRight className={`w-4 h-4 ${theme.dropdownArrow}`} />
                                   </motion.div>
@@ -566,7 +636,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                 Ver comparacao completa de planos
                                 <motion.div
                                   whileHover={{ x: 5 }}
-                                  transition={{ duration: 0.2 }}
+                                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
                                 >
                                   <ArrowRight className="w-4 h-4" />
                                 </motion.div>
@@ -850,14 +920,14 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
       {/* Sticky promo bar com animacoes premium */}
       {isMenu && (
         <AnimatePresence>
-          {isScrolled && (
+          {isScrolled && !hidden && (
             <motion.div
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 80, opacity: 1 }}
               exit={{ y: -100, opacity: 0 }}
               transition={{
-                duration: 0.6,
-                ease: [0.22, 1, 0.36, 1]
+                duration: 0.35,
+                ease: "easeInOut",
               }}
               className={`fixed top-0 left-0 right-0 z-40 bg-gradient-to-r ${theme.promoBgGradient} ${theme.promoText} py-2 shadow-2xl hidden lg:block overflow-hidden`}
               style={{
