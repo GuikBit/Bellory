@@ -201,6 +201,8 @@ interface FormData {
   bairro: string
   cidade: string
   estado: string
+  latitude?: number
+  longitude?: number
 
   // Step 3: Acesso
   login: string
@@ -521,7 +523,9 @@ export default function Cadastro() {
         complemento: data.complemento || "",
         bairro: data.bairro,
         cidade: data.cidade,
-        estado: data.estado
+        estado: data.estado,
+        latitude: data.latitude || null,
+        longitude: data.longitude || null,
       },
       acesso: {
         login: data.login,
@@ -559,7 +563,7 @@ export default function Cadastro() {
     }
     
     console.log("=== DADOS COMPLETOS DO CADASTRO ===")
-    console.log(JSON.stringify(finalData, null, 2))
+    console.log(JSON.stringify(finalData))
     console.log("===================================")
     
     // Aqui você pode fazer a chamada para sua API
@@ -568,17 +572,17 @@ export default function Cadastro() {
     // setIsSubmitted(true)
 
 
-    postOrganizacao(finalData).then((response)=>{
-      console.log(response)
-      setIsSubmitted(true)
-      trackCadastroCompleted(
-        selectedPlan,
-        plans.find(p => p.id === selectedPlan)?.name,
-        isAnnual ? 'annual' : 'monthly'
-      )
-    }).catch((error)=>{
-      console.log(error)
-    })
+    // postOrganizacao(finalData).then((response)=>{
+    //   console.log(response)
+    //   setIsSubmitted(true)
+    //   trackCadastroCompleted(
+    //     selectedPlan,
+    //     plans.find(p => p.id === selectedPlan)?.name,
+    //     isAnnual ? 'annual' : 'monthly'
+    //   )
+    // }).catch((error)=>{
+    //   console.log(error)
+    // })
   }
 
   const isCurrentStepValid = () => {

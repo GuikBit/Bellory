@@ -11,7 +11,7 @@ export interface Response {
 }
 
 const api = axios.create({
-  baseURL: 'https://api.bellory.com.br/api',
+  baseURL: 'https://api.bellory.com.br/api/v1',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
