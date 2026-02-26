@@ -16,8 +16,6 @@ import {
 import { Card } from "primereact/card"
 import { Button } from "primereact/button"
 import { useRef, useState } from "react"
-import { useTheme } from "@/contexts/HeroThemeContext"
-import { themeConfig } from "@/utils/themes"
 import Link from "next/link"
 import { useInteractionTracker, useConversionTracker } from "@/hooks/tracking"
 
@@ -149,7 +147,7 @@ const planFAQs = [
 ]
 
 // Card de plano
-export const PlanCard = ({ plan, isAnnual, index, isCadastro, theme, isDark }: any) => {
+export const PlanCard = ({ plan, isAnnual, index, isCadastro }: any) => {
   const cardRef = useRef(null)
   const isInView = useInView(cardRef, { once: true, margin: "-50px" })
   const { trackPlanClick } = useInteractionTracker()
@@ -180,8 +178,8 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro, theme, isDark }: a
       <Card
         className={`h-full p-8 rounded-3xl transition-all duration-300 ${
           plan.popular
-            ? `${theme.cardBg} border-2 ${theme.cardShadowHover} scale-105 hover:scale-110 `
-            : `${theme.cardBg} border ${theme.cardBorder} ${theme.cardShadow} ${theme.cardShadowHover} hover:-translate-y-2`
+            ? `bg-white border-2 hover:shadow-xl scale-105 hover:scale-110 `
+            : `bg-white border border-[#d8ccc4] shadow-lg shadow-[#2a2420]/5 hover:shadow-xl hover:-translate-y-2`
         }`}
         style={plan.popular ? { borderColor: plan.color } : {}}
       >
@@ -196,18 +194,18 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro, theme, isDark }: a
         </div>
 
         {/* Nome e tagline */}
-        <h3 className={`text-3xl font-bold ${theme.headlineColor} mb-2`} style={{ color: theme.textPrimary }}>{plan.name}</h3>
-        <p className={`${theme.subheadlineColor} mb-6`}>{plan.tagline}</p>
+        <h3 className="text-3xl font-bold text-[#2a2420] mb-2">{plan.name}</h3>
+        <p className="text-[#5a7d71] mb-6">{plan.tagline}</p>
 
         {/* Preço */}
         <div className="mb-8">
           {/* Preço mensal em destaque */}
           <div className="flex items-baseline gap-2">
-            <span className={`text-5xl font-bold ${theme.headlineColor}`} style={{ color: theme.textPrimary }}>
+            <span className="text-5xl font-bold text-[#2a2420]">
               R$ {displayPrice.toFixed(2).replace('.', ',')}
             </span>
             {plan.price > 0 && (
-              <span className={theme.subheadlineColor}>/mês</span>
+              <span className="text-[#5a7d71]">/mês</span>
             )}
           </div>
 
@@ -228,8 +226,8 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro, theme, isDark }: a
               </div>
 
               {/* Preço total anual */}
-              <div className={`text-sm ${theme.subheadlineColor}`}>
-                <span className={`font-semibold ${theme.headlineColor}`} style={{ color: theme.textPrimary }}>
+              <div className="text-sm text-[#5a7d71]">
+                <span className="font-semibold text-[#2a2420]">
                   R$ {totalAnnual.toFixed(2).replace('.', ',')}
                 </span>
                 {' '}cobrado anualmente
@@ -260,12 +258,12 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro, theme, isDark }: a
                   ? 'bg-gradient-to-r text-white border-0 hover:scale-105 shadow-lg'
                   : ' border-2 hover:scale-105'
               }`}
-              style={plan.popular ? { 
-                background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)` 
+              style={plan.popular ? {
+                background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`
               } : {
                 color: plan.color,
                 borderColor: plan.color,
-                background: theme.inputBg
+                background: 'white'
               }}
             />
           </Link>
@@ -284,9 +282,9 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro, theme, isDark }: a
                 {feature.included ? (
                   <Check className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: plan.color }} />
                 ) : (
-                  <X className={`w-5 h-5 mt-0.5 flex-shrink-0 ${theme.textMuted}`} />
+                  <X className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#99A1AF]" />
                 )}
-                <span className={feature.included ? theme.headlineColor : `${theme.textMuted} line-through`} style={feature.included ? { color: theme.textPrimary } : {}}>
+                <span className={feature.included ? 'text-[#2a2420]' : 'text-[#99A1AF] line-through'}>
                   {feature.text}
                 </span>
               </li>
@@ -300,8 +298,6 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro, theme, isDark }: a
 }
 
 export function Pricing() {
-  const { isDark } = useTheme()
-  const theme = isDark ? themeConfig.dark : themeConfig.light
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
   const [isAnnual, setIsAnnual] = useState(false)
@@ -335,13 +331,13 @@ export function Pricing() {
     <section
       ref={sectionRef}
       id="planos"
-      className={`py-32 relative overflow-hidden ${theme.sectionBgAlt}`}
+      className="py-32 relative overflow-hidden bg-[#f0e8e3] border-t border-[#d8ccc4]"
     >
       {/* Background decorativo */}
       <div className="absolute inset-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(theme.patternColor)}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          opacity: parseFloat(theme.patternOpacity),
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent('#8b3d35')}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          opacity: 0.03,
         }}
       />
 
@@ -354,23 +350,23 @@ export function Pricing() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto mb-16"
         >
-          <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full ${theme.badge} border mb-8`}>
-            <Crown className={`w-5 h-5 ${theme.badgeIcon}`} />
-            <span className={`font-bold ${theme.badgeText} uppercase tracking-wide text-sm`}>
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-[#8b3d35]/10 border border-[#8b3d35]/20 mb-8">
+            <Crown className="w-5 h-5 text-[#db6f57]" />
+            <span className="font-bold text-[#8b3d35] uppercase tracking-wide text-sm">
               Planos e Preços
             </span>
           </div>
 
-          <h2 className={`font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 ${theme.headlineColor} leading-[1.1]`}>
+          <h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-[#2a2420] leading-[1.1]">
             Escolha o plano{" "}
-            <span className={`${theme.gradientText} bg-clip-text text-transparent`}>
+            <span className="bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent">
               perfeito para você
             </span>
           </h2>
 
-          <p className={`text-xl sm:text-2xl ${theme.subheadlineColor} leading-relaxed mb-8`}>
+          <p className="text-xl sm:text-2xl text-[#5a7d71] leading-relaxed mb-8">
             Sem surpresas. Sem taxas escondidas.{" "}
-            <span className={`${theme.highlightColor} font-semibold`}>
+            <span className="text-[#8b3d35] font-semibold">
               Cancele quando quiser
             </span>.
           </p>
@@ -378,20 +374,20 @@ export function Pricing() {
           {/* Toggle anual/mensal */}
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="w-[180px]"></div>
-            <span className={`font-semibold `} style={{color: !isAnnual ? theme.textPrimary : theme.textMuted2 }}>
+            <span className="font-semibold" style={{color: !isAnnual ? '#2a2420' : '#99A1AF' }}>
               Mensal
             </span>
             <button
               onClick={() => { const next = !isAnnual; setIsAnnual(next); trackInteraction(next ? 'plan_toggle_annual' : 'plan_toggle_monthly', 'pricing-billing-toggle', { section: 'pricing' }) }}
               className="relative w-16 h-8 rounded-full transition-colors duration-300"
-              style={{ backgroundColor: isAnnual ? '#db6f57' : isDark ? '#4a5568' : '#d8ccc4' }}
+              style={{ backgroundColor: isAnnual ? '#db6f57' : '#d8ccc4' }}
             >
               <div
                 className="absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300"
                 style={{ transform: isAnnual ? 'translateX(32px)' : 'translateX(0)' }}
               />
             </button>
-            <span className={`font-semibold `} style={{color: isAnnual ? theme.textPrimary : theme.textMuted2 }}>
+            <span className="font-semibold" style={{color: isAnnual ? '#2a2420' : '#99A1AF' }}>
               Anual
             </span>
             <div className="w-[180px]">
@@ -413,8 +409,6 @@ export function Pricing() {
               plan={plan}
               isAnnual={isAnnual}
               index={index}
-              theme={theme}
-              isDark={isDark}
             />
           ))}
         </div>
@@ -448,10 +442,10 @@ export function Pricing() {
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              className={`${theme.cardBg} rounded-3xl p-8 mt-4 shadow-xl border ${theme.cardBorder}`}
+              className="bg-white rounded-3xl p-8 mt-4 shadow-xl border border-[#d8ccc4]"
             >
               <div className="mb-6">
-                <label className={`block text-sm font-semibold mb-2`} style={{color: theme.textPrimary}}>
+                <label className="block text-sm font-semibold mb-2 text-[#2a2420]">
                   Qual seu faturamento mensal médio?
                 </label>
                 <input
@@ -469,26 +463,26 @@ export function Pricing() {
               </div>
 
               <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div className={`${theme.sectionBg} rounded-2xl p-6`}>
-                  <h4 className={`font-bold ${theme.textPrimary} mb-4 flex items-center gap-2`}>
+                <div className="bg-[#f0e8e3] rounded-2xl p-6">
+                  <h4 className="font-bold text-[#2a2420] mb-4 flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-[#5a7a6e]" />
                     Ganhos Mensais
                   </h4>
                   <ul className="space-y-3 text-sm">
                     <li className="flex justify-between">
-                      <span style={{color: theme.textSecondary}}>Tempo economizado:</span>
-                      <span className={`font-bold`} style={{color: theme.textPrimary}}>R$ {roiData.timeSaved}</span>
+                      <span className="text-[#4f6f64]">Tempo economizado:</span>
+                      <span className="font-bold text-[#2a2420]">R$ {roiData.timeSaved}</span>
                     </li>
                     <li className="flex justify-between">
-                      <span style={{color: theme.textSecondary}}>Redução de faltas:</span>
-                      <span className={`font-bold`} style={{color: theme.textPrimary}}>R$ {roiData.noShowReduction}</span>
+                      <span className="text-[#4f6f64]">Redução de faltas:</span>
+                      <span className="font-bold text-[#2a2420]">R$ {roiData.noShowReduction}</span>
                     </li>
                     <li className="flex justify-between">
-                      <span style={{color: theme.textSecondary}}>Novos clientes:</span>
-                      <span className={`font-bold`} style={{color: theme.textPrimary}}>R$ {roiData.newCustomers}</span>
+                      <span className="text-[#4f6f64]">Novos clientes:</span>
+                      <span className="font-bold text-[#2a2420]">R$ {roiData.newCustomers}</span>
                     </li>
-                    <li className={`flex justify-between pt-3 border-t ${theme.border}`}>
-                      <span className={`font-bold`} style={{color: theme.textPrimary}}>Total:</span>
+                    <li className="flex justify-between pt-3 border-t border-[#d8ccc4]">
+                      <span className="font-bold text-[#2a2420]">Total:</span>
                       <span className="font-bold text-[#5a7a6e]">R$ {roiData.totalGain}</span>
                     </li>
                   </ul>
@@ -507,7 +501,7 @@ export function Pricing() {
                 </div>
               </div>
 
-              <p className={`text-center text-sm`} style={{color: theme.textSecondary}}>
+              <p className="text-center text-sm text-[#4f6f64]">
                 *Cálculo baseado em médias de clientes reais. Resultados podem variar.
               </p>
             </motion.div>
@@ -521,20 +515,20 @@ export function Pricing() {
           transition={{ duration: 0.8, delay: 0.8 }}
           className="max-w-3xl mx-auto"
         >
-          <h3 className={`text-center text-3xl font-bold ${theme.headlineColor} mb-8`}>
+          <h3 className="text-center text-3xl font-bold text-[#2a2420] mb-8">
             Perguntas Frequentes
           </h3>
           <div className="space-y-4">
             {planFAQs.map((faq, index) => (
               <div
                 key={index}
-                className={`${theme.cardBg} ${theme.cardBgHover} rounded-2xl p-6 shadow-lg border ${theme.cardBorder}`}
+                className="bg-white hover:bg-gray-50 rounded-2xl p-6 shadow-lg border border-[#d8ccc4]"
               >
                 <div className="flex items-start gap-3">
-                  <HelpCircle className={`w-6 h-6 ${theme.badgeIcon} flex-shrink-0 mt-1`} />
+                  <HelpCircle className="w-6 h-6 text-[#db6f57] flex-shrink-0 mt-1" />
                   <div>
-                    <h4 className={`font-bold text-lg mb-2`} style={{color: theme.textPrimary}}>{faq.question}</h4>
-                    <p className={`leading-relaxed`} style={{color: theme.textSecondary}}>{faq.answer}</p>
+                    <h4 className="font-bold text-lg mb-2 text-[#2a2420]">{faq.question}</h4>
+                    <p className="leading-relaxed text-[#4f6f64]">{faq.answer}</p>
                   </div>
                 </div>
               </div>

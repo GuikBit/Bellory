@@ -1,102 +1,38 @@
-import {
-  Calendar,
-  Users,
-  Bot,
-  DollarSign,
-  Globe,
-  UserCheck,
-} from "lucide-react"
-import type { LucideIcon } from "lucide-react"
-
-export interface Feature {
-  id: string
-  icon: LucideIcon
-  title: string
-  subtitle: string
-  color: string
-  colorDark: string
-  angle: number // degrees
+export interface MockupConfig {
+  position: "left" | "center" | "right"
+  src: string
+  alt: string
+  rotate: number
 }
 
-export const FEATURES: Feature[] = [
-  // ── Right side (top to bottom) ──
+export const MOCKUPS: MockupConfig[] = [
   {
-    id: "agenda",
-    icon: Calendar,
-    title: "Agenda Inteligente",
-    subtitle: "Automação de horários",
-    color: "#db6f57",
-    colorDark: "#E07A62",
-    angle: -25, // right-top
+    position: "left",
+    src: "/mockup-white.png",
+    alt: "Bellory app - agenda inteligente",
+    rotate: -5,
   },
   {
-    id: "ia",
-    icon: Bot,
-    title: "Agente IA",
-    subtitle: "WhatsApp automatizado",
-    color: "#4f6f64",
-    colorDark: "#6B8F82",
-    angle: 0, // right-center
+    position: "center",
+    src: "/mockup_white1.png",
+    alt: "Bellory app - gestão completa",
+    rotate: 0,
   },
   {
-    id: "presenca",
-    icon: Globe,
-    title: "Presença Digital",
-    subtitle: "Site personalizado",
-    color: "#8b3d35",
-    colorDark: "#D4AF37",
-    angle: 25, // right-bottom
-  },
-  // ── Left side (top to bottom) ──
-  {
-    id: "equipe",
-    icon: Users,
-    title: "Gestão Equipe",
-    subtitle: "Colaboração eficiente",
-    color: "#8b3d35",
-    colorDark: "#D4AF37",
-    angle: 155, // left-top
-  },
-  {
-    id: "financeiro",
-    icon: DollarSign,
-    title: "Financeiro",
-    subtitle: "Controle total",
-    color: "#db6f57",
-    colorDark: "#E07A62",
-    angle: 180, // left-center
-  },
-  {
-    id: "clientes",
-    icon: UserCheck,
-    title: "Gestão Clientes",
-    subtitle: "CRM completo",
-    color: "#4f6f64",
-    colorDark: "#6B8F82",
-    angle: 205, // left-bottom
+    position: "right",
+    src: "/mockup-white.png",
+    alt: "Bellory app - site personalizado",
+    rotate: 5,
   },
 ]
 
-export const ANIMATION_PHASES = {
-  loading: 0,
-  nucleus: 100,
-  scattered: 300,
-  drawing: 800,
-  settling: 1500,
-  floating: 2500,
+export const HERO_COLORS = {
+  background: "#faf8f6",
+  titleGradient: "from-[#db6f57] via-[#8b3d35] to-[#db6f57]",
+  ctaPrimary: "from-[#db6f57] to-[#c55a42]",
+  ctaSecondary: {
+    base: "bg-white text-[#8b3d35] border-2 border-[#8b3d35] hover:bg-[#8b3d35] hover:text-white",
+  },
+  blob1: "bg-gradient-to-br from-[#db6f57]/20 to-[#8b3d35]/20",
+  blob2: "bg-gradient-to-tr from-[#4f6f64]/20 to-[#db6f57]/20",
 } as const
-
-export type AnimationPhase = keyof typeof ANIMATION_PHASES
-
-export const ORBIT_RADII = {
-  lg: 450,
-  xl: 520,
-  "2xl": 580,
-} as const
-
-export const FLOATING_CONFIG = {
-  y: { values: [0, -18, 0], duration: 4 },
-  rotate: { values: [-2.5, 2.5, -2.5], duration: 5 },
-} as const
-
-export const CARD_SIZE = { width: 185, height: 85 } as const

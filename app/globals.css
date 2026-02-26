@@ -13,105 +13,58 @@
 
 @plugin 'tailwind-scrollbar';
 
-@custom-variant dark (&:is(.dark *));
-
-/* Custom theme for Bellory — neutro sofisticado com azul #db6f57 como cor principal */
+/* Custom theme for Bellory — clean, profissional com #db6f57 como cor principal */
 :root {
-  --background: oklch(0.98 0.005 85);
-  --foreground: oklch(0.15 0 0);
-  --card: oklch(0.99 0 0);
-  --card-foreground: oklch(0.15 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0 0);
+  --background: #faf8f6;
+  --foreground: #2a2420;
+  --card: #ffffff;
+  --card-foreground: #2a2420;
+  --popover: #ffffff;
+  --popover-foreground: #2a2420;
 
-  /* Cor principal (azul suave #db6f57) */
+  /* Cor principal (#db6f57) */
   --primary: #db6f57;
-  --primary-foreground: oklch(0.99 0.005 85);
+  --primary-foreground: #ffffff;
 
-  --secondary: oklch(0.55 0.07 160);
-  --secondary-foreground: oklch(0.15 0 0);
+  --secondary: #4f6f64;
+  --secondary-foreground: #2a2420;
 
-  --muted: oklch(0.88 0.02 60);
-  --muted-foreground: oklch(0.45 0 0);
+  --muted: #f0e8e3;
+  --muted-foreground: #99A1AF;
 
-  --accent: oklch(0.42 0.11 25);
-  --accent-foreground: oklch(0.15 0 0);
+  --accent: #8b3d35;
+  --accent-foreground: #ffffff;
 
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.98 0.005 85);
+  --destructive: #d15847;
+  --destructive-foreground: #ffffff;
 
-  --border: oklch(0.9 0.005 85);
-  --input: oklch(0.9 0.005 85);
+  --border: #d8ccc4;
+  --input: #d8ccc4;
   --ring: #db6f57;
 
   /* Cores de gráficos harmônicas ao tom principal */
   --chart-1: #db6f57;
-  --chart-2: color-mix(in oklch, #db6f57 40%, oklch(0.75 0 250));
-  --chart-3: color-mix(in oklch, #db6f57 60%, oklch(0.85 0 180));
-  --chart-4: color-mix(in oklch, #db6f57 40%, oklch(0.45 0 210));
-  --chart-5: color-mix(in oklch, #db6f57 30%, oklch(0.95 0 300));
+  --chart-2: #4f6f64;
+  --chart-3: #8b3d35;
+  --chart-4: #c55a42;
+  --chart-5: #5a7d71;
 
   --radius: 0.5rem;
 
   /* Sidebar */
-  --sidebar: oklch(0.98 0.005 85);
-  --sidebar-foreground: oklch(0.15 0 0);
+  --sidebar: #faf8f6;
+  --sidebar-foreground: #2a2420;
   --sidebar-primary: #db6f57;
-  --sidebar-primary-foreground: oklch(0.98 0.005 85);
-  --sidebar-accent: color-mix(in oklch, #db6f57 20%, white);
-  --sidebar-accent-foreground: oklch(0.15 0 0);
-  --sidebar-border: oklch(0.9 0.005 85);
-  --sidebar-ring: #db6f57;
-}
-
-.dark {
-  --background: oklch(0.12 0 0);
-  --foreground: oklch(0.98 0.005 85);
-  --card: oklch(0.15 0 0);
-  --card-foreground: oklch(0.98 0.005 85);
-  --popover: oklch(0.15 0 0);
-  --popover-foreground: oklch(0.98 0.005 85);
-
-  /* Mantém o azul #db6f57 como base, mas com contraste maior */
-  --primary: #db6f57;
-  --primary-foreground: oklch(0.98 0.005 85);
-
-  --secondary: oklch(0.2 0 0);
-  --secondary-foreground: oklch(0.98 0.005 85);
-
-  --muted: oklch(0.2 0 0);
-  --muted-foreground: oklch(0.7 0 0);
-
-  --accent: color-mix(in oklch, #db6f57 50%, oklch(0.2 0 0));
-  --accent-foreground: oklch(0.98 0.005 85);
-
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.98 0.005 85);
-
-  --border: oklch(0.2 0 0);
-  --input: oklch(0.2 0 0);
-  --ring: #db6f57;
-
-  /* Gráficos adaptados ao dark mode */
-  --chart-1: #db6f57;
-  --chart-2: color-mix(in oklch, #db6f57 60%, oklch(0.35 0 210));
-  --chart-3: color-mix(in oklch, #db6f57 40%, oklch(0.45 0 180));
-  --chart-4: color-mix(in oklch, #db6f57 50%, oklch(0.25 0 270));
-  --chart-5: color-mix(in oklch, #db6f57 35%, oklch(0.6 0 200));
-
-  /* Sidebar no modo escuro */
-  --sidebar: oklch(0.15 0 0);
-  --sidebar-foreground: oklch(0.98 0.005 85);
-  --sidebar-primary: #db6f57;
-  --sidebar-primary-foreground: oklch(0.12 0 0);
-  --sidebar-accent: color-mix(in oklch, #db6f57 40%, oklch(0.2 0 0));
-  --sidebar-accent-foreground: oklch(0.98 0.005 85);
-  --sidebar-border: oklch(0.2 0 0);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f0e8e3;
+  --sidebar-accent-foreground: #2a2420;
+  --sidebar-border: #d8ccc4;
   --sidebar-ring: #db6f57;
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
   --font-mono: var(--font-geist-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -159,5 +112,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-

@@ -1,144 +1,66 @@
 "use client"
 
 import { useState } from "react"
-import { Menu, X, ArrowRight, Sparkles, LogIn, ChevronDown, Scissors, Sparkle, Building2, Palette, Smartphone, Users, Calendar, MessageSquare, BarChart3, CreditCard, Zap, Bot, Brain, Target, Gift, Crown, Moon, Sun } from "lucide-react"
+import { Menu, X, ArrowRight, Sparkles, LogIn, ChevronDown, Scissors, Sparkle, Building2, Palette, Smartphone, Users, Calendar, MessageSquare, BarChart3, CreditCard, Zap, Bot, Brain, Target, Gift, Crown } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion"
 import Link from "next/link"
 import { Button } from "primereact/button"
 import { useRouter } from 'next/navigation'
-import { useTheme } from "@/contexts/HeroThemeContext"
 import { useInteractionTracker } from "@/hooks/tracking"
 
-const headerThemeConfig = {
-  light: {
-    // Header background
-    headerBg: "bg-white/90 backdrop-blur-md",
-    headerBgTransparent: "bg-transparent",
-    headerBorder: "border-[#e6d9d4]/50",
-    headerShadow: "shadow-xl",
+const theme = {
+  // Header background
+  headerBg: "bg-white/90 backdrop-blur-md",
+  headerBgTransparent: "bg-transparent",
+  headerBorder: "border-[#e6d9d4]/50",
+  headerShadow: "shadow-xl",
 
-    // Logo
-    logoGradient: "from-[#db6f57] via-[#8b3d35] to-[#db6f57]",
-    logoShimmer: "via-white/40",
+  // Logo
+  logoGradient: "from-[#db6f57] via-[#8b3d35] to-[#db6f57]",
 
-    // Navigation
-    navText: "text-[#2a2420]",
-    navTextHover: "text-[#db6f57]",
-    navUnderline: "from-[#db6f57] to-[#c55a42]",
+  // Navigation
+  navText: "text-[#2a2420]",
+  navTextHover: "text-[#db6f57]",
+  navUnderline: "from-[#db6f57] to-[#c55a42]",
 
-    // Dropdown
-    dropdownBg: "bg-white",
-    dropdownBorder: "border-[#e6d9d4]/50",
-    dropdownShadow: "0 20px 60px -15px rgba(219, 111, 87, 0.2), 0 10px 20px -10px rgba(0, 0, 0, 0.1)",
-    dropdownGradient: "from-[#db6f57]/10 to-transparent",
-    dropdownItemHover: "hover:border-r-[#db6f57]",
-    dropdownItemShimmer: "via-[#db6f57]/5",
-    dropdownIconBg: "from-[#db6f57]/70 to-[#c55a42]",
-    dropdownIconText: "text-white",
-    dropdownTitleText: "text-[#2a2420]",
-    dropdownTitleHover: "group-hover:text-[#db6f57]",
-    dropdownDescText: "text-[#6b5d57]",
-    dropdownArrow: "text-[#db6f57]",
-    dropdownBadgeBg: "bg-[#db6f57]",
-    dropdownFooterBorder: "border-[#e6d9d4]",
-    dropdownFooterText: "text-[#db6f57] hover:text-[#c55a42]",
+  // Dropdown
+  dropdownBg: "bg-white",
+  dropdownBorder: "border-[#e6d9d4]/50",
+  dropdownShadow: "0 20px 60px -15px rgba(219, 111, 87, 0.2), 0 10px 20px -10px rgba(0, 0, 0, 0.1)",
+  dropdownGradient: "from-[#db6f57]/10 to-transparent",
+  dropdownIconBg: "from-[#db6f57]/70 to-[#c55a42]",
+  dropdownIconText: "text-white",
+  dropdownTitleText: "text-[#2a2420]",
+  dropdownTitleHover: "group-hover:text-[#db6f57]",
+  dropdownDescText: "text-[#6b5d57]",
+  dropdownArrow: "text-[#db6f57]",
+  dropdownBadgeBg: "bg-[#db6f57]",
+  dropdownFooterBorder: "border-[#e6d9d4]",
+  dropdownFooterText: "text-[#db6f57] hover:text-[#c55a42]",
 
-    // Buttons
-    enterBtnBg: "bg-white",
-    enterBtnText: "text-[#8b3d35]",
-    enterBtnBorder: "border-[#8b3d35]/30",
-    enterBtnHoverBorder: "hover:border-[#db6f57]",
-    enterBtnHoverText: "hover:text-[#db6f57]",
-    enterBtnGlow: "hover:shadow-[0_0_20px_rgba(219,111,87,0.15)]",
+  // Buttons
+  enterBtnBg: "bg-white",
+  enterBtnText: "text-[#8b3d35]",
+  enterBtnBorder: "border-[#8b3d35]/30",
+  enterBtnHoverBorder: "hover:border-[#db6f57]",
+  enterBtnHoverText: "hover:text-[#db6f57]",
+  enterBtnGlow: "hover:shadow-[0_0_20px_rgba(219,111,87,0.15)]",
 
-    ctaBtnGradient: "from-[#db6f57] via-[#c55a42] to-[#8b3d35]",
-    ctaBtnText: "text-white",
-    ctaBtnShadow: "shadow-lg hover:shadow-2xl",
-    ctaBtnGlow: "hover:shadow-[0_0_30px_rgba(219,111,87,0.4)]",
+  ctaBtnGradient: "from-[#db6f57] via-[#c55a42] to-[#8b3d35]",
+  ctaBtnText: "text-white",
+  ctaBtnShadow: "shadow-lg hover:shadow-2xl",
+  ctaBtnGlow: "hover:shadow-[0_0_30px_rgba(219,111,87,0.4)]",
 
-    // Theme toggle
-    toggleBg: "bg-white/90 backdrop-blur-sm",
-    toggleBorder: "border-[#e6d9d4]",
-    toggleIcon: "text-[#db6f57]",
-    toggleHover: "hover:bg-[#faf8f6]",
-    toggleText: "text-[#2a2420]",
+  // Mobile menu
+  mobileMenuBg: "bg-white/95 backdrop-blur-xl",
+  mobileMenuBorder: "border-[#d8ccc4]",
+  mobileItemBg: "hover:bg-[#faf8f6]",
 
-    // Mobile menu
-    mobileMenuBg: "bg-white/95 backdrop-blur-xl",
-    mobileMenuBorder: "border-[#d8ccc4]",
-    mobileItemBg: "hover:bg-[#faf8f6]",
-
-    // Promo bar
-    promoBgGradient: "from-[#8b3d35] via-[#db6f57] to-[#8b3d35]",
-    promoText: "text-white",
-    promoBtnBg: "bg-white",
-    promoBtnText: "text-[#8b3d35]",
-  },
-
-  dark: {
-    // Header background
-    headerBg: "bg-[#0D0B0A]/95 backdrop-blur-md",
-    headerBgTransparent: "bg-transparent",
-    headerBorder: "border-[#2D2925]/50",
-    headerShadow: "shadow-[0_4px_30px_rgba(0,0,0,0.3)]",
-
-    // Logo
-    logoGradient: "from-[#E07A62] via-[#D4AF37] to-[#E07A62]",
-    logoShimmer: "via-[#D4AF37]/30",
-
-    // Navigation
-    navText: "text-[#F5F0EB]",
-    navTextHover: "text-[#E07A62]",
-    navUnderline: "from-[#E07A62] to-[#D4AF37]",
-
-    // Dropdown
-    dropdownBg: "bg-[#1A1715]/98 backdrop-blur-xl",
-    dropdownBorder: "border-[#2D2925]",
-    dropdownShadow: "0 20px 60px -15px rgba(0, 0, 0, 0.5), 0 0 30px rgba(224, 122, 98, 0.1)",
-    dropdownGradient: "from-[#E07A62]/10 to-transparent",
-    dropdownItemHover: "hover:border-r-[#E07A62]",
-    dropdownItemShimmer: "via-[#E07A62]/10",
-    dropdownIconBg: "from-[#E07A62] to-[#A8524A]",
-    dropdownIconText: "text-white",
-    dropdownTitleText: "text-[#F5F0EB]",
-    dropdownTitleHover: "group-hover:text-[#E07A62]",
-    dropdownDescText: "text-[#B8AEA4]",
-    dropdownArrow: "text-[#E07A62]",
-    dropdownBadgeBg: "bg-gradient-to-r from-[#db6f57] to-[#E8937E]",
-    dropdownFooterBorder: "border-[#2D2925]",
-    dropdownFooterText: "text-[#E07A62] hover:text-[#E8937E]",
-
-    // Buttons
-    enterBtnBg: "bg-[#1A1715]/80",
-    enterBtnText: "text-[#F5F0EB]",
-    enterBtnBorder: "border-[#E07A62]/40",
-    enterBtnHoverBorder: "hover:border-[#E07A62]",
-    enterBtnHoverText: "hover:text-[#E07A62]",
-    enterBtnGlow: "hover:shadow-[0_0_25px_rgba(224,122,98,0.2)]",
-
-    ctaBtnGradient: "from-[#E07A62] via-[#DB6F57] to-[#A8524A]",
-    ctaBtnText: "text-white",
-    ctaBtnShadow: "shadow-lg",
-    ctaBtnGlow: "hover:shadow-[0_0_40px_rgba(224,122,98,0.5)]",
-
-    // Theme toggle
-    toggleBg: "bg-[#1A1715]/90 backdrop-blur-sm",
-    toggleBorder: "border-[#2D2925]",
-    toggleIcon: "text-[#E07A62]",
-    toggleHover: "hover:bg-[#242120]",
-    toggleText: "text-[#F5F0EB]",
-
-    // Mobile menu
-    mobileMenuBg: "bg-[#0D0B0A]/98 backdrop-blur-xl",
-    mobileMenuBorder: "border-[#2D2925]",
-    mobileItemBg: "hover:bg-[#1A1715]",
-
-    // Promo bar
-    promoBgGradient: "from-[#1A1715] via-[#E07A62]/20 to-[#1A1715]",
-    promoText: "text-[#F5F0EB]",
-    promoBtnBg: "bg-gradient-to-r from-[#E07A62] to-[#A8524A]",
-    promoBtnText: "text-white",
-  }
+  // Promo bar
+  promoBgGradient: "from-[#8b3d35] via-[#db6f57] to-[#8b3d35]",
+  promoText: "text-white",
+  promoBtnBg: "bg-white",
+  promoBtnText: "text-[#8b3d35]",
 }
 
 export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boolean}) {
@@ -147,8 +69,6 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
 
-  const { isDark, toggleTheme } = useTheme()
-  const theme = isDark ? headerThemeConfig.dark : headerThemeConfig.light
   const { trackClick, trackInteraction } = useInteractionTracker()
 
   const router = useRouter()
@@ -311,8 +231,6 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
     { label: "Funcionalidades",  href:'#funcionalidades', key: "funcionalidades", hasDropdown: true },
     { label: "Agente IA", href: "#ai-agent", key: "agenteIA", hasDropdown: true },
     { label: "Público-Alvo", key: "publicoAlvo", hasDropdown: true },
-    // { label: "Personalizacao", href: "#personalizacao" },
-    // { label: "Beneficios", href: "#beneficios" },
     { label: "Planos", key: "planos", hasDropdown: true },
     { label: "Sobre nós", key: "sobre"}
   ]
@@ -419,12 +337,12 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
             ? `md:${theme.headerBg} ${theme.headerShadow} md:${theme.headerBorder}`
             : theme.headerBgTransparent
           }
-          ${isMobileMenuOpen ? (isDark ? 'bg-[#0D0B0A]' : 'bg-white') : 'bg-transparent'}
+          ${isMobileMenuOpen ? 'bg-white' : 'bg-transparent'}
         `}
       >
         <div className="container mx-auto  ">
           <div className="flex items-center justify-between md:h-20 h-12">
-            {/* Logo com efeito shimmer animado */}
+            {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group relative">
               <motion.div
                 whileHover={{ scale: 1.08, rotate: [0, -2, 2, 0] }}
@@ -432,22 +350,6 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                 className={`text-2xl font-serif font-bold bg-gradient-to-r ${theme.logoGradient} bg-clip-text text-transparent relative overflow-hidden`}
               >
                 Bellory
-                {/* Efeito shimmer */}
-                {/* <motion.div
-                  className={`absolute inset-0 bg-gradient-to-r from-transparent ${theme.logoShimmer} to-transparent`}
-                  initial={{ x: "-100%" }}
-                  animate={{ x: "200%" }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    repeatDelay: 5,
-                    ease: "easeInOut"
-                  }}
-                  style={{
-                    transform: "skewX(-20deg)",
-                    filter: "blur(2px)"
-                  }}
-                /> */}
               </motion.div>
             </Link>
 
@@ -501,7 +403,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                       </motion.a>
                     )}
 
-                    {/* Dropdown Menu com animacoes premium */}
+                    {/* Dropdown Menu */}
                     <AnimatePresence>
                       {item.hasDropdown && activeDropdown === item.key && (
                         <motion.div
@@ -530,19 +432,9 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                             transition={{ duration: 0.6, delay: 0.15 }}
                           />
 
-                          {/* Efeito de brilho superior para dark mode */}
-                          {isDark && (
-                            <motion.div
-                              className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-[#E07A62]/30 to-transparent blur-sm"
-                              initial={{ opacity: 0, scaleX: 0 }}
-                              animate={{ opacity: 1, scaleX: 1 }}
-                              transition={{ duration: 0.5, delay: 0.1 }}
-                            />
-                          )}
-
                           {/* Shimmer sweep de entrada */}
                           <motion.div
-                            className={`absolute inset-0 bg-gradient-to-r from-transparent ${isDark ? 'via-[#E07A62]/5' : 'via-[#db6f57]/5'} to-transparent pointer-events-none`}
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-[#db6f57]/5 to-transparent pointer-events-none"
                             initial={{ x: "-100%" }}
                             animate={{ x: "200%" }}
                             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
@@ -558,7 +450,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                   variants={dropdownItemVariants}
                                   whileHover={{
                                     x: 6,
-                                    backgroundColor: isDark ? "rgba(224, 122, 98, 0.08)" : "rgba(219, 111, 87, 0.06)",
+                                    backgroundColor: "rgba(219, 111, 87, 0.06)",
                                     transition: {
                                       type: "spring",
                                       stiffness: 400,
@@ -626,7 +518,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                             })}
                           </div>
 
-                          {/* Footer do Dropdown com animacao */}
+                          {/* Footer do Dropdown */}
                           {item.key === 'planos' && (
                             <motion.div
                               variants={dropdownItemVariants}
@@ -652,38 +544,9 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
             )}
 
 
-            {/* Desktop CTAs com botoes sofisticados */}
+            {/* Desktop CTAs */}
             <div className="hidden lg:flex items-center gap-3">
-              {/* Theme Toggle Button */}
-              <motion.button
-                onClick={toggleTheme}
-                className={`
-                  flex items-center gap-2 px-3 py-3
-                  rounded-xl border-2 cursor-pointer
-                  transition-all duration-300
-                  ${theme.toggleBg} ${theme.toggleBorder} ${theme.toggleHover}
-                `}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={isDark ? "moon" : "sun"}
-                    initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
-                    animate={{ rotate: 0, opacity: 1, scale: 1 }}
-                    exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {isDark ? (
-                      <Moon className={`w-4 h-4 ${theme.toggleIcon}`} />
-                    ) : (
-                      <Sun className={`w-4 h-4 ${theme.toggleIcon}`} />
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-              </motion.button>
-
-              {/* Botao Entrar - Sofisticado */}
+              {/* Botao Entrar */}
               <motion.div
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
@@ -712,7 +575,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                 </button>
               </motion.div>
 
-              {/* Botao Cadastro/Comece Gratis - Premium */}
+              {/* Botao Cadastro/Comece Gratis */}
               {isCadastro && (
                 <Link href="/cadastro" onClick={() => trackClick("cta-header-comece-gratis", "Comece gratis", "header")}>
                   <motion.div
@@ -745,21 +608,6 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                         style={{ transform: "skewX(-20deg)" }}
                       />
 
-                      {/* Borda brilhante para dark mode */}
-                      {isDark && (
-                        <motion.div
-                          className="absolute inset-0 rounded-xl border border-[#D4AF37]/30"
-                          animate={{
-                            borderColor: ["rgba(212, 175, 55, 0.3)", "rgba(212, 175, 55, 0.6)", "rgba(212, 175, 55, 0.3)"]
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                        />
-                      )}
-
                       <span className="relative z-10">Comece gratis</span>
                       <ArrowRight className="w-4 h-4 relative z-10 transition-transform group-hover:translate-x-1" />
 
@@ -776,7 +624,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                           repeatDelay: 2
                         }}
                       >
-                        <Sparkles className={`w-3 h-3 ${isDark ? 'text-[#D4AF37]' : 'text-white/80'}`} />
+                        <Sparkles className="w-3 h-3 text-white/80" />
                       </motion.div>
                     </button>
                   </motion.div>
@@ -786,31 +634,14 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
 
             {/* Mobile Menu Button */}
             <div className="lg:hidden flex items-center gap-2">
-              {/* Theme Toggle Mobile */}
-              <motion.button
-                onClick={toggleTheme}
-                className={`
-                  w-8 h-8 flex items-center justify-center
-                  rounded-lg transition-colors
-                  ${isDark ? 'hover:bg-[#1A1715]' : 'hover:bg-[#e6d9d4]'}
-                `}
-                whileTap={{ scale: 0.9 }}
-              >
-                {isDark ? (
-                  <Moon className="w-4 h-4 text-[#D4AF37]" />
-                ) : (
-                  <Sun className="w-4 h-4 text-[#db6f57]" />
-                )}
-              </motion.button>
-
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors ${isDark ? 'hover:bg-[#1A1715]' : 'hover:bg-[#e6d9d4]'}`}
+                className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:bg-[#e6d9d4]"
               >
                 {isMobileMenuOpen ? (
-                  <X className={isDark ? "text-[#F5F0EB]" : "text-[#2a2420]"} size={18} />
+                  <X className="text-[#2a2420]" size={18} />
                 ) : (
-                  <Menu className={isDark ? "text-[#F5F0EB]" : "text-[#2a2420]"} size={18} />
+                  <Menu className="text-[#2a2420]" size={18} />
                 )}
               </button>
             </div>
@@ -818,7 +649,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
         </div>
       </motion.header>
 
-      {/* Mobile Menu com animacoes aprimoradas */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -917,7 +748,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
         )}
       </AnimatePresence>
 
-      {/* Sticky promo bar com animacoes premium */}
+      {/* Sticky promo bar */}
       {isMenu && (
         <AnimatePresence>
           {isScrolled && !hidden && (
@@ -936,7 +767,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
             >
               {/* Efeito de brilho de fundo animado */}
               <motion.div
-                className={`absolute inset-0 bg-gradient-to-r from-transparent ${isDark ? 'via-[#E07A62]/10' : 'via-white/10'} to-transparent`}
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
                 initial={{ x: "-100%" }}
                 animate={{ x: "200%" }}
                 transition={{

@@ -11,14 +11,11 @@ import {
   Award,
   Users,
   Calendar,
-  DollarSign,
   BarChart3
 } from "lucide-react"
 import { Card } from "primereact/card"
 import { Avatar } from "primereact/avatar"
 import { useRef } from "react"
-import { useTheme } from "@/contexts/HeroThemeContext"
-import { themeConfig } from "@/utils/themes"
 
 // Benefícios principais
 const benefits = [
@@ -131,7 +128,7 @@ const overallMetrics = [
 ]
 
 // Card de depoimento
-const TestimonialCard = ({ testimonial, index, theme }: any) => {
+const TestimonialCard = ({ testimonial, index }: any) => {
   const cardRef = useRef(null)
   const isInView = useInView(cardRef, { once: true, margin: "-50px" })
 
@@ -142,16 +139,16 @@ const TestimonialCard = ({ testimonial, index, theme }: any) => {
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, delay: index * 0.2 }}
     >
-      <Card className={`relative p-8 h-full ${theme.cardBg} ${theme.cardBgHover} border ${theme.cardBorder} rounded-3xl shadow-lg ${theme.cardShadowHover} transition-all duration-300 hover:-translate-y-2 overflow-hidden`}>
+      <Card className="relative p-8 h-full bg-[#3d2e28] hover:bg-[#463530] border border-[#3d2e28] rounded-3xl shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-all duration-300 hover:-translate-y-2 overflow-hidden">
         {/* Quote decorativo */}
-        <Quote 
-          className="absolute top-6 right-6 w-16 h-16 opacity-5" 
+        <Quote
+          className="absolute top-6 right-6 w-16 h-16 opacity-5"
           style={{ color: testimonial.color }}
         />
 
         {/* Header com foto e info */}
         <div className="flex items-start gap-4 mb-6 relative z-10">
-          <Avatar 
+          <Avatar
             image={testimonial.image}
             size="xlarge"
             shape="circle"
@@ -159,33 +156,33 @@ const TestimonialCard = ({ testimonial, index, theme }: any) => {
             style={{ borderColor: `${testimonial.color}40` }}
           />
           <div className="flex-1">
-            <h4 className={`font-bold text-lg`} style={{ color: theme.textPrimary }}>{testimonial.name}</h4>
-            <p className={`text-sm `} style={{ color: theme.textSecondary }}>{testimonial.role}</p>
+            <h4 className="font-bold text-lg text-white">{testimonial.name}</h4>
+            <p className="text-sm text-[#d8ccc4]">{testimonial.role}</p>
             <p className="text-sm font-semibold" style={{ color: testimonial.color }}>
               {testimonial.business}
             </p>
-            <p className={`text-xs mt-1`} style={{ color: theme.textSecondary }}>{testimonial.location}</p>
+            <p className="text-xs mt-1 text-[#d8ccc4]">{testimonial.location}</p>
           </div>
         </div>
 
         {/* Rating */}
         <div className="flex gap-1 mb-4">
           {[...Array(testimonial.rating)].map((_, i) => (
-            <Star 
-              key={i} 
-              className="w-5 h-5 fill-current" 
-              style={{ color: testimonial.color }} 
+            <Star
+              key={i}
+              className="w-5 h-5 fill-current"
+              style={{ color: testimonial.color }}
             />
           ))}
         </div>
 
         {/* Depoimento */}
-        <p className={`${theme.textMuted} leading-relaxed mb-6 italic`} >
+        <p className="text-[#d8ccc4] leading-relaxed mb-6 italic">
           "{testimonial.content}"
         </p>
 
         {/* Resultados */}
-        <div className={`flex gap-4 pt-6 border-t ${theme.border}`}>
+        <div className="flex gap-4 pt-6 border-t border-[#5a4a42]">
           {testimonial.results.map((result: any, i: number) => (
             <div key={i} className="flex-1 text-center">
               <div
@@ -194,7 +191,7 @@ const TestimonialCard = ({ testimonial, index, theme }: any) => {
               >
                 {result.value}
               </div>
-              <div className={`text-xs ${theme.textMuted}`}>{result.label}</div>
+              <div className="text-xs text-[#99A1AF]">{result.label}</div>
             </div>
           ))}
         </div>
@@ -204,8 +201,6 @@ const TestimonialCard = ({ testimonial, index, theme }: any) => {
 }
 
 export function Benefits() {
-  const { isDark } = useTheme()
-  const theme = isDark ? themeConfig.dark : themeConfig.light
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
 
@@ -213,13 +208,13 @@ export function Benefits() {
     <section
       ref={sectionRef}
       id="beneficios"
-      className={`py-32 relative overflow-hidden ${theme.sectionBg}`}
+      className="py-32 relative overflow-hidden bg-[#2a2420]"
     >
       {/* Background decorativo */}
       <div className="absolute inset-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(theme.patternColor)}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          opacity: parseFloat(theme.patternOpacity),
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          opacity: 0.03,
         }}
       />
 
@@ -232,23 +227,23 @@ export function Benefits() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto mb-20"
         >
-          <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full ${theme.badge} border mb-8`}>
-            <Award className={`w-5 h-5 ${theme.badgeIcon}`} />
-            <span className={`font-bold ${theme.badgeText} uppercase tracking-wide text-sm`}>
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-[#3d2e28]/60 border border-[#db6f57]/30 mb-8">
+            <Award className="w-5 h-5 text-[#db6f57]" />
+            <span className="font-bold text-[#db6f57] uppercase tracking-wide text-sm">
               Resultados Reais
             </span>
           </div>
 
-          <h2 className={`font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 ${theme.headlineColor} leading-[1.1]`}>
+          <h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-white leading-[1.1]">
             Por que escolher o{" "}
-            <span className={`${theme.gradientText} bg-clip-text text-transparent`}>
+            <span className="bg-gradient-to-r from-[#db6f57] to-[#e88c76] bg-clip-text text-transparent">
               Bellory
             </span>?
           </h2>
 
-          <p className={`text-xl sm:text-2xl ${theme.subheadlineColor} leading-relaxed`}>
+          <p className="text-xl sm:text-2xl text-[#d8ccc4] leading-relaxed">
             Mais de 500 estabelecimentos já transformaram seus negócios.{" "}
-            <span className={`${theme.highlightColor} font-semibold`}>
+            <span className="text-[#db6f57] font-semibold">
               Veja os resultados que nossos clientes alcançam
             </span>.
           </p>
@@ -267,7 +262,7 @@ export function Benefits() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-              className={`${theme.cardBg} ${theme.cardBgHover} rounded-2xl p-8 shadow-lg border ${theme.cardBorder} text-center ${theme.cardShadowHover} hover:-translate-y-2 transition-all duration-300`}
+              className="bg-[#3d2e28] hover:bg-[#463530] rounded-2xl p-8 shadow-lg shadow-black/20 border border-[#3d2e28] text-center hover:shadow-xl hover:shadow-black/30 hover:-translate-y-2 transition-all duration-300"
             >
               <div 
                 className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
@@ -278,14 +273,10 @@ export function Benefits() {
               >
                 <metric.icon className="w-8 h-8" style={{ color: metric.color }} />
               </div>
-              <div
-                className="text-4xl font-bold mb-2"
-                // style={{ color: metric.color }}
-                style={{ color: theme.textPrimary }}
-              >
+              <div className="text-4xl font-bold mb-2 text-white">
                 {metric.value}
               </div>
-              <div className={`text-sm`} style={{ color: theme.textSecondary }}> {metric.label}</div>
+              <div className="text-sm text-[#d8ccc4]">{metric.label}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -299,7 +290,7 @@ export function Benefits() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
             >
-              <Card className={`p-8 h-full ${theme.cardBg} ${theme.cardBgHover} border ${theme.cardBorder} rounded-2xl ${theme.cardShadowHover} transition-all duration-300 hover:-translate-y-2`}>
+              <Card className="p-8 h-full bg-[#3d2e28] hover:bg-[#463530] border border-[#3d2e28] rounded-2xl shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-all duration-300 hover:-translate-y-2">
                 <div 
                   className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-md"
                   style={{ 
@@ -310,19 +301,19 @@ export function Benefits() {
                   <benefit.icon className="w-8 h-8" style={{ color: benefit.color }} />
                 </div>
                 <div className="min-h-42">
-                  <h3 className={`text-xl font-bold mb-3`} style={{ color: theme.textPrimary }}>{benefit.title}</h3>
-                  <p className={`leading-relaxed mb-6`} style={{ color: theme.textSecondary }}>{benefit.description}</p>
+                  <h3 className="text-xl font-bold mb-3 text-white">{benefit.title}</h3>
+                  <p className="leading-relaxed mb-6 text-[#d8ccc4]">{benefit.description}</p>
                 </div>
 
                 {/* Estatística de destaque */}
-                <div className={`pt-4 border-t ${theme.border}`}>
+                <div className="pt-4 border-t border-[#5a4a42]">
                   <div
                     className="text-3xl font-bold mb-1"
                     style={{ color: benefit.color }}
                   >
                     {benefit.stat}
                   </div>
-                  <div className={`text-sm ${theme.textMuted}`}>{benefit.statLabel}</div>
+                  <div className="text-sm text-[#99A1AF]">{benefit.statLabel}</div>
                 </div>
               </Card>
             </motion.div>
@@ -337,10 +328,10 @@ export function Benefits() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="text-center mb-12"
           >
-            <h3 className={`font-serif text-4xl sm:text-5xl font-bold ${theme.headlineColor} mb-4`}>
+            <h3 className="font-serif text-4xl sm:text-5xl font-bold text-white mb-4">
               O que nossos clientes dizem
             </h3>
-            <p className={`text-xl ${theme.subheadlineColor}`}>
+            <p className="text-xl text-[#d8ccc4]">
               Histórias reais de transformação e crescimento
             </p>
           </motion.div>
@@ -351,7 +342,6 @@ export function Benefits() {
                 key={testimonial.name}
                 testimonial={testimonial}
                 index={index}
-                theme={theme}
               />
             ))}
           </div>

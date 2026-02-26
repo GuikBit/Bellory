@@ -10,8 +10,6 @@ import {
   Target
 } from "lucide-react"
 import { useRef } from "react"
-import { useTheme } from "@/contexts/HeroThemeContext"
-import { themeConfig } from "@/utils/themes"
 
 // Comparação de features
 const comparisonTable = {
@@ -168,8 +166,6 @@ const results = [
 ]
 
 export function ComparisonSection() {
-  const { isDark } = useTheme()
-  const theme = isDark ? themeConfig.dark : themeConfig.light
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
 
@@ -192,13 +188,13 @@ export function ComparisonSection() {
   return (
     <section
       ref={sectionRef}
-      className={`py-32 relative overflow-hidden ${theme.sectionBgAlt}`}
+      className="py-32 relative overflow-hidden bg-[#faf8f6]"
     >
       {/* Background decorativo */}
       <div className="absolute inset-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(theme.patternColor)}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          opacity: parseFloat(theme.patternOpacity),
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b3d35' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          opacity: 0.03,
         }}
       />
 
@@ -211,21 +207,21 @@ export function ComparisonSection() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto mb-20"
         >
-          <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full ${theme.badge} border mb-8`}>
-            <Target className={`w-5 h-5 ${theme.badgeIcon}`} />
-            <span className={`font-bold ${theme.badgeText} uppercase tracking-wide text-sm`}>
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-[#db6f57]/10 via-[#8b3d35]/10 to-[#db6f57]/10 border-[#db6f57]/20 border mb-8">
+            <Target className="w-5 h-5 text-[#db6f57]" />
+            <span className="font-bold text-[#8b3d35] uppercase tracking-wide text-sm">
               Por Que Escolher o Bellory
             </span>
           </div>
 
-          <h2 className={`font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 ${theme.headlineColor} leading-[1.1]`}>
+          <h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-[#2a2420] leading-[1.1]">
             Compare e{" "}
-            <span className={`${theme.gradientText} bg-clip-text text-transparent`}>
+            <span className="bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent">
               veja a diferença
             </span>
           </h2>
 
-          <p className={`text-xl sm:text-2xl ${theme.subheadlineColor} leading-relaxed`}>
+          <p className="text-xl sm:text-2xl text-[#5a7d71] leading-relaxed">
             Veja como o Bellory se compara com métodos tradicionais e outros sistemas do mercado
           </p>
         </motion.div>
@@ -237,7 +233,7 @@ export function ComparisonSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mb-20"
         >
-          <h3 className={`text-center text-3xl font-bold ${theme.headlineColor} mb-12`}>
+          <h3 className="text-center text-3xl font-bold text-[#2a2420] mb-12">
             Resultados reais dos nossos clientes
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
@@ -247,7 +243,7 @@ export function ComparisonSection() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                className={`${theme.cardBg} ${theme.cardBgHover} rounded-3xl p-8 shadow-xl border-2`}
+                className="bg-white hover:bg-white rounded-3xl p-8 shadow-xl border-2"
                 style={{ borderColor: result.color + '30' }}
               >
                 <div className="flex flex-col items-center justify-between text-center h-full">
@@ -257,10 +253,10 @@ export function ComparisonSection() {
                   >
                     {result.bellory}
                   </div>
-                  <div className={`font-semibold mb-4`} style={{ color: theme.textPrimary }}>
+                  <div className="font-semibold mb-4" style={{ color: '#2a2420' }}>
                     {result.metric}
                   </div>
-                  <div className={`text-sm space-y-1`} style={{ color: theme.textSecondary }}>
+                  <div className="text-sm space-y-1" style={{ color: '#4f6f64' }}>
                     <div className="flex justify-between">
                       <span>Concorrentes: &nbsp;</span>
                       <span className="font-medium">{result.competitors}</span>
@@ -283,7 +279,7 @@ export function ComparisonSection() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="max-w-6xl mx-auto overflow-x-auto"
         >
-          <div className={`${theme.cardBg} rounded-3xl shadow-2xl overflow-hidden border ${theme.cardBorder}`}>
+          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-[#d8ccc4]">
             {/* Header da tabela */}
             <div className="grid grid-cols-4 bg-gradient-to-r from-[#4f6f64] to-[#3d574f] text-white p-6">
               <div className="font-bold text-lg">Funcionalidade</div>
@@ -301,7 +297,7 @@ export function ComparisonSection() {
             {comparisonTable.categories.map((category, catIndex) => (
               <div key={category.name}>
                 {/* Nome da categoria */}
-                <div className={`${theme.sectionBg} px-6 py-4 font-bold text-lg border-t ${theme.border}`} style={{ color: theme.textPrimary }}>
+                <div className="bg-[#faf8f6] px-6 py-4 font-bold text-lg border-t border-[#d8ccc4]" style={{ color: '#2a2420' }}>
                   {category.name}
                 </div>
                 
@@ -312,9 +308,9 @@ export function ComparisonSection() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.5, delay: 0.6 + catIndex * 0.2 + featIndex * 0.1 }}
-                    className={`grid grid-cols-4 p-6 border-t ${theme.cardBg} ${theme.border} ${theme.cardBgHover} transition-colors`}
+                    className="grid grid-cols-4 p-6 border-t bg-white border-[#d8ccc4] hover:bg-white transition-colors"
                   >
-                    <div style={{ color: theme.textSecondary }}>{feature.name}</div>
+                    <div style={{ color: '#4f6f64' }}>{feature.name}</div>
                     <div className="text-center font-semibold">
                       {renderCell(feature.bellory)}
                     </div>

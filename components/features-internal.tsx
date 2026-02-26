@@ -21,7 +21,6 @@ import {
 } from "lucide-react"
 import { Card } from "primereact/card"
 import { useRef } from "react"
-import { useTheme } from "@/contexts/HeroThemeContext"
 import { themeConfig } from "@/utils/themes"
 
 // Benefícios principais organizados por problema que resolvem
@@ -160,7 +159,7 @@ const FeatureCard = ({ feature, color, index, theme }: any) => {
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
     >
-      <Card className={`group relative p-8 h-full ${theme.cardBg} ${theme.cardBgHover} border ${theme.cardBorder} ${theme.borderHover} rounded-2xl transition-all duration-300 ${theme.cardShadowHover} hover:-translate-y-2 overflow-hidden`}>
+      <Card className="group relative p-8 h-full bg-[#3d2e28] hover:bg-[#3d2e28] border border-[#3d2e28] hover:border-[#db6f57]/30 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-black/30 hover:-translate-y-2 overflow-hidden">
         {/* Decoração de fundo */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-full blur-3xl"
           style={{ backgroundColor: color }}
@@ -188,10 +187,10 @@ const FeatureCard = ({ feature, color, index, theme }: any) => {
         </div>
 
         {/* Conteúdo */}
-        <h3 className={`text-2xl font-bold mb-3 ${theme.headlineColor} group-hover:${theme.highlightColor} transition-colors`} style={{ color: theme.textPrimary }}>
+        <h3 className="text-2xl font-bold mb-3 text-white transition-colors">
           {feature.title}
         </h3>
-        <p className={`${theme.subheadlineColor} leading-relaxed mb-4 text-base`}>
+        <p className="text-[#d8ccc4] leading-relaxed mb-4 text-base">
           {feature.description}
         </p>
 
@@ -237,7 +236,7 @@ const BenefitSection = ({ section, index, theme }: any) => {
           }}
         >
           <CheckCircle2 className="w-5 h-5" style={{ color: section.color }} />
-          <span className={`font-bold ${theme.headlineColor} uppercase tracking-wide text-sm`} style={{ color: theme.textPrimary }}>
+          <span className="font-bold text-white uppercase tracking-wide text-sm">
             {section.category}
           </span>
         </motion.div>
@@ -246,7 +245,7 @@ const BenefitSection = ({ section, index, theme }: any) => {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className={`font-serif text-3xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 ${theme.headlineColor}`}
+          className="font-serif text-3xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 text-white"
         >
           {section.tagline}
         </motion.h2>
@@ -277,16 +276,14 @@ const BenefitSection = ({ section, index, theme }: any) => {
 }
 
 export function FeaturesInternal() {
-  const { isDark } = useTheme()
-  const theme = isDark ? themeConfig.dark : themeConfig.light
+  const theme = themeConfig.light
 
   return (
-    <section id="funcionalidades" className={`py-32 relative overflow-hidden ${theme.sectionBg}`}>
+    <section id="funcionalidades" className={`py-32 relative overflow-hidden bg-[#2a2420]`}>
       {/* Padrão de fundo */}
       <div className="absolute inset-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(theme.patternColor)}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          opacity: parseFloat(theme.patternOpacity),
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }}
       />
 
@@ -331,7 +328,7 @@ export function FeaturesInternal() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className={`text-center mt-24 p-12 rounded-3xl ${isDark ? 'bg-gradient-to-br from-[#E07A62] via-[#DB6F57] to-[#A8524A]' : 'bg-gradient-to-br from-[#db6f57] to-[#8b3d35]'} relative overflow-hidden`}
+          className="text-center mt-24 p-12 rounded-3xl bg-gradient-to-br from-[#db6f57] to-[#8b3d35] relative overflow-hidden"
         >
           {/* Padrão decorativo */}
           <div className="absolute inset-0 opacity-10"
@@ -351,7 +348,7 @@ export function FeaturesInternal() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`inline-flex items-center gap-3 px-10 py-5 bg-white ${isDark ? 'text-[#E07A62]' : 'text-[#8b3d35]'} rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300`}
+              className="inline-flex items-center gap-3 px-10 py-5 bg-white text-[#8b3d35] rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300"
             >
               Teste grátis por 14 dias
               <ArrowRight className="w-6 h-6" />

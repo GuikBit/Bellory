@@ -693,7 +693,7 @@ class BelloryTracker {
 
   private log(message: string, data?: any): void {
     if (this.config.debug) {
-      console.log(`[Bellory Tracker] ${message}`, data ?? '')
+      // console.log(`[Bellory Tracker] ${message}`, data ?? '')
     }
   }
 }

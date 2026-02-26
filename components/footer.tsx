@@ -18,12 +18,7 @@ import Link from "next/link"
 import { Button } from "primereact/button"
 import { InputText } from "primereact/inputtext"
 import { useState } from "react"
-import { useTheme } from "@/contexts/HeroThemeContext"
-import { themeConfig } from "@/utils/themes"
-
 export function Footer() {
-  const { isDark } = useTheme()
-  const theme = isDark ? themeConfig.dark : themeConfig.light
   const [email, setEmail] = useState("")
 
   const footerLinks = {
@@ -66,12 +61,12 @@ export function Footer() {
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Implementar lógica de newsletter
-    console.log("Newsletter:", email)
+    // console.log("Newsletter:", email)
     setEmail("")
   }
 
   return (
-    <footer className={`relative ${isDark ? 'bg-gradient-to-b from-gray-900 to-black' : 'bg-gradient-to-b from-[#2a2420] to-[#1a1510]'} text-white overflow-hidden`}>
+    <footer className="relative bg-gradient-to-b from-[#2a2420] to-[#1a1510] text-white overflow-hidden">
       {/* Padrão decorativo */}
       <div className="absolute inset-0 opacity-5"
         style={{
@@ -114,7 +109,7 @@ export function Footer() {
                   placeholder="Seu melhor e-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`flex-1 px-6 py-4 rounded-xl border-2 ${theme.inputBorder} rounded-xl ${theme.inputFocus} ${theme.inputBg} ${theme.inputText} transition-all`}
+                  className="flex-1 px-6 py-4 rounded-xl border-2 border-white/20 bg-white/10 text-white placeholder:text-white/50 focus:border-[#db6f57] transition-all"
                   required
                 />
                 <Button

@@ -108,7 +108,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" className={`${playfair.variable} ${inter.variable} overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-primary scrollbar-track-[#ffffff00]`}>
+    <html lang="pt-BR" className={`${playfair.variable} ${inter.variable} overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-primary scrollbar-track-background`}>
       <head>
         <StructuredData />
       </head>

@@ -13,10 +13,8 @@ import {
   Sparkles,
   ArrowRight
 } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { Button } from "primereact/button"
-import { useTheme } from "@/contexts/HeroThemeContext"
-import { themeConfig } from "@/utils/themes"
 
 // Mensagens do chat mockup
 const chatMessages = [
@@ -91,8 +89,6 @@ const stats = [
 ]
 
 export function AIAgentSection() {
-  const { isDark } = useTheme()
-  const theme = isDark ? themeConfig.dark : themeConfig.light
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
   const [activeMessage, setActiveMessage] = useState(0)
@@ -105,21 +101,17 @@ export function AIAgentSection() {
     return () => clearInterval(interval)
   })
 
-  useEffect(()=>{
-    console.log(isDark)
-  }, [isDark])
-
   return (
     <section
       id="ai-agent"
       ref={sectionRef}
-      className={`py-32 relative overflow-hidden ${theme.sectionBgAlt}`}
+      className="py-32 relative overflow-hidden bg-[#faf8f6]"
     >
       {/* Background decorativo */}
       <div className="absolute inset-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(theme.patternColor)}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          opacity: parseFloat(theme.patternOpacity),
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b3d35' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          opacity: 0.03,
         }}
       />
 
@@ -146,23 +138,23 @@ export function AIAgentSection() {
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto mb-20"
         >
-          <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full ${theme.badge} border mb-8`}>
-            <Bot className={`w-6 h-6 ${theme.badgeIcon}`} />
-            <span className={`font-bold ${theme.badgeText} uppercase tracking-wide text-sm`}>
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-[#db6f57]/10 via-[#8b3d35]/10 to-[#db6f57]/10 border border-[#db6f57]/20 mb-8">
+            <Bot className="w-6 h-6 text-[#db6f57]" />
+            <span className="font-bold text-[#8b3d35] uppercase tracking-wide text-sm">
               Inteligência Artificial
             </span>
           </div>
 
-          <h2 className={`font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 ${theme.headlineColor} leading-[1.1]`}>
+          <h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-[#2a2420] leading-[1.1]">
             Seu assistente virtual{" "}
-            <span className={`${theme.gradientTextAgent} bg-clip-text text-transparent`}>
+            <span className="bg-gradient-to-r from-[#4f6f64] to-[#3d574f] bg-clip-text text-transparent">
               trabalhando 24/7
             </span>
           </h2>
 
-          <p className={`text-xl sm:text-2xl ${theme.subheadlineColor} leading-relaxed mb-8`}>
+          <p className="text-xl sm:text-2xl text-[#5a7d71] leading-relaxed mb-8">
             Atenda seus clientes automaticamente pelo WhatsApp.{" "}
-            <span className={`${theme.subheadlineColorAgent} font-semibold`}>
+            <span className="text-[#4f6f64] font-semibold">
               Agende, confirme e gerencie tudo sem mover um dedo
             </span>.
           </p>
@@ -175,11 +167,11 @@ export function AIAgentSection() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-                className={`${theme.cardBgAgent} rounded-2xl p-6 shadow-lg border ${theme.cardBorder}`}
+                className="bg-white rounded-2xl p-6 shadow-lg border border-[#d8ccc4]"
               >
-                <stat.icon className={`w-8 h-8 ${theme.subheadlineColorAgent} mx-auto mb-3`} />
-                <div className={`text-3xl font-bold mb-1`} style={{ color: theme.textPrimary }}>{stat.value}</div>
-                <div className={`text-sm`} style={{ color: theme.textSecondary }}>{stat.label}</div>
+                <stat.icon className="w-8 h-8 text-[#4f6f64] mx-auto mb-3" />
+                <div className="text-3xl font-bold mb-1 text-[#2a2420]">{stat.value}</div>
+                <div className="text-sm text-[#4f6f64]">{stat.label}</div>
               </motion.div>
             ))}
           </div>
@@ -265,7 +257,7 @@ export function AIAgentSection() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="space-y-6"
           >
-            <h3 className={`font-serif text-3xl sm:text-4xl font-bold ${theme.headlineColor} mb-8`}>
+            <h3 className="font-serif text-3xl sm:text-4xl font-bold text-[#2a2420] mb-8">
               O que o agente virtual faz por você?
             </h3>
 
@@ -275,7 +267,7 @@ export function AIAgentSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
-                className={`flex gap-4 p-6 ${theme.cardBgAgent} ${theme.cardBgHoverAgent} rounded-2xl shadow-md ${theme.cardShadowHover} transition-all duration-300 border ${theme.cardBorder} group hover:-translate-y-1`}
+                className="flex gap-4 p-6 bg-white hover:bg-[#faf8f6] rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-[#d8ccc4] group hover:-translate-y-1"
               >
                 <div
                   className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform"
@@ -287,8 +279,8 @@ export function AIAgentSection() {
                   <useCase.icon className="w-7 h-7" style={{ color: useCase.color }} />
                 </div>
                 <div>
-                  <h4 className={`font-bold text-lg mb-2`} style={{ color: theme.textPrimary }}>{useCase.title}</h4>
-                  <p className={`leading-relaxed`}style={{ color: theme.textSecondary }}>{useCase.description}</p>
+                  <h4 className="font-bold text-lg mb-2 text-[#2a2420]">{useCase.title}</h4>
+                  <p className="leading-relaxed text-[#4f6f64]">{useCase.description}</p>
                 </div>
               </motion.div>
             ))}

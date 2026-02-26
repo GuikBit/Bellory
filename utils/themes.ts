@@ -1417,15 +1417,15 @@ export const createColorVariations = (baseColor: string) => {
 export const themeConfig = {
   light: {
     // Backgrounds
-    background: "bg-gradient-to-br from-[#faf8f6] via-[#e6d9d4]/30 to-[#faf8f6]",
-    backgroundStyle: { background: "linear-gradient(to bottom right, #faf8f6, rgba(230, 217, 212, 0.3), #faf8f6)" },
-    sectionBg: "bg-gradient-to-b from-[#faf8f6] via-white to-[#faf8f6]",
-    sectionBgAlt: "bg-gradient-to-b from-white via-[#faf8f6] to-white",
+    background: "bg-[#faf8f6]",
+    backgroundStyle: { background: "#faf8f6" },
+    sectionBg: "bg-[#faf8f6]",
+    sectionBgAlt: "bg-[#faf8f6]",
     cardBg: "bg-white",
-    cardBgAgent: "bg-[#FAFFFA]",
-    cardBgHover: "hover:bg-gradient-to-br hover:from-white hover:to-[#faf8f6]",
-    cardBgHoverAgent: "hover:bg-green-50",
-    
+    cardBgAgent: "bg-white",
+    cardBgHover: "hover:bg-white",
+    cardBgHoverAgent: "hover:bg-[#faf8f6]",
+
     // Blobs decorativos
     blob1: "bg-gradient-to-br from-[#db6f57]/20 to-[#8b3d35]/20",
     blob2: "bg-gradient-to-tr from-[#4f6f64]/20 to-[#db6f57]/20",
@@ -1437,14 +1437,14 @@ export const themeConfig = {
     // Textos
     headlineColor: "text-[#2a2420]",
     gradientText: "bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57]",
-    gradientTextAgent: "bg-gradient-to-r from-[#4f6f64] to-[#3d574f] bg-clip-text text-transparent",
+    gradientTextAgent: "bg-gradient-to-r from-[#4f6f64] to-[#3d574f]",
     subheadlineColorAgent: "text-[#4f6f64]",
-    subheadlineColor: "text-[#4f6f64]",
+    subheadlineColor: "text-[#5a7d71]",
     highlightColor: "text-[#8b3d35]",
     textPrimary: "#2a2420",
     textSecondary: "#4f6f64",
     textTertiary: "#8b3d35",
-    textMuted: "text-gray-400",
+    textMuted: "text-[#99A1AF]",
     textMuted2: "#99A1AF",
 
     // Beneficios
@@ -1474,8 +1474,8 @@ export const themeConfig = {
 
     // Cards
     cardBorder: "border-[#d8ccc4]",
-    cardShadow: "shadow-lg",
-    cardShadowHover: "hover:shadow-2xl",
+    cardShadow: "shadow-lg shadow-[#2a2420]/5",
+    cardShadowHover: "hover:shadow-xl",
 
     // Cores de status/features
     color1: "#db6f57",
@@ -1486,86 +1486,9 @@ export const themeConfig = {
     // Inputs
     inputBg: "bg-white",
     inputBorder: "border-[#d8ccc4]",
-    inputFocus: "focus:border-[#db6f57]",
+    inputFocus: "focus:border-[#db6f57] focus:ring-[#db6f57]",
     inputText: "text-[#2a2420]",
     placeholder: "placeholder:text-[#4f6f64]/50",
-  },
-
-  dark: {
-    // Backgrounds - tons escuros sofisticados
-    background: "",
-    backgroundStyle: { background: "linear-gradient(180deg, #0D0B0A 0%, #141210 50%, #1A1715 100%)" },
-    sectionBg: "bg-gradient-to-b from-[#0D0B0A] via-[#141210] to-[#0D0B0A]",
-    sectionBgAlt: "bg-gradient-to-b from-[#141210] via-[#1A1715] to-[#141210]",
-    cardBg: "bg-[#1A1715]",
-    cardBgAgent: "bg-[#1B201B]",
-    cardBgHover: "hover:bg-[#242120]",
-    cardBgHoverAgent: "hover:bg-[#242120]",
-    // Blobs decorativos - com cores vibrantes mas sutis
-    blob1: "",
-    blob1Style: { background: "linear-gradient(135deg, rgba(224, 122, 98, 0.2) 0%, rgba(168, 82, 74, 0.15) 100%)" },
-    blob2: "",
-    blob2Style: { background: "linear-gradient(135deg, rgba(107, 143, 130, 0.15) 0%, rgba(224, 122, 98, 0.1) 100%)" },
-
-    // Pattern de fundo
-    patternColor: "#E07A62",
-    patternOpacity: "0.02",
-
-    // Textos
-    headlineColor: "text-[#F5F0EB]",
-    gradientText: "bg-gradient-to-r from-[#E07A62] via-[#D4AF37] to-[#E07A62]",
-    gradientTextAgent: "bg-gradient-to-r from-[#4f6f64] to-[#3d574f] bg-clip-text text-transparent",
-    subheadlineColorAgent: "text-[#4f6f64]",
-    subheadlineColor: "text-[#B8AEA4]",
-    highlightColor: "text-[#E07A62]",
-    textPrimary: "#F5F0EB",
-    textSecondary: "#B8AEA4",
-    textTertiary: " #E07A62",
-    textMuted: "text-[#7A716A]",
-    textMuted2: "#7A716A",
-
-    // Beneficios
-    benefitCard: "bg-[#1A1715]/80 backdrop-blur-sm border-[#2D2925]",
-    benefitText: "text-[#F5F0EB]",
-    benefitColors: ["#6B8F82", "#E07A62", "#D4AF37", "#6B8F82"],
-
-    // Botoes
-    primaryButton: "bg-gradient-to-r from-[#E07A62] via-[#DB6F57] to-[#A8524A] text-white hover:shadow-[0_0_30px_rgba(224,122,98,0.4)]",
-    secondaryButton: "bg-transparent text-[#E07A62] border-2 border-[#E07A62] hover:bg-[#E07A62]/10 hover:border-[#E8937E]",
-
-    // Badge
-    badge: "bg-[#1A1715]/60 backdrop-blur-md border-[#E07A62]/30",
-    badgeIcon: "text-[#D4AF37]",
-    badgeText: "text-[#E07A62]",
-
-    // Prova social
-    starFill: "#D4AF37",
-    ratingText: "text-[#F5F0EB]",
-    socialText: "text-[#B8AEA4]",
-    checkIcon: "text-[#6B8F82]",
-
-    // Borders
-    border: "border-[#2D2925]",
-    borderHover: "hover:border-[#E07A62]/40",
-    divider: "border-[#2D2925]",
-
-    // Cards
-    cardBorder: "border-[#2D2925]",
-    cardShadow: "shadow-[0_4px_20px_rgba(0,0,0,0.3)]",
-    cardShadowHover: "hover:shadow-[0_8px_30px_rgba(0,0,0,0.4),0_0_20px_rgba(224,122,98,0.1)]",
-
-    // Cores de status/features (versões dark mais vibrantes)
-    color1: "#E07A62",
-    color2: "#6B8F82",
-    color3: "#D4AF37",
-    color4: "#F87171",
-
-    // Inputs
-    inputBg: "bg-[#141210]",
-    inputBorder: "border-[#2D2925]",
-    inputFocus: "focus:border-[#E07A62]",
-    inputText: "text-[#F5F0EB]",
-    placeholder: "placeholder:text-[#7A716A]",
   },
 }
 

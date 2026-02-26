@@ -292,7 +292,7 @@ export default function Cadastro() {
       validaCNPJ(cnpjLimpo)
         .then((response) => {
           setCnpjFound(true)
-          console.log(response)
+          // console.log(response)
           // Se dados === false, CNPJ está disponível
           if (response.dados === false) {
             setCnpjValid(true)
@@ -562,9 +562,9 @@ export default function Cadastro() {
       }
     }
     
-    console.log("=== DADOS COMPLETOS DO CADASTRO ===")
-    console.log(JSON.stringify(finalData))
-    console.log("===================================")
+    // console.log("=== DADOS COMPLETOS DO CADASTRO ===")
+    // console.log(JSON.stringify(finalData))
+    // console.log("===================================")
     
     // Aqui você pode fazer a chamada para sua API
     // await api.post('/empresas', finalData)
@@ -572,17 +572,17 @@ export default function Cadastro() {
     // setIsSubmitted(true)
 
 
-    // postOrganizacao(finalData).then((response)=>{
-    //   console.log(response)
-    //   setIsSubmitted(true)
-    //   trackCadastroCompleted(
-    //     selectedPlan,
-    //     plans.find(p => p.id === selectedPlan)?.name,
-    //     isAnnual ? 'annual' : 'monthly'
-    //   )
-    // }).catch((error)=>{
-    //   console.log(error)
-    // })
+    postOrganizacao(finalData).then((response)=>{
+      // console.log(response)
+      setIsSubmitted(true)
+      trackCadastroCompleted(
+        selectedPlan,
+        plans.find(p => p.id === selectedPlan)?.name,
+        isAnnual ? 'annual' : 'monthly'
+      )
+    }).catch((error)=>{
+      console.log(error)
+    })
   }
 
   const isCurrentStepValid = () => {
