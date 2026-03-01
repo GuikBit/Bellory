@@ -2,103 +2,113 @@
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Check, Crown, Flower, Scissors, X } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useGetPlanos } from "@/service/Querys/Organizacao";
 
 
 export function Planos() {
   const [periodo, setPeriodo] = useState<"mensal" | "anual">("mensal");
+  const { data, isLoading, isError } = useGetPlanos();
 
-  const planos = [
-    {
-      id: "gratuito",
-      nome: "PLANO GRATUITO",
-      descricaoBreve: "Avalie se a nossa solucao faz sentido para o negocio",
-      precoMensal: 0.00,
-      precoAnual: 0.00, // preço mensal no plano anual
-      icone: <Scissors size={28} color="#C0921A" />,
-      destaque: false,
-      beneficios: [
-        "Agendamentos limitados",
-        "Agendamentos limitados",
-        "Cadastro de clientes limitados",
-        "Cadastro de funcionarios limitados",
-        "Cadastro de servicos limitados",
-        "Acesso a dashboards inteligentes que mostram a evolucao do seu negocio",
-      ],
-      naoIncluido: [
-        "Produtos exclusivos",
-        "Atendimento VIP",
-        "Serviços premium",
-        "Acesso a eventos exclusivos",
-      ],
-      className: "scale-90"
-    },
-    {
-      id: "basico",
-      nome: "PLANO BASICO",
-      descricaoBreve: "Cuidados essenciais para sua beleza",
-      precoMensal: 79.90,
-      precoAnual: 64.90, // preço mensal no plano anual
-      icone: <Scissors size={28} color="#C0921A" />,
-      destaque: false,
-      beneficios: [
-        "2 cortes de cabelo por mês",
-        "1 tratamento capilar por mês",
-        "10% de desconto em produtos",
-        "Agendamento prioritário",
-        "Chá ou espumante grátis durante o atendimento",
-      ],
-      naoIncluido: [
-        "Produtos exclusivos",
-        "Atendimento VIP",
-        "Serviços premium",
-        "Acesso a eventos exclusivos",
-      ],
-      className: "scale-90"
-    },
-    {
-      id: "plus",
-      nome: "PLANO PLUS",
-      descricaoBreve: "Experiência completa de beleza e bem-estar",
-      precoMensal: 129.90,
-      precoAnual: 99.90, // preço mensal no plano anual
-      icone: <Scissors size={28}  color="#C0921A"  />,
-      destaque: false,
-      beneficios: [
-        "Cortes de cabelo ilimitados",
-        "2 tratamentos capilares por mês",
-        "1 tratamento facial por mês",
-        "20% de desconto em produtos",
-        "Kit de produtos exclusivos trimestralmente",
-        "Agendamento VIP com horários exclusivos",
-        "Chá, espumante ou drink especial grátis durante o atendimento",
-        "Acesso a eventos exclusivos para membros",
-      ],
-      naoIncluido: [],
-      className: ""
-    },
-    {
-      id: "premium",
-      nome: "PLANO PREMIUM",
-      descricaoBreve: "Experiência completa de beleza e bem-estar",
-      precoMensal: 249.90,
-      precoAnual: 199.90,
-      icone: <Crown size={28}  color="#C0921A"  />,
-      destaque: true,
-      beneficios: [
-        "Cortes de cabelo ilimitados",
-        "2 tratamentos capilares por mês",
-        "1 tratamento facial por mês",
-        "20% de desconto em produtos",
-        "Kit de produtos exclusivos trimestralmente",
-        "Agendamento VIP com horários exclusivos",
-        "Chá, espumante ou drink especial grátis durante o atendimento",
-        "Acesso a eventos exclusivos para membros",
-      ],
-      naoIncluido: [],
-      className: ""
-    },
-  ];
+  const [planos, setPlanos] = useState();
+
+  useEffect(()=> {
+    if (data && data.success) {
+      setPlanos(data.dados);
+    }
+  },[data])
+
+  // const planos = [
+  //   {
+  //     id: "gratuito",
+  //     nome: "PLANO GRATUITO",
+  //     descricaoBreve: "Avalie se a nossa solucao faz sentido para o negocio",
+  //     precoMensal: 0.00,
+  //     precoAnual: 0.00, // preço mensal no plano anual
+  //     icone: <Scissors size={28} color="#C0921A" />,
+  //     destaque: false,
+  //     beneficios: [
+  //       "Agendamentos limitados",
+  //       "Agendamentos limitados",
+  //       "Cadastro de clientes limitados",
+  //       "Cadastro de funcionarios limitados",
+  //       "Cadastro de servicos limitados",
+  //       "Acesso a dashboards inteligentes que mostram a evolucao do seu negocio",
+  //     ],
+  //     naoIncluido: [
+  //       "Produtos exclusivos",
+  //       "Atendimento VIP",
+  //       "Serviços premium",
+  //       "Acesso a eventos exclusivos",
+  //     ],
+  //     className: "scale-90"
+  //   },
+  //   {
+  //     id: "basico",
+  //     nome: "PLANO BASICO",
+  //     descricaoBreve: "Cuidados essenciais para sua beleza",
+  //     precoMensal: 79.90,
+  //     precoAnual: 64.90, // preço mensal no plano anual
+  //     icone: <Scissors size={28} color="#C0921A" />,
+  //     destaque: false,
+  //     beneficios: [
+  //       "2 cortes de cabelo por mês",
+  //       "1 tratamento capilar por mês",
+  //       "10% de desconto em produtos",
+  //       "Agendamento prioritário",
+  //       "Chá ou espumante grátis durante o atendimento",
+  //     ],
+  //     naoIncluido: [
+  //       "Produtos exclusivos",
+  //       "Atendimento VIP",
+  //       "Serviços premium",
+  //       "Acesso a eventos exclusivos",
+  //     ],
+  //     className: "scale-90"
+  //   },
+  //   {
+  //     id: "plus",
+  //     nome: "PLANO PLUS",
+  //     descricaoBreve: "Experiência completa de beleza e bem-estar",
+  //     precoMensal: 129.90,
+  //     precoAnual: 99.90, // preço mensal no plano anual
+  //     icone: <Scissors size={28}  color="#C0921A"  />,
+  //     destaque: false,
+  //     beneficios: [
+  //       "Cortes de cabelo ilimitados",
+  //       "2 tratamentos capilares por mês",
+  //       "1 tratamento facial por mês",
+  //       "20% de desconto em produtos",
+  //       "Kit de produtos exclusivos trimestralmente",
+  //       "Agendamento VIP com horários exclusivos",
+  //       "Chá, espumante ou drink especial grátis durante o atendimento",
+  //       "Acesso a eventos exclusivos para membros",
+  //     ],
+  //     naoIncluido: [],
+  //     className: ""
+  //   },
+  //   {
+  //     id: "premium",
+  //     nome: "PLANO PREMIUM",
+  //     descricaoBreve: "Experiência completa de beleza e bem-estar",
+  //     precoMensal: 249.90,
+  //     precoAnual: 199.90,
+  //     icone: <Crown size={28}  color="#C0921A"  />,
+  //     destaque: true,
+  //     beneficios: [
+  //       "Cortes de cabelo ilimitados",
+  //       "2 tratamentos capilares por mês",
+  //       "1 tratamento facial por mês",
+  //       "20% de desconto em produtos",
+  //       "Kit de produtos exclusivos trimestralmente",
+  //       "Agendamento VIP com horários exclusivos",
+  //       "Chá, espumante ou drink especial grátis durante o atendimento",
+  //       "Acesso a eventos exclusivos para membros",
+  //     ],
+  //     naoIncluido: [],
+  //     className: ""
+  //   },
+  // ];
   
   return(
     <section id="planos" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">

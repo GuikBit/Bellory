@@ -111,3 +111,23 @@ export async function getBuscarCEP(cep: any): Promise<any> {
     throw new Error('Erro de rede ou inesperado.');
   }
 }
+
+
+export async function getPlanos(): Promise<Response> {
+  try {
+    
+    const response = await api.get<Response>(`public/planos`);
+    
+    return {
+      success: response.data.success,
+      message: response.data.message,
+      errorCode: response.data.errorCode,
+      dados: response.data.dados
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || 'Erro ao buscar serviços.');
+    }
+    throw new Error('Erro de rede ou inesperado.');
+  }
+}

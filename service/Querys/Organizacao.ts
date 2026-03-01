@@ -1,6 +1,6 @@
 
-import { useMutation } from "@tanstack/react-query";
-import { getBuscarCEP, postOrganizacao, validaCNPJ, validaEmail, validaUsename } from "../API/Organizacao";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getBuscarCEP, getPlanos, postOrganizacao, validaCNPJ, validaEmail, validaUsename } from "../API/Organizacao";
 
 export function useMutationPostOrganizacao(){
     // const queryClient = useQueryClient();
@@ -62,7 +62,6 @@ export function useMutationValidaUsername(){
   })
 }
 
-
 export function useMutationGetBuscarCEP(){
     // const queryClient = useQueryClient();
     return useMutation({
@@ -73,3 +72,15 @@ export function useMutationGetBuscarCEP(){
         } 
     })
 }
+
+export function useGetPlanos() {
+
+  return useQuery({
+    queryKey: ['getPlanos'],
+    queryFn: async () => {
+        return await getPlanos();
+    }
+  });
+}
+
+
