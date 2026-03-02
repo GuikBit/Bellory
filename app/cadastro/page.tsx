@@ -40,10 +40,9 @@ import Link from "next/link"
 import { themes } from "@/utils/themes"
 import { AddressForm } from "@/components/address-form-improved"
 import { ThemeSelector } from "@/components/theme-selector-improved"
-import { useMutationPostOrganizacao, useMutationValidaCNPJ, useMutationValidaEmail, useMutationValidaUsername } from "@/service/Querys/Organizacao"
+import { useGetPlanos, useMutationPostOrganizacao, useMutationValidaCNPJ, useMutationValidaEmail, useMutationValidaUsername } from "@/service/Querys/Organizacao"
 import { useTheme } from "@/contexts/HeroThemeContext"
-import { plans } from "@/components/pricing"
-import { useConversionTracker, useInteractionTracker } from "@/hooks/tracking"
+import { useConversionTracker } from "@/hooks/tracking"
 
 // ============================================================================
 // CONFIGURAÇÃO DOS TEMAS DO CADASTRO
@@ -265,6 +264,11 @@ export default function Cadastro() {
   const {mutateAsync: validaCNPJ, isPending} = useMutationValidaCNPJ();
   const {mutateAsync: validaEmail, isPending: isPendingEmail} = useMutationValidaEmail();
   const {mutateAsync: validaUsername, isPending: isPendingUsername} = useMutationValidaUsername();
+
+  const { data, isLoading, isError, isSuccess } = useGetPlanos();
+
+  const [plano, setPlano] = useState<any[]>([])
+
   const {
     control,
     handleSubmit,
@@ -284,6 +288,16 @@ export default function Cadastro() {
 
   // Validação CNPJ
   const cnpjValue = watch("cnpj")
+
+  useEffect(()=> {
+    if (data && data.success && isSuccess) {
+      const transformed = data.dados.map((plan: any) => ({
+        ...plan,
+        priceAnnual: plan.yearlyPrice > 0 ? plan.yearlyPrice / 12 : 0,
+      }))
+      setPlano(transformed);
+    }
+  },[data, isSuccess])
 
   useEffect(() => {
     const cnpjLimpo = cnpjValue?.replace(/\D/g, "") || ""
@@ -415,7 +429,7 @@ export default function Cadastro() {
 
     // Verifica se o plano passado na URL existe nos planos disponíveis
     if (planoParam) {
-      const planoEncontrado = plans.find(p => p.id === planoParam.toLowerCase())
+      const planoEncontrado = plano.find(p => p.id === planoParam.toLowerCase())
       if (planoEncontrado) {
         setSelectedPlan(planoEncontrado.id)
       }
@@ -433,11 +447,11 @@ export default function Cadastro() {
       cadastroTracked.current = true
       const planoParam = searchParams.get('plano')
       const recorrenciaParam = searchParams.get('recorrencia')
-      trackCadastroStarted(
-        planoParam || undefined,
-        planoParam ? plans.find(p => p.id === planoParam)?.name : undefined,
-        recorrenciaParam === 'anual' ? 'annual' : 'monthly'
-      )
+      // trackCadastroStarted(
+      //   planoParam || undefined,
+      //   planoParam ? plans.find(p => p.id === planoParam)?.name : undefined,
+      //   recorrenciaParam === 'anual' ? 'annual' : 'monthly'
+      // )
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -499,7 +513,7 @@ export default function Cadastro() {
   }
 
   const onSubmit = (data: FormData) => {
-    const selectedPlanData = plans.find(p => p.id === selectedPlan)
+    const selectedPlanData = plano.find(p => p.id === selectedPlan)
     const selectedThemeData = themeArray.find(t => t.id === data.tema)
     
     // Monta objeto base
@@ -577,7 +591,7 @@ export default function Cadastro() {
       setIsSubmitted(true)
       trackCadastroCompleted(
         selectedPlan,
-        plans.find(p => p.id === selectedPlan)?.name,
+        plano.find(p => p.id === selectedPlan)?.name,
         isAnnual ? 'annual' : 'monthly'
       )
     }).catch((error)=>{
@@ -1380,7 +1394,7 @@ export default function Cadastro() {
 
                       {/* Cards de planos selecionáveis */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        {plans.map((plan) => {
+                        {plano.map((plan) => {
                           const displayPrice = isAnnual ? plan.priceAnnual : plan.price
                           const savings = plan.price > 0 ? ((plan.price - plan.priceAnnual) * 12).toFixed(0) : 0
                           const isSelected = selectedPlan === plan.id
@@ -1547,10 +1561,10 @@ export default function Cadastro() {
                           className={`${theme.cardBg} border ${theme.cardBorder} rounded-2xl p-6 transition-colors duration-300`}
                         >
                           <h4 className={`font-bold ${theme.textPrimary} mb-4 transition-colors duration-300`}>
-                            Recursos inclusos no plano {plans.find(p => p.id === selectedPlan)?.name}
+                            Recursos inclusos no plano {plano.find(p => p.id === selectedPlan)?.name}
                           </h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {plans.find(p => p.id === selectedPlan)?.features.map((feature: any, i: number) => (
+                            {plano.find(p => p.id === selectedPlan)?.features.map((feature: any, i: number) => (
                               <div key={i} className="flex items-start gap-2">
                                 {feature.included ? (
                                   <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isDark ? 'text-[#6B8F82]' : 'text-[#4f6f64]'}`} />
@@ -1740,27 +1754,27 @@ export default function Cadastro() {
                         {selectedPlan && (
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                              {plans.find(p => p.id === selectedPlan) && (
+                              {plano.find(p => p.id === selectedPlan) && (
                                 <>
                                   <div 
                                     className="w-12 h-12 rounded-xl flex items-center justify-center"
                                     style={{ 
-                                      background: `linear-gradient(135deg, ${plans.find(p => p.id === selectedPlan)?.color}20, ${plans.find(p => p.id === selectedPlan)?.color}40)`
+                                      background: `linear-gradient(135deg, ${plano.find(p => p.id === selectedPlan)?.color}20, ${plano.find(p => p.id === selectedPlan)?.color}40)`
                                     }}
                                   >
                                     {(() => {
-                                      const SelectedIcon = plans.find(p => p.id === selectedPlan)?.icon;
+                                      const SelectedIcon = plano.find(p => p.id === selectedPlan)?.icon;
                                       return SelectedIcon ? (
                                         <SelectedIcon
                                           className="w-6 h-6"
-                                          style={{ color: plans.find(p => p.id === selectedPlan)?.color }}
+                                          style={{ color: plano.find(p => p.id === selectedPlan)?.color }}
                                         />
                                       ) : null;
                                     })()}
                                   </div>
                                   <div>
                                     <p className={`${theme.textPrimary} font-bold text-lg transition-colors duration-300`}>
-                                      {plans.find(p => p.id === selectedPlan)?.name}
+                                      {plano.find(p => p.id === selectedPlan)?.name}
                                     </p>
                                     <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>
                                       {isAnnual ? "Plano Anual" : "Plano Mensal"}
@@ -1772,8 +1786,8 @@ export default function Cadastro() {
                             <div className="text-right">
                               <p className={`text-2xl font-bold ${theme.textPrimary} transition-colors duration-300`}>
                                 R$ {(isAnnual
-                                  ? plans.find(p => p.id === selectedPlan)?.priceAnnual
-                                  : plans.find(p => p.id === selectedPlan)?.price
+                                  ? plano.find(p => p.id === selectedPlan)?.priceAnnual
+                                  : plano.find(p => p.id === selectedPlan)?.price
                                 )?.toFixed(2).replace('.', ',')}
                               </p>
                               <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>/mês</p>
