@@ -142,6 +142,9 @@ export interface GeoInfo {
   country?: string
   state?: string
   city?: string
+  latitude?: number
+  longitude?: number
+  source?: 'browser' | 'ip'
 }
 
 export interface PerformanceMetrics {
@@ -248,7 +251,8 @@ export interface TrackingConfig {
 }
 
 export const DEFAULT_TRACKING_CONFIG: TrackingConfig = {
-  apiUrl: 'https://api-dev.bellory.com.br/api/tracking',
+  apiUrl: 'https://api.bellory.com.br/api/v1/tracking',
+  // apiUrl: 'http://localhost:8081/api/v1/tracking',
   flushInterval: 10000,
   maxBatchSize: 20,
   enabled: true,
