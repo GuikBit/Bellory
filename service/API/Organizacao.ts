@@ -11,7 +11,8 @@ export interface Response {
 }
 
 const api = axios.create({
-  baseURL: 'https://api.bellory.com.br/api/v1',
+  // baseURL: 'https://api.bellory.com.br/api/v1',
+  baseURL: 'http://localhost:8081/api/v1',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -112,6 +113,23 @@ export async function getBuscarCEP(cep: any): Promise<any> {
   }
 }
 
+
+export async function validarCupom(payload: { codigoCupom: string, planoCodigo: string, cicloCobranca: string }): Promise<Response> {
+  try {
+    const response = await api.post<Response>('/public/planos/validar-cupom', JSON.stringify(payload));
+    return {
+      success: response.data.success,
+      message: response.data.message,
+      errorCode: response.data.errorCode,
+      dados: response.data.dados
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || 'Erro ao validar cupom.');
+    }
+    throw new Error('Erro de rede ou inesperado.');
+  }
+}
 
 export async function getPlanos(): Promise<Response> {
   try {

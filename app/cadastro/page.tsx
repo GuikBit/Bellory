@@ -40,7 +40,7 @@ import Link from "next/link"
 import { themes } from "@/utils/themes"
 import { AddressForm } from "@/components/address-form-improved"
 import { ThemeSelector } from "@/components/theme-selector-improved"
-import { useGetPlanos, useMutationPostOrganizacao, useMutationValidaCNPJ, useMutationValidaEmail, useMutationValidaUsername } from "@/service/Querys/Organizacao"
+import { useGetPlanos, useMutationPostOrganizacao, useMutationValidaCNPJ, useMutationValidaEmail, useMutationValidaUsername, useMutationValidarCupom } from "@/service/Querys/Organizacao"
 import { useTheme } from "@/contexts/HeroThemeContext"
 import { useConversionTracker } from "@/hooks/tracking"
 
@@ -191,6 +191,7 @@ interface FormData {
   emailResponsavel: string
   telefoneResponsavel: string
   publicoAlvo: string
+  segmento: string
 
   // Step 2: Endereço
   cep: string
@@ -239,7 +240,7 @@ export default function Cadastro() {
   const { trackCadastroStarted, trackCadastroStep, trackCadastroCompleted, trackCadastroAbandoned, trackPlanSelected } = useConversionTracker()
   const cadastroTracked = useRef(false)
 
-  const [activeStep, setActiveStep] = useState(0)
+  const [activeStep, setActiveStep] = useState(4)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfPassword, setShowConfPassword] = useState(false)
@@ -260,10 +261,17 @@ export default function Cadastro() {
   const [usernameError, setUsernameError] = useState("")
   const [usernameValid, setUsernameValid] = useState(false)
 
+  // Cupom
+  const [cupomCodigo, setCupomCodigo] = useState("")
+  const [cupomValid, setCupomValid] = useState(false)
+  const [cupomError, setCupomError] = useState("")
+  const [cupomDados, setCupomDados] = useState<any>(null)
+
   const {mutateAsync: postOrganizacao} = useMutationPostOrganizacao();
   const {mutateAsync: validaCNPJ, isPending} = useMutationValidaCNPJ();
   const {mutateAsync: validaEmail, isPending: isPendingEmail} = useMutationValidaEmail();
   const {mutateAsync: validaUsername, isPending: isPendingUsername} = useMutationValidaUsername();
+  const {mutateAsync: validarCupom, isPending: isPendingCupom} = useMutationValidarCupom();
 
   const { data, isLoading, isError, isSuccess } = useGetPlanos();
 
@@ -289,11 +297,15 @@ export default function Cadastro() {
   // Validação CNPJ
   const cnpjValue = watch("cnpj")
 
+  const planIconMap: Record<string, any> = {
+    Gift, Zap, Sparkles, Crown,
+  }
+
   useEffect(()=> {
     if (data && data.success && isSuccess) {
       const transformed = data.dados.map((plan: any) => ({
         ...plan,
-        priceAnnual: plan.yearlyPrice > 0 ? plan.yearlyPrice / 12 : 0,
+        icon: planIconMap[plan.icon] || Zap,
       }))
       setPlano(transformed);
     }
@@ -417,6 +429,44 @@ export default function Cadastro() {
     { name: 'Unissex', code: 'U' }
   ]
 
+  const segmentoOptions = [
+    { name: 'Barbearia', code: 'BARBEARIA' },
+    { name: 'Salão de Beleza', code: 'SALAO_BELEZA' },
+    { name: 'Clínica de Estética', code: 'CLINICA_ESTETICA' },
+    { name: 'Studio', code: 'STUDIO' },
+    { name: 'Nail Designer', code: 'NAIL_DESIGNER' },
+    { name: 'Spa', code: 'SPA' },
+    { name: 'Massagem', code: 'MASSAGEM' }
+  ]
+
+  const handleValidarCupom = () => {
+    if (!cupomCodigo.trim() || !selectedPlan) return
+
+    setCupomError("")
+    setCupomValid(false)
+    setCupomDados(null)
+
+    validarCupom({
+      codigoCupom: cupomCodigo.trim().toUpperCase(),
+      planoCodigo: selectedPlan,
+      cicloCobranca: isAnnual ? "ANUAL" : "MENSAL"
+    }).then((response) => {
+      if (response.dados?.valido) {
+        setCupomValid(true)
+        setCupomDados(response.dados)
+        setCupomError("Cupom aplicado com sucesso!")
+      } else {
+        setCupomValid(false)
+        setCupomDados(null)
+        setCupomError(response.dados?.mensagem || "Cupom inválido")
+      }
+    }).catch((error) => {
+      setCupomValid(false)
+      setCupomDados(null)
+      setCupomError(error.message || "Erro ao validar cupom")
+    })
+  }
+
   const themeArray = Object.values(themes) as Theme[]
 
   // Watch para validação em tempo real
@@ -476,7 +526,7 @@ export default function Cadastro() {
       
       fieldsToValidate = [
         "cnpj", "razaoSocial", "nomeFantasia", "email", "telefone",
-        "nomeResponsavel", "emailResponsavel", "telefoneResponsavel", "publicoAlvo"
+        "nomeResponsavel", "emailResponsavel", "telefoneResponsavel", "publicoAlvo", "segmento"
       ]
     } else if (activeStep === 1) {
       fieldsToValidate = ["cep", "rua", "numero", "bairro", "cidade", "estado"]
@@ -525,6 +575,7 @@ export default function Cadastro() {
       email: data.email,
       telefone: data.telefone,
       publicoAlvo: data.publicoAlvo,
+      segmento: data.segmento,
       responsavel: {
         nome: data.nomeResponsavel,
         email: data.emailResponsavel,
@@ -577,7 +628,7 @@ export default function Cadastro() {
     }
     
     // console.log("=== DADOS COMPLETOS DO CADASTRO ===")
-    // console.log(JSON.stringify(finalData))
+    console.log(JSON.stringify(finalData))
     // console.log("===================================")
     
     // Aqui você pode fazer a chamada para sua API
@@ -606,7 +657,7 @@ export default function Cadastro() {
         values.cnpj && values.razaoSocial && values.nomeFantasia &&
         values.email && values.telefone && values.nomeResponsavel &&
         values.emailResponsavel && values.telefoneResponsavel && 
-        values.publicoAlvo && cnpjValid && cnpjFound && 
+        values.publicoAlvo && values.segmento && cnpjValid && cnpjFound &&
         emailValid && emailFound // CORREÇÃO 3: Adicionar validação de email
       )
     } else if (activeStep === 1) {
@@ -793,7 +844,7 @@ export default function Cadastro() {
             </div>
 
             {/* Form Content */}
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeStep}
@@ -923,7 +974,7 @@ export default function Cadastro() {
                           )}
                         </div>
 
-                        <div>
+                        <div className="md:col-span-2">
                           <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
                             Nome Fantasia <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
                           </label>
@@ -965,13 +1016,62 @@ export default function Cadastro() {
                                   errors.publicoAlvo ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
                                 }`}
                                 pt={{
-                                  input: { className: "px-4 py-3" }
+                                  input: { className: "px-4 py-3 text-sm" },
+                                  trigger: { className: "px-3" },
+                                  panel: { className: `border ${isDark ? 'bg-[#1a1a1a] border-[#333]' : 'bg-white border-[#d8ccc4]'} rounded-xl shadow-lg mt-1 overflow-hidden` },
+                                  list: { className: "py-1" },
+                                  item: ({ context }: any) => ({
+                                    className: `px-4 py-3 text-sm cursor-pointer transition-colors ${
+                                      context?.selected
+                                        ? isDark ? 'bg-[#4f6f64]/30 text-[#7ab8a4]' : 'bg-[#4f6f64]/10 text-[#4f6f64]'
+                                        : isDark ? 'text-[#ccc] hover:bg-[#2a2a2a]' : 'text-[#2a2420] hover:bg-[#f5f0ec]'
+                                    }`
+                                  })
                                 }}
                               />
                             )}
                           />
                           {errors.publicoAlvo && (
                             <small className="text-[#d15847] text-sm mt-1 block">{errors.publicoAlvo.message}</small>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
+                            Segmento <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
+                          </label>
+                          <Controller
+                            name="segmento"
+                            control={control}
+                            rules={{ required: "Segmento é obrigatório" }}
+                            render={({ field }) => (
+                              <Dropdown
+                                {...field}
+                                options={segmentoOptions}
+                                optionLabel="name"
+                                optionValue="code"
+                                placeholder="Selecione o segmento"
+                                className={`${theme.textSecondary} w-full border-2 rounded-xl transition-all ${theme.inputBg} ${
+                                  errors.segmento ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
+                                }`}
+                                pt={{
+                                  input: { className: "px-4 py-3 text-sm" },
+                                  trigger: { className: "px-3" },
+                                  panel: { className: `border ${isDark ? 'bg-[#1a1a1a] border-[#333]' : 'bg-white border-[#d8ccc4]'} rounded-xl shadow-lg mt-1 overflow-hidden` },
+                                  list: { className: "py-1" },
+                                  item: ({ context }: any) => ({
+                                    className: `px-4 py-3 text-sm cursor-pointer transition-colors ${
+                                      context?.selected
+                                        ? isDark ? 'bg-[#4f6f64]/30 text-[#7ab8a4]' : 'bg-[#4f6f64]/10 text-[#4f6f64]'
+                                        : isDark ? 'text-[#ccc] hover:bg-[#2a2a2a]' : 'text-[#2a2420] hover:bg-[#f5f0ec]'
+                                    }`
+                                  })
+                                }}
+                              />
+                            )}
+                          />
+                          {errors.segmento && (
+                            <small className="text-[#d15847] text-sm mt-1 block">{errors.segmento.message}</small>
                           )}
                         </div>
 
@@ -1203,6 +1303,7 @@ export default function Cadastro() {
                               <div className="relative">
                                 <InputText
                                   {...field}
+                                  onChange={(e) => field.onChange(e.target.value.toLowerCase())}
                                   placeholder="Escolha um nome de usuário (mínimo 6 caracteres)"
                                   className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${theme.textSecondary} ${
                                     errors.login
@@ -1213,7 +1314,7 @@ export default function Cadastro() {
                                       ? "border-[#d15847]"
                                       : `${theme.inputBorder} ${theme.inputFocus}`
                                   }`}
-                                  // Removido o disabled para não perder foco
+                                  style={{ textTransform: "lowercase" }}
                                 />
                                 {/* Indicador sempre visível no canto direito */}
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -1364,7 +1465,7 @@ export default function Cadastro() {
 
                           <button
                             type="button"
-                            onClick={() => setIsAnnual(!isAnnual)}
+                            onClick={() => { setIsAnnual(!isAnnual); setCupomValid(false); setCupomError(""); setCupomDados(null); }}
                             className="relative w-16 h-8 rounded-full transition-colors duration-300"
                             style={{ backgroundColor: isAnnual ? '#4f6f64' : '#d8ccc4' }}
                           >
@@ -1395,17 +1496,17 @@ export default function Cadastro() {
                       {/* Cards de planos selecionáveis */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         {plano.map((plan) => {
-                          const displayPrice = isAnnual ? plan.priceAnnual : plan.price
-                          const savings = plan.price > 0 ? ((plan.price - plan.priceAnnual) * 12).toFixed(0) : 0
+                          const displayPrice = isAnnual ? plan.yearlyPrice : plan.price
+                          const savings = plan.price > 0 ? ((plan.price - plan.yearlyPrice) * 12).toFixed(0) : 0
                           const isSelected = selectedPlan === plan.id
-                          const discountPercent = plan.price > 0 ? Math.round(((plan.price - plan.priceAnnual) / plan.price) * 100) : 0
-                          const totalAnnual = plan.priceAnnual * 12
+                          const discountPercent = plan.price > 0 ? Math.round(((plan.price - plan.yearlyPrice) / plan.price) * 100) : 0
+                          const totalAnnual = plan.yearlyPrice * 12
 
                           return (
                             <motion.button
                               key={plan.id}
                               type="button"
-                              onClick={() => setSelectedPlan(plan.id)}
+                              onClick={() => { setSelectedPlan(plan.id); setCupomValid(false); setCupomError(""); setCupomDados(null); }}
                               whileHover={{ scale: 1.02 }}
                               whileTap={{ scale: 0.98 }}
                               className={`relative p-6 rounded-2xl border-2 transition-all duration-300 text-left ${
@@ -1487,9 +1588,20 @@ export default function Cadastro() {
                                   )}
 
                                   <div className="flex items-baseline gap-2">
-                                    <span className={`text-4xl font-bold ${isDark? `text-[#F5F0EB]`:`text-[#2a2420]`}`} style={{ color: theme.textPrimary }}>
-                                      R$ {displayPrice.toFixed(2).replace('.', ',')}
-                                    </span>
+                                    {cupomValid && cupomDados && isSelected ? (
+                                      <>
+                                        <span className={`text-lg line-through ${theme.textMuted}`}>
+                                          R$ {cupomDados.valorOriginal.toFixed(2).replace('.', ',')}
+                                        </span>
+                                        <span className={`text-4xl font-bold ${isDark ? 'text-[#5a7a6e]' : 'text-[#4f6f64]'}`}>
+                                          R$ {cupomDados.valorComDesconto.toFixed(2).replace('.', ',')}
+                                        </span>
+                                      </>
+                                    ) : (
+                                      <span className={`text-4xl font-bold ${isDark? `text-[#F5F0EB]`:`text-[#2a2420]`}`} style={{ color: theme.textPrimary }}>
+                                        R$ {displayPrice.toFixed(2).replace('.', ',')}
+                                      </span>
+                                    )}
                                     {plan.price > 0 && (
                                       <span className={`${isDark? `text-[#B8AEA4]`:`text-[#4f6f64]`}`}>/mês</span>
                                     )}
@@ -1551,6 +1663,100 @@ export default function Cadastro() {
                             </motion.button>
                           )
                         })}
+                      </div>
+
+                      {/* Cupom de desconto */}
+                      <div className={`${theme.cardBg} border ${theme.cardBorder} rounded-2xl p-6 transition-colors duration-300`}>
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className={`w-10 h-10 rounded-lg ${theme.sectionIconBg('#db6f57')} flex items-center justify-center`}>
+                            <Gift className={`w-5 h-5 ${isDark ? 'text-[#E07A62]' : 'text-[#db6f57]'}`} />
+                          </div>
+                          <div>
+                            <h4 className={`font-bold ${theme.textPrimary} transition-colors duration-300`}>Cupom de Desconto</h4>
+                            <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>Possui um cupom? Insira abaixo</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3">
+                          <div className="relative flex-1">
+                            <InputText
+                              value={cupomCodigo}
+                              onChange={(e) => {
+                                setCupomCodigo(e.target.value.toUpperCase())
+                                setCupomValid(false)
+                                setCupomError("")
+                                setCupomDados(null)
+                              }}
+                              placeholder={selectedPlan ? "Digite o código do cupom" : "Selecione um plano primeiro"}
+                              readOnly={!selectedPlan}
+                              className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${theme.textSecondary} ${
+                                !selectedPlan
+                                  ? `${theme.inputBorder} opacity-60 cursor-not-allowed`
+                                  : cupomValid
+                                  ? isDark ? "border-[#5a7a6e]" : "border-green-500"
+                                  : cupomError && !cupomValid
+                                  ? "border-[#d15847]"
+                                  : `${theme.inputBorder} ${theme.inputFocus}`
+                              }`}
+                              style={{ textTransform: "uppercase" }}
+                            />
+                            {cupomValid && (
+                              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                <Check className={`w-5 h-5 ${isDark ? 'text-[#5a7a6e]' : 'text-green-500'}`} />
+                              </div>
+                            )}
+                            {cupomError && !cupomValid && (
+                              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                <X className="w-5 h-5 text-[#d15847]" />
+                              </div>
+                            )}
+                          </div>
+                          <Button
+                            type="button"
+                            onClick={handleValidarCupom}
+                            disabled={!selectedPlan || !cupomCodigo.trim() || isPendingCupom}
+                            className={`px-6 py-3 rounded-xl font-semibold transition-all ${
+                              !selectedPlan || !cupomCodigo.trim()
+                                ? `${isDark ? 'bg-[#333] text-[#666]' : 'bg-gray-200 text-gray-400'} cursor-not-allowed`
+                                : `${isDark ? 'bg-[#4f6f64] hover:bg-[#5a7a6e]' : 'bg-[#4f6f64] hover:bg-[#5a7a6e]'} text-white`
+                            }`}
+                            label={isPendingCupom ? "" : "Aplicar"}
+                            icon={isPendingCupom ? "pi pi-spin pi-spinner" : undefined}
+                          />
+                        </div>
+                        {cupomError && (
+                          <small className={`text-sm mt-2 block ${cupomValid ? (isDark ? 'text-[#5a7a6e]' : 'text-green-600') : 'text-[#d15847]'}`}>
+                            {cupomError}
+                          </small>
+                        )}
+                        {cupomValid && cupomDados && (
+                          <div className={`mt-4 p-4 rounded-xl border ${isDark ? 'bg-[#5a7a6e]/10 border-[#5a7a6e]/30' : 'bg-[#4f6f64]/5 border-[#4f6f64]/20'}`}>
+                            <div className="flex items-center justify-between text-sm">
+                              <span className={theme.textSecondary}>Valor original:</span>
+                              <span className={`${theme.textPrimary} line-through`}>R$ {cupomDados.valorOriginal.toFixed(2).replace('.', ',')}</span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm mt-1">
+                              <span className={theme.textSecondary}>Desconto ({cupomDados.tipoDesconto === 'PERCENTUAL' ? `${cupomDados.percentualDesconto}%` : `R$ ${cupomDados.valorDesconto.toFixed(2).replace('.', ',')}`}):</span>
+                              <span className={`font-semibold ${isDark ? 'text-[#5a7a6e]' : 'text-[#4f6f64]'}`}>
+                                - R$ {(cupomDados.valorOriginal - cupomDados.valorComDesconto).toFixed(2).replace('.', ',')}
+                              </span>
+                            </div>
+                            <div className={`flex items-center justify-between mt-2 pt-2 border-t ${isDark ? 'border-[#5a7a6e]/30' : 'border-[#4f6f64]/20'}`}>
+                              <span className={`font-bold ${theme.textPrimary}`}>Valor final:</span>
+                              <span className={`text-lg font-bold ${isDark ? 'text-[#5a7a6e]' : 'text-[#4f6f64]'}`}>
+                                R$ {cupomDados.valorComDesconto.toFixed(2).replace('.', ',')}/mês
+                              </span>
+                            </div>
+                            <div className={`mt-3 px-3 py-2 rounded-lg text-sm ${
+                              cupomDados.tipoAplicacao === 'RECORRENTE'
+                                ? isDark ? 'bg-[#4f6f64]/15 text-[#7ab8a4]' : 'bg-[#4f6f64]/10 text-[#4f6f64]'
+                                : isDark ? 'bg-[#db6f57]/15 text-[#E07A62]' : 'bg-[#db6f57]/10 text-[#db6f57]'
+                            }`}>
+                              {cupomDados.tipoAplicacao === 'RECORRENTE'
+                                ? '🔄 Desconto aplicado em todas as cobranças enquanto o cupom estiver vigente.'
+                                : '1️⃣ Desconto aplicado somente na primeira cobrança.'}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Detalhes do plano selecionado */}
@@ -1624,6 +1830,12 @@ export default function Cadastro() {
                             <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Público Alvo</p>
                             <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>
                               {publicoAlvoOptions.find(p => p.code === getValues("publicoAlvo"))?.name}
+                            </p>
+                          </div>
+                          <div>
+                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Segmento</p>
+                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>
+                              {segmentoOptions.find(s => s.code === getValues("segmento"))?.name}
                             </p>
                           </div>
                           <div>
@@ -1784,12 +1996,23 @@ export default function Cadastro() {
                               )}
                             </div>
                             <div className="text-right">
-                              <p className={`text-2xl font-bold ${theme.textPrimary} transition-colors duration-300`}>
-                                R$ {(isAnnual
-                                  ? plano.find(p => p.id === selectedPlan)?.priceAnnual
-                                  : plano.find(p => p.id === selectedPlan)?.price
-                                )?.toFixed(2).replace('.', ',')}
-                              </p>
+                              {cupomValid && cupomDados ? (
+                                <>
+                                  <p className={`text-sm line-through ${theme.textMuted} transition-colors duration-300`}>
+                                    R$ {cupomDados.valorOriginal.toFixed(2).replace('.', ',')}
+                                  </p>
+                                  <p className={`text-2xl font-bold ${isDark ? 'text-[#5a7a6e]' : 'text-[#4f6f64]'} transition-colors duration-300`}>
+                                    R$ {cupomDados.valorComDesconto.toFixed(2).replace('.', ',')}
+                                  </p>
+                                </>
+                              ) : (
+                                <p className={`text-2xl font-bold ${theme.textPrimary} transition-colors duration-300`}>
+                                  R$ {(isAnnual
+                                    ? plano.find(p => p.id === selectedPlan)?.yearlyPrice
+                                    : plano.find(p => p.id === selectedPlan)?.price
+                                  )?.toFixed(2).replace('.', ',')}
+                                </p>
+                              )}
                               <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>/mês</p>
                             </div>
                           </div>

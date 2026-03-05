@@ -1,6 +1,6 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getBuscarCEP, getPlanos, postOrganizacao, validaCNPJ, validaEmail, validaUsename } from "../API/Organizacao";
+import { getBuscarCEP, getPlanos, postOrganizacao, validaCNPJ, validaEmail, validaUsename, validarCupom } from "../API/Organizacao";
 
 export function useMutationPostOrganizacao(){
     // const queryClient = useQueryClient();
@@ -71,6 +71,20 @@ export function useMutationGetBuscarCEP(){
             return response;       
         } 
     })
+}
+
+export function useMutationValidarCupom(){
+  return useMutation({
+    mutationKey: ['validarCupom'],
+    mutationFn: async (payload: { codigoCupom: string, planoCodigo: string, cicloCobranca: string }) =>{
+      const response = await validarCupom(payload);
+      if (response.success) {
+        return response;
+      } else {
+        throw new Error(response.message);
+      }
+    }
+  })
 }
 
 export function useGetPlanos() {
