@@ -240,7 +240,7 @@ export default function Cadastro() {
   const { trackCadastroStarted, trackCadastroStep, trackCadastroCompleted, trackCadastroAbandoned, trackPlanSelected } = useConversionTracker()
   const cadastroTracked = useRef(false)
 
-  const [activeStep, setActiveStep] = useState(4)
+  const [activeStep, setActiveStep] = useState(0)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfPassword, setShowConfPassword] = useState(false)
