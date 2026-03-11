@@ -343,15 +343,18 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
         <div className="container mx-auto  ">
           <div className="flex items-center justify-between md:h-20 h-12">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group relative">
-              <motion.div
-                whileHover={{ scale: 1.08, rotate: [0, -2, 2, 0] }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
-                className={`text-2xl font-serif font-bold bg-gradient-to-r ${theme.logoGradient} bg-clip-text text-transparent relative overflow-hidden`}
-              >
-                Bellory
-              </motion.div>
-            </Link>
+            <div className="flex items-center gap-2" >              
+              <Link href="/" className="flex items-center gap-2 group relative">                
+                <motion.div
+                  whileHover={{ scale: 1.08, rotate: [0, -2, 2, 0] }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  className={`flex items-center gap-2 text-2xl font-serif font-bold bg-gradient-to-r from-[#db6f57] to-[#8b3d35] bg-clip-text text-transparent`}
+                >
+                  <img src="/bellory2sfundo.svg" alt="Bellory Logo" className="h-7 w-auto" style={{filter: "drop-shadow(2px 2px 2px #11111130)"}} />
+                  Bellory
+                </motion.div>
+              </Link>
+            </div>
 
             {/* Desktop Navigation */}
             {isMenu && (

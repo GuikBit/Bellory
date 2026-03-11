@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/og-image.png',
+        url: '/bellory2sfundo.svg',
         width: 1200,
         height: 630,
         alt: 'Bellory - Sistema de Gestão para Salões e Barbearias',
@@ -86,8 +86,13 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Bellory - Sistema de Gestão para Salões e Barbearias',
     description: 'Transforme a gestão do seu negócio com o Bellory',
-    images: ['/og-image.png'],
+    images: ['/bellory2sfundo.svg'],
     creator: '@bellory',
+  },
+  icons: {
+    icon: '/bellory2sfundo.svg',
+    shortcut: '/bellory2sfundo.svg',
+    apple: '/bellory2sfundo.svg',
   },
   robots: {
     index: true,

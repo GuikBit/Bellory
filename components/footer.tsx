@@ -130,7 +130,8 @@ export function Footer() {
           {/* Coluna da marca */}
           <div className="lg:col-span-2">
             <Link href="/" className="inline-block mb-6">
-              <div className="text-3xl font-serif font-bold bg-gradient-to-r from-[#db6f57] to-[#e88c76] bg-clip-text text-transparent">
+              <div className="flex items-center gap-2 text-3xl font-serif font-bold bg-gradient-to-r from-[#db6f57] to-[#e88c76] bg-clip-text text-transparent">
+                <img src="/bellory2sfundo.svg" alt="Bellory Logo" className="h-8 w-auto" style={{filter: "drop-shadow(2px 2px 2px #11111130)"}} />
                 Bellory
               </div>
             </Link>
