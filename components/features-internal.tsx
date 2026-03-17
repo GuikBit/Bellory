@@ -17,8 +17,10 @@ import {
   ArrowRight,
   Heart,
   type LucideIcon,
+  LayoutGrid,
 } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import { useRef, useState, useEffect, useMemo } from "react"
 
 // ─── Data: 4 quadrants matching the sketch ───
@@ -42,7 +44,7 @@ const quadrants: Quadrant[] = [
   {
     id: "seo",
     title: "SEO & Negócio",
-    tagline: "Presença digital profissional",
+    tagline: "Presença digital profissional para atrair mais clientes",
     color: "#8b3d35",
     position: "top-left",
     features: [
@@ -69,7 +71,7 @@ const quadrants: Quadrant[] = [
   {
     id: "automacao",
     title: "Automação Inteligente",
-    tagline: "Nunca mais perca um cliente",
+    tagline: "Nunca mais perca um cliente, reduza faltas em até 40%",
     color: "#db6f57",
     position: "top-right",
     features: [
@@ -96,7 +98,7 @@ const quadrants: Quadrant[] = [
   {
     id: "financeiro",
     title: "Financeiro",
-    tagline: "Saúde financeira em tempo real",
+    tagline: "Saúde financeira em tempo real para decisões inteligentes",
     color: "#4f6f64",
     position: "bottom-left",
     features: [
@@ -123,7 +125,7 @@ const quadrants: Quadrant[] = [
   {
     id: "admin",
     title: "Administrativo",
-    tagline: "Gestão no piloto automático",
+    tagline: "Gestão no piloto automático, economize até 10 horas por semana",
     color: "#db6f57",
     position: "bottom-right",
     features: [
@@ -363,7 +365,7 @@ function QuadrantCard({
               {quadrant.title}
             </h3>
           </div>
-          <p className="text-xs text-[#5a4a42]/50 pl-5">
+          <p className="text-sm text-[#5a4a42] pl-5">
             {quadrant.tagline}
           </p>
         </div>
@@ -649,6 +651,34 @@ export function FeaturesInternal() {
 
 
         </div>
+
+          {/* CTA button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="mt-14 md:mt-18 px-4 relative z-10"
+          >
+            <Link
+              href="/funcionalidades"
+              className="group/cta block w-full max-w-4xl mx-auto bg-gradient-to-r from-[#4f6f64] to-[#3d574f] text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <LayoutGrid className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 flex-shrink-0" />
+                  <div className="text-left">
+                    <h3 className="text-base sm:text-xl lg:text-2xl font-bold mb-0.5 sm:mb-1">
+                      Conheça todas as funcionalidades
+                    </h3>
+                    <p className="text-white/80 text-xs sm:text-sm lg:text-base">
+                      E veja como podemos transformar seu negócio hoje mesmo
+                    </p>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 transition-transform duration-300 group-hover/cta:translate-x-1" />
+              </div>
+            </Link>
+          </motion.div>
 
       </section>  
     </>

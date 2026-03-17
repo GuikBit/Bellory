@@ -1,6 +1,7 @@
 import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
 import { FeaturesInternal } from "@/components/features-internal"
+import { FeaturesInternalOld } from "@/components/features-internalOld"
 import { FeaturesExternal } from "@/components/features-external"
 import { DemoSection } from "@/components/demo-section"
 import { Benefits } from "@/components/benefits"
@@ -17,7 +18,8 @@ export default function Home() {
     <main className="min-h-screen overflow-x-hidden">
       <Header isMenu={true} isCadastro={true}/>
       <Hero />
-      <FeaturesInternal />
+      <FeaturesInternal /> 
+      {/* <FeaturesInternalOld />  */}
       <AIAgentSection />
       {/* <FeaturesExternal /> */}
       {/* <DemoSection />

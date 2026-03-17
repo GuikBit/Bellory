@@ -452,7 +452,6 @@ export function Hero() {
           >
             {/* All cards + lines move down with scroll */}
             <motion.g style={{ translateY: cardsTranslateY }}>
-              {/* Connection lines */}
               {paths.map((p, i) => (
                 <ConnectionLine
                   key={p.id}
@@ -465,7 +464,6 @@ export function Hero() {
                 />
               ))}
 
-              {/* Feature cards */}
               <g className="pointer-events-auto">
                 {FEATURE_CARDS.map((card, i) => (
                   <FeatureCardSVG

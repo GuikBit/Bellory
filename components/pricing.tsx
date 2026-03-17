@@ -1,6 +1,6 @@
 "use client"
 
-import { motion, useInView } from "framer-motion"
+import { motion, useInView, useReducedMotion } from "framer-motion"
 import {
   Check,
   X,
@@ -338,7 +338,8 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro }: any) => {
 export function Pricing() {
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
-  const [isAnnual, setIsAnnual] = useState(false) // Mensal como padrão
+  const prefersReduced = useReducedMotion()
+  const [isAnnual, setIsAnnual] = useState(false)
   const [showROI, setShowROI] = useState(false)
   const [monthlyRevenue, setMonthlyRevenue] = useState(10000)
   const { trackInteraction } = useInteractionTracker()
@@ -364,7 +365,7 @@ export function Pricing() {
     const newCustomers = monthlyRevenue * 0.25
 
     const totalGain = timeSaved * hourlyValue + noShowReduction + newCustomers
-    const systemCost = 139.9 // plano Plus atualizado
+    const systemCost = 139.9
     const roi = ((totalGain - systemCost) / systemCost * 100).toFixed(0)
 
     return {
@@ -382,42 +383,59 @@ export function Pricing() {
     <section
       ref={sectionRef}
       id="planos"
-      className="py-16 sm:py-20 lg:py-32 relative overflow-hidden bg-[#f0e8e3] border-t border-[#d8ccc4]"
+      className="py-24 md:py-32 relative overflow-hidden bg-[#f3eeea]"
     >
-      {/* Background decorativo */}
+      {/* Background pattern */}
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(
-            "#8b3d35"
-          )}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          opacity: 0.03,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b3d35' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }}
+      />
+
+      {/* Animated blobs */}
+      <motion.div
+        className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-[#db6f57]/[0.06] to-[#8b3d35]/[0.04] rounded-full blur-3xl"
+        animate={
+          prefersReduced
+            ? {}
+            : { scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }
+        }
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-gradient-to-tr from-[#4f6f64]/[0.06] to-[#db6f57]/[0.04] rounded-full blur-3xl"
+        animate={
+          prefersReduced
+            ? {}
+            : { scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }
+        }
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
       />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center max-w-4xl mx-auto mb-8 sm:mb-12 lg:mb-16"
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.7 }}
+          className="text-center mb-16 md:mb-20"
         >
-          <div className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-[#8b3d35]/10 border border-[#8b3d35]/20 mb-6 sm:mb-8">
-            <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-[#db6f57]" />
-            <span className="font-bold text-[#8b3d35] uppercase tracking-wide text-xs sm:text-sm">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8b3d35]/[0.08] border border-[#8b3d35]/20 mb-6">
+            <Crown className="w-4 h-4 text-[#db6f57]" />
+            <span className="text-xs font-bold text-[#8b3d35] uppercase tracking-wider">
               Planos e Preços
             </span>
           </div>
 
-          <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 sm:mb-6 text-[#2a2420] leading-[1.1]">
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#2a2420] mb-4 leading-[1.1]">
             Escolha o plano{" "}
-            <span className="bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#db6f57] to-[#8b3d35] bg-clip-text text-transparent">
               perfeito para você
             </span>
           </h2>
 
-          <p className="text-lg sm:text-xl md:text-2xl text-[#5a7d71] leading-relaxed mb-6 sm:mb-8">
+          <p className="text-base sm:text-lg text-[#5a4a42]/70 leading-relaxed max-w-2xl mx-auto mb-8">
             Sem surpresas. Sem taxas escondidas.{" "}
             <span className="text-[#8b3d35] font-semibold">
               Cancele quando quiser
@@ -425,93 +443,59 @@ export function Pricing() {
             .
           </p>
 
-          {/* Toggle mensal/anual — Mensal vem ativo por padrão */}
-          <div className="flex flex-col items-center gap-3 sm:gap-4 mb-4">
-            <div className="flex items-center justify-center gap-3 sm:gap-4">
-              <div className="hidden sm:flex w-[180px] justify-end">
-                {!isAnnual && (
-                  <motion.span
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#5a7a6e] text-white text-sm font-bold rounded-full"
-                  >
-                    <Shield className="w-3.5 h-3.5" />
-                    Mais flexível
-                  </motion.span>
-                )}
-              </div>
+          {/* Toggle mensal/anual */}
+          <div className="inline-flex items-center rounded-full p-1 border"
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.85)",
+              backdropFilter: "blur(12px)",
+              borderColor: "#2a242015",
+              boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
+            }}
+          >
+            <button
+              onClick={() => {
+                if (isAnnual) {
+                  setIsAnnual(false)
+                  trackInteraction("plan_toggle_monthly", "pricing-billing-toggle", { section: "pricing" })
+                }
+              }}
+              className="relative px-5 sm:px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300"
+              style={{
+                backgroundColor: !isAnnual ? "#4f6f64" : "transparent",
+                color: !isAnnual ? "#ffffff" : "#5a4a42aa",
+              }}
+            >
+              Mensal
+            </button>
+            <button
+              onClick={() => {
+                if (!isAnnual) {
+                  setIsAnnual(true)
+                  trackInteraction("plan_toggle_annual", "pricing-billing-toggle", { section: "pricing" })
+                }
+              }}
+              className="relative flex items-center gap-2 px-5 sm:px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300"
+              style={{
+                backgroundColor: isAnnual ? "#db6f57" : "transparent",
+                color: isAnnual ? "#ffffff" : "#5a4a42aa",
+              }}
+            >
+              Anual
               <span
-                className="font-semibold text-sm sm:text-base"
-                style={{ color: !isAnnual ? "#2a2420" : "#99A1AF" }}
-              >
-                Mensal
-              </span>
-              <button
-                onClick={() => {
-                  const next = !isAnnual
-                  setIsAnnual(next)
-                  trackInteraction(
-                    next ? "plan_toggle_annual" : "plan_toggle_monthly",
-                    "pricing-billing-toggle",
-                    { section: "pricing" }
-                  )
+                className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                style={{
+                  backgroundColor: isAnnual ? "rgba(255,255,255,0.25)" : "#db6f5715",
+                  color: isAnnual ? "#ffffff" : "#db6f57",
                 }}
-                className="relative w-14 h-7 sm:w-16 sm:h-8 rounded-full transition-colors duration-300 flex-shrink-0"
-                style={{ backgroundColor: isAnnual ? "#db6f57" : "#5a7a6e" }}
               >
-                <div
-                  className="absolute top-0.5 left-1 w-6 h-6 sm:top-1 sm:w-6 sm:h-6 bg-white rounded-full shadow-md transition-transform duration-300"
-                  style={{
-                    transform: isAnnual
-                      ? "translateX(24px)"
-                      : "translateX(0)",
-                  }}
-                />
-              </button>
-              <span
-                className="font-semibold text-sm sm:text-base"
-                style={{ color: isAnnual ? "#2a2420" : "#99A1AF" }}
-              >
-                Anual
+                Até -10%
               </span>
-              <div className="hidden sm:block w-[180px]">
-                {isAnnual && (
-                  <motion.span
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="px-3 py-1 bg-[#db6f57] text-white text-sm font-bold rounded-full"
-                  >
-                    Economize 10%
-                  </motion.span>
-                )}
-              </div>
-            </div>
-            {/* Badge mobile - aparece abaixo do toggle */}
-            <div className="sm:hidden">
-              {isAnnual ? (
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="px-3 py-1 bg-[#db6f57] text-white text-xs font-bold rounded-full"
-                >
-                  Economize 10%
-                </motion.span>
-              ) : (
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#5a7a6e] text-white text-xs font-bold rounded-full"
-                >
-                  <Shield className="w-3 h-3" />
-                  Mais flexível
-                </motion.span>
-              )}
-            </div>
+            </button>
           </div>
         </motion.div>
 
         {/* Grid de planos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mb-12 max-w-8xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mb-14 max-w-8xl mx-auto">
           {planos && planos.map((plan: any, index: number) => (
             <PlanCard
               key={plan.id}
@@ -522,42 +506,50 @@ export function Pricing() {
           ))}
         </div>
 
-        {/* ===== BANNER PIX — Abaixo dos cards de plano ===== */}
+        {/* ===== BANNER PIX ===== */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="max-w-4xl mx-auto mb-12 sm:mb-16 lg:mb-20"
+          className="max-w-4xl mx-auto mb-14"
         >
-          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#f0fdf4] via-[#ecfdf5] to-[#f0fdf4] border border-[#bbf7d0] p-4 sm:p-6 lg:p-8 shadow-lg">
-            {/* Decoração sutil */}
+          <div
+            className="relative overflow-hidden rounded-3xl border p-5 sm:p-7"
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.85)",
+              backdropFilter: "blur(12px)",
+              borderColor: "#10b98120",
+              boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
+            }}
+          >
             <div
-              className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-20"
+              className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-3xl"
               style={{
-                background:
-                  "radial-gradient(circle, #10b981 0%, transparent 70%)",
+                background: "radial-gradient(ellipse at center, #10b98106 0%, transparent 70%)",
               }}
             />
 
             <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-              {/* Ícone Pix */}
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                <QrCode className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-600" />
+              <div
+                className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{
+                  backgroundColor: "#10b98112",
+                  border: "1.5px solid #10b98125",
+                }}
+              >
+                <QrCode className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-600" />
               </div>
 
-              {/* Texto */}
               <div className="flex-1 text-center sm:text-left">
                 <h4 className="text-base sm:text-lg font-bold text-[#2a2420] mb-1">
                   Pague com Pix e comece na hora
                 </h4>
-                <p className="text-[#4f6f64] text-sm leading-relaxed">
+                <p className="text-sm text-[#5a4a42]/70 leading-relaxed">
                   Pagamentos via Pix são confirmados instantaneamente — seu
-                  plano é ativado em segundos, sem esperar aprovação de
-                  operadora de cartão.
+                  plano é ativado em segundos.
                 </p>
               </div>
 
-              {/* Badges */}
               <div className="flex flex-col gap-2 flex-shrink-0">
                 {[
                   { icon: Zap, text: "Ativação imediata" },
@@ -566,7 +558,11 @@ export function Pricing() {
                 ].map((item, idx) => (
                   <span
                     key={idx}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-white border border-emerald-200 text-emerald-700 shadow-sm"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold"
+                    style={{
+                      backgroundColor: "#10b98115",
+                      color: "#10b981",
+                    }}
                   >
                     <item.icon className="w-3.5 h-3.5" />
                     {item.text}
@@ -574,15 +570,19 @@ export function Pricing() {
                 ))}
               </div>
             </div>
+
+            <div
+              className="absolute bottom-0 left-0 h-0.5 w-0 group-hover:w-full transition-all duration-700 bg-emerald-500"
+            />
           </div>
         </motion.div>
 
         {/* Calculadora de ROI */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="max-w-4xl mx-auto mb-12 sm:mb-16 lg:mb-20"
+          transition={{ duration: 0.7, delay: 0.6 }}
+          className="max-w-4xl mx-auto mb-14"
         >
           <button
             onClick={() => {
@@ -621,7 +621,13 @@ export function Pricing() {
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
-              className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 mt-3 sm:mt-4 shadow-xl border border-[#d8ccc4]"
+              className="rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 mt-4 border"
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.85)",
+                backdropFilter: "blur(12px)",
+                borderColor: "#4f6f6420",
+                boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
+              }}
             >
               <div className="mb-6">
                 <label className="block text-sm font-semibold mb-2 text-[#2a2420]">
@@ -644,44 +650,38 @@ export function Pricing() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
-                <div className="bg-[#f0e8e3] rounded-xl sm:rounded-2xl p-4 sm:p-6">
+                <div
+                  className="rounded-2xl border p-4 sm:p-6"
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.6)",
+                    borderColor: "#4f6f6420",
+                  }}
+                >
                   <h4 className="font-bold text-[#2a2420] mb-4 flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-[#5a7a6e]" />
+                    <TrendingUp className="w-5 h-5 text-[#4f6f64]" />
                     Ganhos Mensais
                   </h4>
                   <ul className="space-y-3 text-sm">
                     <li className="flex justify-between">
-                      <span className="text-[#4f6f64]">
-                        Tempo economizado:
-                      </span>
-                      <span className="font-bold text-[#2a2420]">
-                        R$ {roiData.timeSaved}
-                      </span>
+                      <span className="text-[#5a4a42]/70">Tempo economizado:</span>
+                      <span className="font-bold text-[#2a2420]">R$ {roiData.timeSaved}</span>
                     </li>
                     <li className="flex justify-between">
-                      <span className="text-[#4f6f64]">
-                        Redução de faltas:
-                      </span>
-                      <span className="font-bold text-[#2a2420]">
-                        R$ {roiData.noShowReduction}
-                      </span>
+                      <span className="text-[#5a4a42]/70">Redução de faltas:</span>
+                      <span className="font-bold text-[#2a2420]">R$ {roiData.noShowReduction}</span>
                     </li>
                     <li className="flex justify-between">
-                      <span className="text-[#4f6f64]">Novos clientes:</span>
-                      <span className="font-bold text-[#2a2420]">
-                        R$ {roiData.newCustomers}
-                      </span>
+                      <span className="text-[#5a4a42]/70">Novos clientes:</span>
+                      <span className="font-bold text-[#2a2420]">R$ {roiData.newCustomers}</span>
                     </li>
-                    <li className="flex justify-between pt-3 border-t border-[#d8ccc4]">
+                    <li className="flex justify-between pt-3" style={{ borderTop: "1px solid #4f6f6420" }}>
                       <span className="font-bold text-[#2a2420]">Total:</span>
-                      <span className="font-bold text-[#5a7a6e]">
-                        R$ {roiData.totalGain}
-                      </span>
+                      <span className="font-bold text-[#4f6f64]">R$ {roiData.totalGain}</span>
                     </li>
                   </ul>
                 </div>
 
-                <div className="bg-gradient-to-br from-[#5a7a6e] to-[#4f6f64] rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white">
+                <div className="bg-gradient-to-br from-[#4f6f64] to-[#3d574f] rounded-2xl p-4 sm:p-6 text-white">
                   <h4 className="font-bold mb-3 sm:mb-4">Seu ROI</h4>
                   <div className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-2">
                     {roiData.roi}%
@@ -689,53 +689,57 @@ export function Pricing() {
                   <p className="text-white/80 mb-3 sm:mb-4 text-sm sm:text-base">
                     de retorno sobre investimento
                   </p>
-                  <div className="bg-white/20 rounded-lg sm:rounded-xl p-3 sm:p-4">
+                  <div className="bg-white/15 rounded-xl p-3 sm:p-4">
                     <p className="text-sm">
                       Com o plano Plus (R$ 139,90/mês), você pode ganhar até{" "}
                       <span className="font-bold">
-                        R${" "}
-                        {(Number(roiData.totalGain) - 139.9).toFixed(0)}
-                        /mês
+                        R$ {(Number(roiData.totalGain) - 139.9).toFixed(0)}/mês
                       </span>
                     </p>
                   </div>
                 </div>
               </div>
 
-              <p className="text-center text-sm text-[#4f6f64]">
-                *Cálculo baseado em médias de clientes reais. Resultados
-                podem variar.
+              <p className="text-center text-sm text-[#5a4a42]/50">
+                *Cálculo baseado em médias de clientes reais. Resultados podem variar.
               </p>
             </motion.div>
           )}
-        </motion.div>
+        </motion.div> */}
 
         {/* FAQ */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.7, delay: 0.7 }}
           className="max-w-3xl mx-auto"
         >
-          <h3 className="text-center text-2xl sm:text-3xl font-bold text-[#2a2420] mb-6 sm:mb-8">
+          <h3 className="font-serif text-center text-2xl sm:text-3xl font-bold text-[#2a2420] mb-6">
             Perguntas Frequentes
           </h3>
-          <div className="space-y-3 sm:space-y-4">
+          <div
+            className="rounded-2xl border divide-y overflow-hidden"
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.85)",
+              backdropFilter: "blur(12px)",
+              borderColor: "#db6f5720",
+              boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
+            }}
+          >
             {planFAQs.map((faq, index) => (
               <div
                 key={index}
-                className="bg-white hover:bg-gray-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-[#d8ccc4]"
+                className="flex items-start gap-3 px-5 py-4 transition-colors duration-300 hover:bg-[#db6f5704]"
+                style={{ borderColor: "#db6f5712" }}
               >
-                <div className="flex items-start gap-2.5 sm:gap-3">
-                  <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 text-[#db6f57] flex-shrink-0 mt-0.5 sm:mt-1" />
-                  <div>
-                    <h4 className="font-bold text-base sm:text-lg mb-1 sm:mb-2 text-[#2a2420]">
-                      {faq.question}
-                    </h4>
-                    <p className="leading-relaxed text-sm sm:text-base text-[#4f6f64]">
-                      {faq.answer}
-                    </p>
-                  </div>
+                <HelpCircle className="w-4 h-4 text-[#db6f57] flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-semibold text-[#2a2420] mb-0.5">
+                    {faq.question}
+                  </h4>
+                  <p className="text-xs text-[#5a4a42]/70 leading-relaxed">
+                    {faq.answer}
+                  </p>
                 </div>
               </div>
             ))}

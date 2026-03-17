@@ -86,75 +86,6 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
 
   // Dados dos menus dropdown
   const menuData = {
-    funcionalidades: {
-      items: [
-        {
-          icon: Calendar,
-          title: "Agenda Online",
-          description: "Agendamento 24/7 para seus clientes",
-          href: "#agenda"
-        },
-        {
-          icon: MessageSquare,
-          title: "WhatsApp Integrado",
-          description: "Comunicação direta e automática",
-          href: "#whatsapp"
-        },
-        {
-          icon: BarChart3,
-          title: "Relatórios Inteligentes",
-          description: "Análises e insights do seu negócio",
-          href: "#relatorios"
-        },
-        {
-          icon: CreditCard,
-          title: "Gestão Financeira",
-          description: "Controle completo de pagamentos",
-          href: "#financeiro"
-        },
-        {
-          icon: Users,
-          title: "Gestão de Clientes",
-          description: "Histórico e preferências organizados",
-          href: "#clientes"
-        },
-        {
-          icon: Zap,
-          title: "Automações",
-          description: "Lembretes e confirmações automáticas",
-          href: "#automacoes"
-        },
-        {
-          icon: Palette,
-          title: "Personalização",
-          description: "Personalize o tema do site externo",
-          href: "#personalizacao"
-        }
-
-      ]
-    },
-    agenteIA: {
-      items: [
-        {
-          icon: Bot,
-          title: "Assistente Virtual 24/7",
-          description: "Atendimento automático inteligente",
-          href: "#assistente"
-        },
-        {
-          icon: Brain,
-          title: "Recomendações Personalizadas",
-          description: "Sugestões baseadas em histórico",
-          href: "#recomendacoes"
-        },
-        {
-          icon: Target,
-          title: "Otimização de Agenda",
-          description: "IA que organiza seus horários",
-          href: "#otimizacao"
-        }
-      ]
-    },
     publicoAlvo: {
       items: [
         {
@@ -228,11 +159,11 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
   }
 
   const navItems = [
-    { label: "Funcionalidades",  href:'#funcionalidades', key: "funcionalidades", hasDropdown: true },
-    { label: "Agente IA", href: "#ai-agent", key: "agenteIA", hasDropdown: true },
+    { label: "Funcionalidades", href: "/#funcionalidades", key: "funcionalidades" },
+    { label: "Agente IA", href: "/#ai-agent", key: "agenteIA" },
     { label: "Público-Alvo", key: "publicoAlvo", hasDropdown: true },
     { label: "Planos", key: "planos", hasDropdown: true },
-    { label: "Sobre nós", key: "sobre"}
+    { label: "Sobre nós", href: "/sobre", key: "sobre" },
   ]
 
   // Animacoes do dropdown - container principal
@@ -390,20 +321,21 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                         />
                       </motion.button>
                     ) : (
-                      <motion.a
-                        href={item.href}
-                        whileHover={{ y: -2 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
-                        className={`${theme.navText} hover:${theme.navTextHover} font-medium transition-colors duration-300 relative group`}
-                      >
-                        {item.label}
+                      <Link href={item.href || "/"}>
                         <motion.span
-                          className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r ${theme.navUnderline}`}
-                          initial={{ width: 0 }}
-                          whileHover={{ width: "100%" }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      </motion.a>
+                          whileHover={{ y: -2 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                          className={`${theme.navText} hover:${theme.navTextHover} font-medium transition-colors duration-300 relative group block`}
+                        >
+                          {item.label}
+                          <motion.span
+                            className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r ${theme.navUnderline}`}
+                            initial={{ width: 0 }}
+                            whileHover={{ width: "100%" }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </motion.span>
+                      </Link>
                     )}
 
                     {/* Dropdown Menu */}
@@ -683,14 +615,22 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                       ease: [0.22, 1, 0.36, 1]
                     }}
                   >
-                    <motion.a
-                      href={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      whileTap={{ scale: 0.98 }}
-                      className={`text-lg font-medium ${theme.navText} py-3 px-4 rounded-xl ${theme.mobileItemBg} transition-all block`}
-                    >
-                      {item.label}
-                    </motion.a>
+                    {item.href ? (
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`text-lg font-medium ${theme.navText} py-3 px-4 rounded-xl ${theme.mobileItemBg} transition-all block`}
+                      >
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`text-lg font-medium ${theme.navText} py-3 px-4 rounded-xl ${theme.mobileItemBg} transition-all block w-full text-left`}
+                      >
+                        {item.label}
+                      </button>
+                    )}
                   </motion.div>
                 ))}
               </nav>

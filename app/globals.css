@@ -13,6 +13,18 @@
 
 @plugin 'tailwind-scrollbar';
 
+/* ## Paleta de Cores para Seções da Landing Page
+
+### Estrutura Proposta
+
+| Seção                   | Fundo                        | Texto Principal            | Destaque
+|-----                    |-----                         |-----                       |-----
+| **Hero**                | `#ffffff` (branco puro)      | `#2a2420` (marrom escuro)  | `#db6f57` (coral principal)
+| **Features/Benefícios** | `#faf8f6` (off-white quente) | `#2a2420`                  | `#db6f57`
+| **Como Funciona**       | `#4f6f64` (verde-azulado)    | `#ffffff`                  | `#f0e8e3` (bege claro)
+| **Depoimentos**         | `#f0e8e3` (bege muted)       | `#2a2420`                  | `#8b3d35` (terracota escuro)
+| **Preços/CTA**          | `#2a2420` (marrom escuro)    | `#ffffff`                  | `#db6f57` */
+
 /* Custom theme for Bellory — clean, profissional com #db6f57 como cor principal */
 :root {
   --background: #faf8f6;
@@ -63,8 +75,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-inter);
-  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-poppins);
+  --font-serif: var(--font-poppins);
   --font-mono: var(--font-geist-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -111,4 +123,11 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Force Poppins everywhere (override PrimeReact theme) */
+*,
+*::before,
+*::after {
+  font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif !important;
 }
