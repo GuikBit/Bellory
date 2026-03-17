@@ -19,10 +19,10 @@ export default function Home() {
       <Hero />
       <FeaturesInternal />
       <AIAgentSection />
-      <FeaturesExternal />
-      <DemoSection />
-      <Benefits />
-      <ComparisonSection />
+      {/* <FeaturesExternal /> */}
+      {/* <DemoSection />
+      <Benefits /> */}
+      {/* <ComparisonSection /> */}
       <Pricing />
       <Contact />
       {/* <FinalCTA /> */}

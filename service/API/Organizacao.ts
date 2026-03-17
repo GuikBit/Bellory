@@ -98,8 +98,6 @@ export async function validaUsename(username: string): Promise<Response> {
   }
 }
 
-
-
 export async function getBuscarCEP(cep: any): Promise<any> {
   try {
     const response = await api.get<Response>(`https://viacep.com.br/ws/${cep}/json`);
@@ -113,7 +111,6 @@ export async function getBuscarCEP(cep: any): Promise<any> {
     throw new Error('Erro de rede ou inesperado.');
   }
 }
-
 
 export async function validarCupom(payload: { codigoCupom: string, planoCodigo: string, cicloCobranca: string }): Promise<Response> {
   try {

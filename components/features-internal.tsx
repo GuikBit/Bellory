@@ -149,6 +149,36 @@ const quadrants: Quadrant[] = [
   },
 ]
 
+// ─── Section divider wave ───
+function SectionDivider({ position, flip }: { position: "top" | "bottom"; flip?: boolean }) {
+  return (
+    <div
+      className={`absolute left-0 right-0 w-full overflow-hidden leading-[0] z-10 ${
+        position === "top" ? "top-0" : "bottom-0"
+      }`}
+      style={{
+        transform: position === "top" ? "translateY(-99%)" : "translateY(99%)",
+      }}
+    >
+      <svg
+        className="relative block w-full"
+        style={{
+          height: "clamp(40px, 5vw, 80px)",
+          transform: flip ? "scaleY(-1)" : undefined,
+        }}
+        viewBox="0 0 1200 120"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0,120 C200,40 400,100 600,60 C800,20 1000,80 1200,40 L1200,120 Z"
+          fill="#f3eeea"
+        />
+      </svg>
+    </div>
+  )
+}
+
 // ─── Connection line from card to center ───
 function ConnectionLine({
   from,
@@ -189,7 +219,7 @@ function ConnectionLine({
           isInView
             ? {
                 pathLength: 1,
-                opacity: prefersReduced ? 0.35 : [0.2, 0.4, 0.2],
+                opacity: prefersReduced ? 0.25 : [0.15, 0.35, 0.15],
               }
             : { pathLength: 0, opacity: 0 }
         }
@@ -206,7 +236,7 @@ function ConnectionLine({
         }}
       />
       {!prefersReduced && isInView && (
-        <circle r={3} fill={color} opacity={0.6}>
+        <circle r={3} fill={color} opacity={0.5}>
           <animateMotion
             dur={`${3 + index * 0.4}s`}
             begin={`${1 + index * 0.3}s`}
@@ -240,33 +270,33 @@ function FeatureRow({
       initial={{ opacity: 0, x: -20 }}
       animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
       transition={{ duration: 0.5, delay: 0.6 + index * 0.12 }}
-      className="group/row flex items-start gap-3 py-3 px-3 rounded-xl transition-all duration-300 hover:bg-white/5 cursor-default"
+      className="group/row flex items-start gap-3 py-3 px-3 rounded-xl transition-all duration-300 hover:bg-[#2a2420]/[0.03] cursor-default"
     >
       <div
         className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover/row:scale-110"
         style={{
-          backgroundColor: `${color}18`,
-          border: `1.5px solid ${color}35`,
+          backgroundColor: `${color}12`,
+          border: `1.5px solid ${color}25`,
         }}
       >
         <Icon className="w-5 h-5" style={{ color }} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
-          <h4 className="text-sm font-semibold text-white leading-tight">
+          <h4 className="text-sm font-semibold text-[#2a2420] leading-tight">
             {feature.title}
           </h4>
           <span
             className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
             style={{
-              backgroundColor: `${color}20`,
+              backgroundColor: `${color}15`,
               color,
             }}
           >
             {feature.stat}
           </span>
         </div>
-        <p className="text-xs text-[#d8ccc4]/80 mt-0.5 leading-relaxed">
+        <p className="text-xs text-[#5a4a42]/70 mt-0.5 leading-relaxed">
           {feature.description}
         </p>
       </div>
@@ -303,17 +333,19 @@ function QuadrantCard({
       className="group relative"
     >
       <div
-        className="relative rounded-2xl border backdrop-blur-sm overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-black/40 hover:-translate-y-1"
+        className="relative rounded-3xl border overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
         style={{
-          backgroundColor: "#3d2e28",
-          borderColor: `${quadrant.color}25`,
+          backgroundColor: "rgba(255, 255, 255, 0.85)",
+          backdropFilter: "blur(12px)",
+          borderColor: `${quadrant.color}20`,
+          boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
         }}
       >
         {/* Glow effect on hover */}
         <div
           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
           style={{
-            background: `radial-gradient(ellipse at center, ${quadrant.color}08 0%, transparent 70%)`,
+            background: `radial-gradient(ellipse at center, ${quadrant.color}06 0%, transparent 70%)`,
           }}
         />
 
@@ -331,7 +363,7 @@ function QuadrantCard({
               {quadrant.title}
             </h3>
           </div>
-          <p className="text-xs text-[#d8ccc4]/60 pl-5">
+          <p className="text-xs text-[#5a4a42]/50 pl-5">
             {quadrant.tagline}
           </p>
         </div>
@@ -341,7 +373,7 @@ function QuadrantCard({
           <div
             className="h-px w-full"
             style={{
-              background: `linear-gradient(to right, ${quadrant.color}40, transparent)`,
+              background: `linear-gradient(to right, ${quadrant.color}30, transparent)`,
             }}
           />
         </div>
@@ -386,7 +418,7 @@ function CenterLogo({ isInView }: { isInView: boolean }) {
       <motion.div
         className="absolute w-36 h-36 md:w-44 md:h-44 rounded-full"
         style={{
-          border: "2px solid rgba(219, 111, 87, 0.15)",
+          border: "2px solid rgba(219, 111, 87, 0.12)",
         }}
         animate={
           isInView
@@ -407,7 +439,7 @@ function CenterLogo({ isInView }: { isInView: boolean }) {
       <motion.div
         className="absolute w-36 h-36 md:w-44 md:h-44 rounded-full"
         style={{
-          border: "2px solid rgba(79, 111, 100, 0.15)",
+          border: "2px solid rgba(79, 111, 100, 0.12)",
         }}
         animate={
           isInView
@@ -427,11 +459,11 @@ function CenterLogo({ isInView }: { isInView: boolean }) {
 
       {/* Main circle */}
       <div
-        className="relative w-28 h-28 md:w-36 md:h-36 rounded-full flex items-center justify-center shadow-2xl"
+        className="relative w-28 h-28 md:w-36 md:h-36 rounded-full flex items-center justify-center"
         style={{
-          background: "linear-gradient(135deg, #3d2e28 0%, #2a2420 50%, #3d2e28 100%)",
-          border: "2px solid rgba(219, 111, 87, 0.3)",
-          boxShadow: "0 0 60px rgba(219, 111, 87, 0.15), 0 0 120px rgba(79, 111, 100, 0.08)",
+          background: "linear-gradient(135deg, #ffffff 0%, #f3eeea 50%, #ffffff 100%)",
+          border: "2px solid rgba(219, 111, 87, 0.2)",
+          boxShadow: "0 8px 40px rgba(139, 61, 53, 0.1), 0 2px 12px rgba(42, 36, 32, 0.06)",
         }}
       >
         <Image
@@ -462,15 +494,13 @@ function ConnectorLines({
 
   // Card center positions (approximate centers of each quadrant)
   const cardCenters = useMemo(() => {
-    // Grid: 2 cols with gap, logo in center
-    // top-left, top-right, bottom-left, bottom-right
     const colW = w * 0.42
     const rowH = h * 0.42
     return [
-      { x: colW * 0.5, y: rowH * 0.5 },                    // top-left
-      { x: w - colW * 0.5, y: rowH * 0.5 },                // top-right
-      { x: colW * 0.5, y: h - rowH * 0.5 },                // bottom-left
-      { x: w - colW * 0.5, y: h - rowH * 0.5 },            // bottom-right
+      { x: colW * 0.5, y: rowH * 0.5 },
+      { x: w - colW * 0.5, y: rowH * 0.5 },
+      { x: colW * 0.5, y: h - rowH * 0.5 },
+      { x: w - colW * 0.5, y: h - rowH * 0.5 },
     ]
   }, [w, h])
 
@@ -521,108 +551,106 @@ export function FeaturesInternal() {
   }, [])
 
   return (
-    <section
-      id="funcionalidades"
-      ref={sectionRef}
-      className="py-24 md:py-32 relative overflow-hidden bg-[#2a2420]"
-    >
-      {/* Background pattern */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
+    <>
+      <section
+        id="funcionalidades"
+        ref={sectionRef}
+        className="py-24 md:py-32 relative overflow-hidden bg-[#f3eeea]"
+      >
+        {/* Top wave divider — transition from Hero (#faf8f6) into this section */}
+        <SectionDivider position="top" />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Section header */}
+        {/* Bottom wave divider — transition into AIAgentSection (#faf8f6) */}
+        <SectionDivider position="bottom" flip />
+
+        {/* Background pattern */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b3d35' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
+
+        {/* Subtle decorative blobs */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.7 }}
-          className="text-center max-w-3xl mx-auto mb-16 md:mb-20"
-        >
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-4 leading-[1.1]">
-            Tudo que você precisa,{" "}
-            <span className="bg-gradient-to-r from-[#db6f57] to-[#8b3d35] bg-clip-text text-transparent">
-              em um só lugar
-            </span>
-          </h2>
-          <p className="text-base sm:text-lg text-[#d8ccc4]/80 leading-relaxed">
-            Quatro pilares que transformam a gestão do seu negócio
-          </p>
-        </motion.div>
+          className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-[#db6f57]/[0.06] to-[#8b3d35]/[0.04] rounded-full blur-3xl"
+          animate={
+            prefersReduced
+              ? {}
+              : { scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }
+          }
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-gradient-to-tr from-[#4f6f64]/[0.06] to-[#db6f57]/[0.04] rounded-full blur-3xl"
+          animate={
+            prefersReduced
+              ? {}
+              : { scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }
+          }
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
 
-        {/* ─── Cross layout grid ─── */}
-        <div ref={gridRef} className="relative max-w-6xl mx-auto">
-          {/* SVG connection lines (desktop only) */}
-          <div className="hidden lg:block">
-            <ConnectorLines
-              isInView={isInView}
-              containerSize={containerSize}
-              prefersReduced={prefersReduced}
-            />
-          </div>
+        <div className="container mx-auto px-4 relative z-10">
+          {/* Section header */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.7 }}
+            className="text-center mb-16 md:mb-20"
+          >
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#2a2420] mb-4 leading-[1.1]">
+              Tudo que você precisa,{" "}
+              <span className="bg-gradient-to-r from-[#db6f57] to-[#8b3d35] bg-clip-text text-transparent">
+                em um só lugar
+              </span>
+            </h2>
+            <p className="text-base sm:text-lg text-[#5a4a42]/70 leading-relaxed">
+              Quatro pilares que transformam a gestão do seu negócio
+            </p>
+          </motion.div>
 
-          {/* Grid: 2x2 with logo in center */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-16">
-            {/* Top-left: SEO Negócio */}
-            <QuadrantCard quadrant={quadrants[0]} index={0} isInView={isInView} />
-
-            {/* Top-right: Automação Inteligente */}
-            <QuadrantCard quadrant={quadrants[1]} index={1} isInView={isInView} />
-
-            {/* Center logo - positioned absolutely on desktop */}
-            <div className="hidden lg:flex absolute inset-0 items-center justify-center z-20 pointer-events-none">
-              <CenterLogo isInView={isInView} />
+          {/* ─── Cross layout grid ─── */}
+          <div ref={gridRef} className="relative max-w-8xl mx-auto">
+            {/* SVG connection lines (desktop only) */}
+            <div className="hidden lg:block">
+              <ConnectorLines
+                isInView={isInView}
+                containerSize={containerSize}
+                prefersReduced={prefersReduced}
+              />
             </div>
 
-            {/* Center logo for mobile - shown between rows */}
-            <div className="flex lg:hidden items-center justify-center py-6">
-              <CenterLogo isInView={isInView} />
+            {/* Grid: 2x2 with logo in center */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-34">
+              {/* Top-left: SEO Negócio */}
+              <QuadrantCard quadrant={quadrants[0]} index={0} isInView={isInView} />
+
+              {/* Top-right: Automação Inteligente */}
+              <QuadrantCard quadrant={quadrants[1]} index={1} isInView={isInView} />
+
+              {/* Center logo - positioned absolutely on desktop */}
+              <div className="hidden lg:flex absolute inset-0 items-center justify-center z-20 pointer-events-none">
+                <CenterLogo isInView={isInView} />
+              </div>
+
+              {/* Center logo for mobile - shown between rows */}
+              <div className="flex lg:hidden items-center justify-center py-6">
+                <CenterLogo isInView={isInView} />
+              </div>
+
+              {/* Bottom-left: Financeiro */}
+              <QuadrantCard quadrant={quadrants[2]} index={2} isInView={isInView} />
+
+              {/* Bottom-right: Administrativo */}
+              <QuadrantCard quadrant={quadrants[3]} index={3} isInView={isInView} />
             </div>
-
-            {/* Bottom-left: Financeiro */}
-            <QuadrantCard quadrant={quadrants[2]} index={2} isInView={isInView} />
-
-            {/* Bottom-right: Administrativo */}
-            <QuadrantCard quadrant={quadrants[3]} index={3} isInView={isInView} />
           </div>
+
+
         </div>
 
-        {/* CTA final */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center mt-20 md:mt-24 p-10 md:p-12 rounded-3xl bg-gradient-to-br from-[#db6f57] to-[#8b3d35] relative overflow-hidden"
-        >
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          />
-          <div className="relative z-10">
-            <Heart className="w-12 h-12 md:w-16 md:h-16 text-white mx-auto mb-6" />
-            <h3 className="font-serif text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-4">
-              Pronto para transformar seu negócio?
-            </h3>
-            <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-              Comece grátis hoje. Sem cartão de crédito. Sem compromisso.
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-3 px-8 py-4 md:px-10 md:py-5 bg-white text-[#8b3d35] rounded-xl font-bold text-base md:text-lg shadow-2xl hover:shadow-3xl transition-all duration-300"
-            >
-              Teste grátis por 14 dias
-              <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
-            </motion.button>
-          </div>
-        </motion.div>
-      </div>
-    </section>
+      </section>  
+    </>
   )
 }
