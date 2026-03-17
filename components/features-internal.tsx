@@ -559,11 +559,7 @@ export function FeaturesInternal() {
         ref={sectionRef}
         className="py-24 md:py-32 relative overflow-hidden bg-[#f3eeea]"
       >
-        {/* Top wave divider — transition from Hero (#faf8f6) into this section */}
-        <SectionDivider position="top" />
-
-        {/* Bottom wave divider — transition into AIAgentSection (#faf8f6) */}
-        <SectionDivider position="bottom" flip />
+        {/* Dividers removed — transitions now handled by SectionTransition in page.tsx */}
 
         {/* Background pattern */}
         <div
