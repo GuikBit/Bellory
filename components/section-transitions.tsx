@@ -33,19 +33,19 @@ export function SectionTransition({
       ref={ref}
       className="relative w-full overflow-hidden pointer-events-none select-none"
       style={{
-        height: "clamp(60px, 8vw, 120px)",
-        marginTop: "-1px",
-        marginBottom: "-1px",
+        height: "clamp(80px, 10vw, 150px)",
+        marginTop: "-2px",
+        marginBottom: "-2px",
         transform: flip ? "scaleY(-1)" : undefined,
       }}
       aria-hidden="true"
     >
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b3d35' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b3d35' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}
+      />
       <Variant
         colorFrom={colorFrom}
         colorTo={colorTo}
@@ -112,8 +112,13 @@ function WavesTransition({
 
   return (
     <>
-      {/* Background fill */}
-      <div className="absolute inset-0" style={{ backgroundColor: colorFrom }} />
+      {/* Gradient background for smooth blend */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(to bottom, ${colorFrom} 0%, ${colorFrom} 30%, ${colorTo} 100%)`,
+        }}
+      />
 
       <svg
         className="absolute inset-0 w-full h-full"
@@ -147,12 +152,12 @@ function WavesTransition({
           d="M0,85 C100,55 220,90 380,65 C540,40 660,80 820,55 C980,30 1100,75 1260,50 C1380,35 1440,60 1440,60"
           fill="none"
           stroke={accentColor}
-          strokeWidth="1.5"
+          strokeWidth="1"
           strokeLinecap="round"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={
             isInView
-              ? { pathLength: 1, opacity: 0.3 }
+              ? { pathLength: 1, opacity: 0.2 }
               : { pathLength: 0, opacity: 0 }
           }
           transition={{
@@ -186,7 +191,12 @@ function DiagonalTransition({
 }: VariantProps) {
   return (
     <>
-      <div className="absolute inset-0" style={{ backgroundColor: colorFrom }} />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(to bottom, ${colorFrom} 0%, ${colorFrom} 20%, ${colorTo} 100%)`,
+        }}
+      />
 
       <svg
         className="absolute inset-0 w-full h-full"
@@ -207,8 +217,8 @@ function DiagonalTransition({
         <defs>
           <linearGradient id="diag-grad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor={accentColor} stopOpacity="0" />
-            <stop offset="30%" stopColor={accentColor} stopOpacity="0.5" />
-            <stop offset="70%" stopColor={accentColor} stopOpacity="0.4" />
+            <stop offset="30%" stopColor={accentColor} stopOpacity="0.35" />
+            <stop offset="70%" stopColor={accentColor} stopOpacity="0.3" />
             <stop offset="100%" stopColor={accentColor} stopOpacity="0" />
           </linearGradient>
         </defs>
@@ -219,7 +229,7 @@ function DiagonalTransition({
           x2="1440"
           y2="0"
           stroke="url(#diag-grad)"
-          strokeWidth="2"
+          strokeWidth="1.5"
           initial={{ pathLength: 0 }}
           animate={isInView ? { pathLength: 1 } : { pathLength: 0 }}
           transition={{
@@ -241,7 +251,7 @@ function DiagonalTransition({
               animate={
                 isInView
                   ? {
-                      opacity: [0, 0.5, 0],
+                      opacity: [0, 0.4, 0],
                       y: [0, -8, 0],
                       x: [0, 6, 0],
                     }
@@ -284,7 +294,12 @@ function CurveTransition({
 }: VariantProps) {
   return (
     <>
-      <div className="absolute inset-0" style={{ backgroundColor: colorFrom }} />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(to bottom, ${colorFrom} 0%, ${colorFrom} 30%, ${colorTo} 100%)`,
+        }}
+      />
 
       <svg
         className="absolute inset-0 w-full h-full"
@@ -294,11 +309,11 @@ function CurveTransition({
       >
         <defs>
           <linearGradient id="curve-stroke-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor={accentColor} stopOpacity="0.1" />
-            <stop offset="25%" stopColor={accentColor} stopOpacity="0.6" />
-            <stop offset="50%" stopColor={accentColor} stopOpacity="0.8" />
-            <stop offset="75%" stopColor={accentColor} stopOpacity="0.6" />
-            <stop offset="100%" stopColor={accentColor} stopOpacity="0.1" />
+            <stop offset="0%" stopColor={accentColor} stopOpacity="0.05" />
+            <stop offset="25%" stopColor={accentColor} stopOpacity="0.4" />
+            <stop offset="50%" stopColor={accentColor} stopOpacity="0.5" />
+            <stop offset="75%" stopColor={accentColor} stopOpacity="0.4" />
+            <stop offset="100%" stopColor={accentColor} stopOpacity="0.05" />
           </linearGradient>
           <filter id="curve-glow">
             <feGaussianBlur stdDeviation="3" result="blur" />
@@ -324,7 +339,7 @@ function CurveTransition({
           d={CURVE_PATH}
           fill="none"
           stroke="url(#curve-stroke-grad)"
-          strokeWidth="2"
+          strokeWidth="1.5"
           strokeLinecap="round"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={
@@ -346,13 +361,13 @@ function CurveTransition({
           d={CURVE_PATH}
           fill="none"
           stroke={accentColor}
-          strokeWidth="6"
+          strokeWidth="4"
           strokeLinecap="round"
           style={{ filter: "url(#curve-glow)" }}
           initial={{ pathLength: 0, opacity: 0 }}
           animate={
             isInView
-              ? { pathLength: 1, opacity: 0.12 }
+              ? { pathLength: 1, opacity: 0.08 }
               : { pathLength: 0, opacity: 0 }
           }
           transition={{
@@ -365,7 +380,7 @@ function CurveTransition({
         {!prefersReduced &&
           isInView &&
           CURVE_DOTS.map((dot, i) => (
-            <circle key={i} r={dot.r} fill={accentColor} opacity="0.7">
+            <circle key={i} r={dot.r} fill={accentColor} opacity="0.5">
               <animateMotion
                 dur={dot.dur}
                 begin={dot.begin}
@@ -420,7 +435,12 @@ function PeaksTransition({
 }: VariantProps) {
   return (
     <>
-      <div className="absolute inset-0" style={{ backgroundColor: colorFrom }} />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(to bottom, ${colorFrom} 0%, ${colorFrom} 25%, ${colorTo} 100%)`,
+        }}
+      />
 
       <svg
         className="absolute inset-0 w-full h-full"
@@ -453,13 +473,13 @@ function PeaksTransition({
           d="M0,85 L100,58 L220,78 L340,42 L460,70 L560,38 L680,62 L800,30 L920,58 L1020,35 L1140,60 L1240,28 L1360,52 L1440,35"
           fill="none"
           stroke={accentColor}
-          strokeWidth="1"
+          strokeWidth="0.8"
           strokeLinecap="round"
           strokeLinejoin="round"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={
             isInView
-              ? { pathLength: 1, opacity: 0.25 }
+              ? { pathLength: 1, opacity: 0.2 }
               : { pathLength: 0, opacity: 0 }
           }
           transition={{
@@ -481,7 +501,7 @@ function PeaksTransition({
                 animate={
                   isInView
                     ? {
-                        opacity: [0, 0.8, 0],
+                        opacity: [0, 0.6, 0],
                         scale: [0.5, 1.5, 0.5],
                       }
                     : { opacity: 0 }
@@ -505,7 +525,7 @@ function PeaksTransition({
                 initial={{ opacity: 0 }}
                 animate={
                   isInView
-                    ? { opacity: [0, 0.5, 0], scaleX: [0.3, 1, 0.3] }
+                    ? { opacity: [0, 0.4, 0], scaleX: [0.3, 1, 0.3] }
                     : { opacity: 0 }
                 }
                 transition={{
@@ -526,7 +546,7 @@ function PeaksTransition({
                 initial={{ opacity: 0 }}
                 animate={
                   isInView
-                    ? { opacity: [0, 0.5, 0], scaleY: [0.3, 1, 0.3] }
+                    ? { opacity: [0, 0.4, 0], scaleY: [0.3, 1, 0.3] }
                     : { opacity: 0 }
                 }
                 transition={{
@@ -556,17 +576,11 @@ function MeshTransition({
 }: VariantProps) {
   return (
     <>
-      <div className="absolute inset-0" style={{ backgroundColor: colorFrom }} />
-
-      {/* Soft gradient base transition */}
-      <motion.div
+      <div
         className="absolute inset-0"
         style={{
           background: `linear-gradient(to bottom, ${colorFrom} 0%, ${colorTo} 100%)`,
         }}
-        initial={{ opacity: 0 }}
-        animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.5 }}
       />
 
       {/* Animated mesh blobs */}
@@ -581,15 +595,15 @@ function MeshTransition({
             <feGaussianBlur stdDeviation="18" />
           </filter>
           <radialGradient id="mesh-blob-1" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={accentColor} stopOpacity="0.18" />
+            <stop offset="0%" stopColor={accentColor} stopOpacity="0.14" />
             <stop offset="100%" stopColor={accentColor} stopOpacity="0" />
           </radialGradient>
           <radialGradient id="mesh-blob-2" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#4f6f64" stopOpacity="0.14" />
+            <stop offset="0%" stopColor="#4f6f64" stopOpacity="0.1" />
             <stop offset="100%" stopColor="#4f6f64" stopOpacity="0" />
           </radialGradient>
           <radialGradient id="mesh-blob-3" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#8b3d35" stopOpacity="0.12" />
+            <stop offset="0%" stopColor="#8b3d35" stopOpacity="0.08" />
             <stop offset="100%" stopColor="#8b3d35" stopOpacity="0" />
           </radialGradient>
         </defs>
@@ -676,11 +690,11 @@ function MeshTransition({
         {/* Soft edge blend to colorTo at bottom */}
         <rect
           x="0"
-          y="80"
+          y="85"
           width="1440"
-          height="40"
+          height="35"
           fill={colorTo}
-          opacity="0.7"
+          opacity="0.5"
           style={{ filter: "url(#mesh-blur)" }}
         />
       </svg>
