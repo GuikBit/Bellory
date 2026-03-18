@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Button } from "primereact/button"
 import { useRouter } from 'next/navigation'
 import { useInteractionTracker } from "@/hooks/tracking"
+import StarBorder from "./StarBorder"
 
 const theme = {
   // Header background
@@ -487,7 +488,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                 whileTap={{ scale: 0.97 }}
                 transition={{ duration: 0.2 }}
               >
-                <button
+                {/* <button
                   onClick={() => { trackClick("btn-header-entrar", "Entrar", "header"); router.push('https://app.bellory.com.br') }}
                   className={`
                     relative group flex items-center gap-2 px-5 py-2.5 rounded-xl
@@ -500,14 +501,26 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                   <LogIn className="w-4 h-4 transition-transform group-hover:translate-x-[-2px]" />
                   <span>Entrar</span>
 
-                  {/* Linha decorativa inferior */}
                   <motion.span
                     className={`absolute bottom-0 left-1/2 h-0.5 bg-gradient-to-r ${theme.navUnderline} rounded-full`}
                     initial={{ width: 0, x: "-50%" }}
                     whileHover={{ width: "60%" }}
                     transition={{ duration: 0.3 }}
                   />
-                </button>
+                </button> */}
+                <StarBorder
+                  as="button"
+                  className="bg-transparent cursor-pointer"
+                  color="#db6f57"
+                  speed="5s"
+                  thickness={2}
+                  onClick={() => { trackClick("btn-header-entrar", "Entrar", "header"); router.push('https://app.bellory.com.br') }}
+                > 
+                  <div className="flex items-center gap-2 bg-white py-[10px] px-[26px] text-center text-[16px] rounded-[18px] font-semibold bg-gradient-to-b from-white to-gray-white border-2 border-[#8b3d35]/30 text-[#8b3d35] text-center text-[16px]  rounded-[16px]">
+                    <LogIn className="w-4 h-4 transition-transform group-hover:translate-x-[-2px]" />
+                    <span>Entrar</span>
+                  </div>
+                </StarBorder>
               </motion.div>
 
               {/* Botao Cadastro/Comece Gratis */}
@@ -519,7 +532,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                     transition={{ duration: 0.2 }}
                     className="relative group"
                   >
-                    <button
+                    {/* <button
                       className={`
                         relative flex items-center gap-2 px-6 py-2.5 rounded-xl
                         font-semibold text-sm cursor-pointer
@@ -530,7 +543,18 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                         overflow-hidden
                       `}
                     >
-                      {/* Efeito de brilho animado */}
+                      
+
+                      
+                    </button> */}
+                    <StarBorder
+                      as="button"
+                      className="bg-transparent cursor-pointer relative"
+                      color="#db6f57"
+                      speed="5s"
+                      thickness={0}
+                      onClick={() => { trackClick("btn-header-entrar", "Entrar", "header"); router.push('https://app.bellory.com.br') }}
+                    >
                       <motion.div
                         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                         initial={{ x: "-100%" }}
@@ -542,28 +566,39 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                         }}
                         style={{ transform: "skewX(-20deg)" }}
                       />
+                      <div className={` border-[#8b3d35]/30 text-[#8b3d35] text-center text-[16px]  flex items-center gap-2 
+                        py-[12px] px-[26px] text-center text-[16px] rounded-[16px] font-semibold 
+                        relative flex items-center gap-2 
+                        font-semibold text-sm cursor-pointer
+                        bg-gradient-to-r ${theme.ctaBtnGradient}
+                        ${theme.ctaBtnText} ${theme.ctaBtnShadow}
+                        transition-all duration-300
+                        ${theme.ctaBtnGlow}
+                        `
+                        }>
+                        <span className="relative z-10">Comece gratis</span>
+                        <ArrowRight className="w-4 h-4 relative z-10 transition-transform group-hover:translate-x-1" />
 
-                      <span className="relative z-10">Comece gratis</span>
-                      <ArrowRight className="w-4 h-4 relative z-10 transition-transform group-hover:translate-x-1" />
-
-                      {/* Icone de sparkle decorativo */}
-                      <motion.div
-                        className="absolute top-1 right-2"
-                        animate={{
-                          rotate: [0, 15, -15, 0],
-                          scale: [1, 1.2, 1]
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Infinity,
-                          repeatDelay: 2
-                        }}
-                      >
-                        <Sparkles className="w-3 h-3 text-white/80" />
-                      </motion.div>
-                    </button>
+                        {/* Icone de sparkle decorativo */}
+                        <motion.div
+                          className="absolute top-1 right-2"
+                          animate={{
+                            rotate: [0, 15, -15, 0],
+                            scale: [1, 1.2, 1]
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            repeatDelay: 2
+                          }}
+                        >
+                          <Sparkles className="w-3 h-3 text-white/80" />
+                        </motion.div>
+                      </div>
+                    </StarBorder>
                   </motion.div>
                 </Link>
+                
               )}
             </div>
 

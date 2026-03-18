@@ -361,14 +361,14 @@ export function Hero() {
           initial={initial(40)}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-          className="text-center mb-5"
+          className="text-center mb-5 "
         >
-          <h1 className="font-serif tracking-tight leading-[1.08]">
+          <h1 className="font-serif tracking-tight leading-[1.08] ">
             <span className="block text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#2a2420]">
               Transforme seu negócio
             </span>
             <span
-              className={`block text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mt-1 bg-gradient-to-r ${HERO_COLORS.titleGradient} bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]`}
+              className={`block text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mt-1 bg-gradient-to-r ${HERO_COLORS.titleGradient}  bg-clip-text text-transparent pb-3 animate-gradient bg-[length:200%_auto]`}
             >
               em um império digital
             </span>
@@ -380,7 +380,7 @@ export function Hero() {
           initial={initial(30)}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
-          className="text-center text-base sm:text-lg lg:text-xl text-balance max-w-2xl mx-auto mb-8 leading-relaxed font-light text-[#5a7d71]"
+          className="text-center text-base sm:text-lg lg:text-xl text-balance max-w-2xl mx-auto mb-10 leading-relaxed font-light text-[#5a7d71]"
         >
           Gestão completa + site personalizado + agente de IA no WhatsApp.
           <br className="hidden sm:block" />
