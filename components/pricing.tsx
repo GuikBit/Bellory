@@ -140,19 +140,22 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro }: any) => {
         style={plan.popular ? { borderColor: plan.color } : {}}
       >
         {/* Icon */}
-        <div
-          className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg"
-          style={{
-            background: `linear-gradient(135deg, ${plan.color}20, ${plan.color}40)`,
-          }}
-        >
-          {getIcone(plan.icon, plan.color)}
+        <div className="flex items-center justify-start gap-4">
+          <div
+            className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center mb-2 shadow-lg"
+            style={{
+              background: `linear-gradient(135deg, ${plan.color}20, ${plan.color}40)`,
+            }}
+          >
+            {getIcone(plan.icon, plan.color)}
+            
+          </div>
+          <h3 className="text-2xl sm:text-3xl font-bold text-[#2a2420]">
+            {plan.name}
+          </h3>
         </div>
-
         {/* Nome e tagline */}
-        <h3 className="text-2xl sm:text-3xl font-bold text-[#2a2420] mb-1 sm:mb-2">
-          {plan.name}
-        </h3>
+        
         <p className="text-sm sm:text-base text-[#5a7d71] mb-4 sm:mb-6">{plan.tagline}</p>
 
         {/* Preço */}
@@ -194,7 +197,7 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro }: any) => {
 
           <div className="flex items-baseline gap-1 sm:gap-2">
             <span
-              className={`text-3xl sm:text-4xl lg:text-5xl font-bold ${
+              className={`text-3xl sm:text-4xl lg:text-4xl font-bold ${
                 hasMonthlyPromo ? "text-[#db6f57]" : "text-[#2a2420]"
               }`}
             >
@@ -240,7 +243,7 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro }: any) => {
           )}
 
           {/* Mensal — info de flexibilidade (sutil) */}
-          {!isAnnual && plan.price > 0 && !hasMonthlyPromo && (
+          {!isAnnual && !hasMonthlyPromo && (
             <div className="mt-3">
               <span className="inline-flex items-center gap-1.5 text-sm text-[#5a7a6e] font-medium">
                 <Shield className="w-4 h-4" />
@@ -284,7 +287,7 @@ export const PlanCard = ({ plan, isAnnual, index, isCadastro }: any) => {
               label={plan.cta}
               icon={<ArrowRight className="mx-1 sm:mx-2" size={14} />}
               iconPos="right"
-              className={`w-full mb-6 sm:mb-8 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl font-medium text-sm sm:text-base transition-all duration-300 ${
+              className={`w-full mb-6 sm:mb-8 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl font-medium text-sm  transition-all duration-300 ${
                 plan.popular
                   ? "bg-gradient-to-r text-white border-0 hover:scale-105 shadow-lg"
                   : " border-2 hover:scale-105"

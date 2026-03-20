@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Menu, X, ArrowRight, Sparkles, LogIn, ChevronDown, Scissors, Sparkle, Building2, Palette, Smartphone, Users, Calendar, MessageSquare, BarChart3, CreditCard, Zap, Bot, Brain, Target, Gift, Crown } from "lucide-react"
+import { Menu, X, ArrowRight, Sparkles, LogIn, ChevronDown, Scissors, Sparkle, Building2, Palette, Smartphone, Users, Calendar, MessageSquare, BarChart3, CreditCard, Zap, Bot, Brain, Target, Gift, Crown, Clock, Bell, Star, TrendingUp, Shield, Layers } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion"
 import Link from "next/link"
 import { Button } from "primereact/button"
@@ -69,6 +69,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
   const [hidden, setHidden] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [mobileSubmenu, setMobileSubmenu] = useState<string | null>(null)
 
   const { trackClick, trackInteraction } = useInteractionTracker()
 
@@ -158,39 +159,44 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
       ]
     },
     funcionalidades: {
-      items: [
+      categories: [
         {
-          icon: Gift,
-          title: "Plano Gratuito",
-          description: "Ideal para começar",
-          href: "#planos",
-          badge: "Gratis"
+          label: "Gestão",
+          items: [
+            { icon: Calendar, title: "Agendamento Online", description: "Agenda inteligente 24/7", href: "/#funcionalidades" },
+            { icon: Users, title: "Gestão de Clientes", description: "CRM completo para seu negócio", href: "/#funcionalidades" },
+            { icon: CreditCard, title: "Controle Financeiro", description: "Fluxo de caixa e relatórios", href: "/#funcionalidades" },
+          ]
         },
         {
-          icon: Zap,
-          title: "Plano Básico",
-          description: "Para começar a crescer",
-          href: "#planos",
+          label: "Crescimento",
+          items: [
+            { icon: BarChart3, title: "Relatórios & Métricas", description: "Dados para decisões certeiras", href: "/#funcionalidades" },
+            { icon: MessageSquare, title: "Marketing Automático", description: "Campanhas e lembretes", href: "/#funcionalidades" },
+            { icon: TrendingUp, title: "Fidelização", description: "Programas de recompensas", href: "/#funcionalidades" },
+          ]
         },
         {
-          icon: Sparkles,
-          title: "Plano Profissional",
-          description: "O plano que você precisa",
-          href: "#planos",
-          badge: "Popular"
-        },
-        {
-          icon: Crown,
-          title: "Plano Premium",
-          description: "Solução completa para estabelecimentos",
-          href: "#planos"
+          label: "Inteligência",
+          items: [
+            { icon: Bot, title: "Agente IA", description: "Assistente virtual inteligente", href: "/#ai-agent", badge: "Novo" },
+            { icon: Bell, title: "Notificações Smart", description: "Lembretes automáticos", href: "/#funcionalidades" },
+            { icon: Smartphone, title: "App para Clientes", description: "Experiência mobile completa", href: "/#funcionalidades" },
+          ]
         }
-      ]
+      ],
+      highlight: {
+        icon: Sparkles,
+        title: "Conheça o Agente IA",
+        description: "Automatize atendimentos, agendamentos e muito mais com inteligência artificial.",
+        href: "/#ai-agent",
+        cta: "Saiba mais"
+      }
     }
   }
 
   const navItems = [
-    { label: "Nossas Solucoes", href: "/#funcionalidades", key: "funcionalidades", hasDropdown: true },
+    { label: "Nossas Soluções", href: "/#funcionalidades", key: "funcionalidades", hasDropdown: true },
     { label: "Agente IA", href: "/#ai-agent", key: "agenteIA" },
     { label: "Público-Alvo", key: "publicoAlvo", hasDropdown: true },
     { label: "Planos", key: "planos", hasDropdown: true },
@@ -294,12 +300,12 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
           duration: 0.35,
           ease: "easeInOut",
         }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-4 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-2 sm:px-4 ${
           isScrolled
-            ? `md:${theme.headerBg} ${theme.headerShadow} md:${theme.headerBorder}`
+            ? `${theme.headerBg} ${theme.headerShadow} ${theme.headerBorder}`
             : theme.headerBgTransparent
           }
-          ${isMobileMenuOpen ? 'bg-white' : 'bg-transparent'}
+          ${isMobileMenuOpen ? 'bg-white' : ''}
         `}
       >
         <div className="container mx-auto  ">
@@ -371,43 +377,179 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
 
                     {/* Dropdown Menu */}
                     <AnimatePresence>
-                      {item.hasDropdown && activeDropdown === item.key && (
+                      {item.hasDropdown && activeDropdown === item.key && item.key === 'funcionalidades' && (
+                        /* ===== MEGA MENU - Funcionalidades ===== */
                         <motion.div
                           variants={dropdownVariants}
                           initial="hidden"
                           animate="visible"
                           exit="exit"
-                          className={`absolute top-full left-1/2 -translate-x-1/2 mt-4 w-[400px] ${theme.dropdownBg} rounded-2xl border ${theme.dropdownBorder} p-6 overflow-hidden`}
+                          className={`absolute top-full right-0 xl:left-1/2 xl:-translate-x-1/2 mt-4 w-[calc(100vw-2rem)] max-w-[780px] ${theme.dropdownBg} rounded-2xl border ${theme.dropdownBorder} overflow-hidden`}
                           style={{
-                            boxShadow: theme.dropdownShadow,
+                            boxShadow: "0 25px 80px -15px rgba(219, 111, 87, 0.25), 0 15px 30px -10px rgba(0, 0, 0, 0.12)",
                             transformOrigin: "top center",
                           }}
                         >
                           {/* Linha decorativa animada no topo */}
                           <motion.div
                             variants={topLineVariants}
-                            className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${theme.navUnderline}`}
+                            className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#db6f57] via-[#c55a42] to-[#8b3d35]"
                             style={{ transformOrigin: "left center" }}
                           />
 
-                          {/* Gradiente decorativo de fundo */}
-                          <motion.div
-                            className={`absolute top-0 right-0 w-40 h-40 bg-gradient-to-br ${theme.dropdownGradient} rounded-full blur-3xl`}
-                            initial={{ opacity: 0, scale: 0.5 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.6, delay: 0.15 }}
-                          />
-
-                          {/* Shimmer sweep de entrada */}
+                          {/* Shimmer sweep */}
                           <motion.div
                             className="absolute inset-0 bg-gradient-to-r from-transparent via-[#db6f57]/5 to-transparent pointer-events-none"
                             initial={{ x: "-100%" }}
                             animate={{ x: "200%" }}
-                            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
                           />
 
-                          <div className="grid gap-1 relative z-10">
-                            {menuData[item.key as keyof typeof menuData]?.items.map((dropdownItem, index) => {
+                          <div className="flex flex-col xl:flex-row relative z-10">
+                            {/* Colunas de categorias */}
+                            <div className="flex-1 p-4 xl:p-4 grid grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-0">
+                              {menuData.funcionalidades.categories.map((category, catIdx) => (
+                                <motion.div
+                                  key={catIdx}
+                                  variants={dropdownItemVariants}
+                                  className=""
+                                >
+                                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#db6f57]/70 mb-3 block px-1 ">
+                                    {category.label}
+                                  </span>
+                                  <div className="flex flex-col gap-1">
+                                    {category.items.map((feat, featIdx) => {
+                                      const FeatIcon = feat.icon
+                                      return (
+                                        <motion.a
+                                          key={featIdx}
+                                          href={feat.href}
+                                          whileHover={{
+                                            x: 4,
+                                            backgroundColor: "rgba(219, 111, 87, 0.06)",
+                                            transition: { type: "spring", stiffness: 400, damping: 25 }
+                                          }}
+                                          className="flex items-center gap-2 p-1 rounded-xl group cursor-pointer"
+                                        >
+                                          <div className={`rounded-lg flex items-center justify-center transition-transform group-hover:scale-110 group-hover:-rotate-6`}>
+                                            <FeatIcon size={16} color="#db6f57"/>
+                                          </div>
+                                          <div className="min-w-0">
+                                            <div className="flex items-center gap-1.5">
+                                              <span className={`text-xs font-semibold ${theme.dropdownTitleText} group-hover:text-[#db6f57] transition-colors`}>
+                                                {feat.title}
+                                              </span>
+                                              {'badge' in feat && feat.badge && (
+                                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#db6f57] text-white font-bold leading-none">
+                                                  {feat.badge}
+                                                </span>
+                                              )}
+                                            </div>
+                                            <p className={`text-[11px] ${theme.dropdownDescText} leading-tight`}>
+                                              {feat.description}
+                                            </p>
+                                          </div>
+                                        </motion.a>
+                                      )
+                                    })}
+                                  </div>
+                                </motion.div>
+                              ))}
+                            </div>
+
+                            {/* Painel destaque lateral */}
+                            <motion.div
+                              variants={dropdownItemVariants}
+                              className="xl:w-[180px] bg-gradient-to-br from-[#8b3d35] to-[#db6f57] p-4 xl:p-4 flex xl:flex-col items-center xl:items-start gap-4 xl:gap-0 justify-between relative overflow-hidden"
+                            >
+                              {/* Decorative circles */}
+                              <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-white/10 blur-xl" />
+                              <div className="absolute -bottom-8 -left-8 w-24 h-24 rounded-full bg-white/5 blur-lg" />
+
+                              <div className="relative z-10">
+                                <motion.div
+                                  animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.15, 1] }}
+                                  transition={{ duration: 4, repeat: Infinity, repeatDelay: 2 }}
+                                  className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4"
+                                >
+                                  <Sparkles size={16} className="text-white" />
+                                </motion.div>
+                                <h4 className="text-white font-bold text-sm mb-2 leading-tight">
+                                  {menuData.funcionalidades.highlight.title}
+                                </h4>
+                                <p className="text-white/80 text-[11px] leading-relaxed">
+                                  {menuData.funcionalidades.highlight.description}
+                                </p>
+                              </div>
+
+                              <Link
+                                href={menuData.funcionalidades.highlight.href}
+                                className="relative z-10 mt-4 flex items-center gap-2 text-white text-sm font-semibold group/cta"
+                              >
+                                <span className="border-b border-white/40 text-xs group-hover/cta:border-white transition-colors">
+                                  {menuData.funcionalidades.highlight.cta}
+                                </span>
+                                <motion.div
+                                  whileHover={{ x: 4 }}
+                                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                                >
+                                  <ArrowRight size={12} />
+                                </motion.div>
+                              </Link>
+                            </motion.div>
+                          </div>
+
+                          {/* Footer do mega menu */}
+                          <motion.div
+                            variants={dropdownItemVariants}
+                            className={`px-6 py-3 border-t ${theme.dropdownFooterBorder} bg-[#faf8f6] relative z-10 flex items-center justify-between`}
+                          >
+                            <span className="text-xs text-[#6b5d57]">
+                              Conheça as funcionalidades de cada plano
+                            </span>
+                            <Link href="/#funcionalidades" className={`text-xs ${theme.dropdownFooterText} font-semibold flex items-center gap-2 group`}>
+                              Ver todas
+                              <motion.div
+                                whileHover={{ x: 5 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                              >
+                                <ArrowRight size={16} />
+                              </motion.div>
+                            </Link>
+                          </motion.div>
+                        </motion.div>
+                      )}
+
+                      {item.hasDropdown && activeDropdown === item.key && item.key !== 'funcionalidades' && (
+                        /* ===== DROPDOWN PADRÃO (mesma identidade do mega menu) ===== */
+                        <motion.div
+                          variants={dropdownVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          className={`absolute top-full left-1/2 -translate-x-1/2 mt-4 ${item.key === 'publicoAlvo' ? 'w-[460px]' : 'w-[340px]'} ${theme.dropdownBg} rounded-2xl border ${theme.dropdownBorder} overflow-hidden`}
+                          style={{
+                            boxShadow: "0 25px 80px -15px rgba(219, 111, 87, 0.25), 0 15px 30px -10px rgba(0, 0, 0, 0.12)",
+                            transformOrigin: "top center",
+                          }}
+                        >
+                          {/* Linha decorativa animada no topo */}
+                          <motion.div
+                            variants={topLineVariants}
+                            className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#db6f57] via-[#c55a42] to-[#8b3d35]"
+                            style={{ transformOrigin: "left center" }}
+                          />
+
+                          {/* Shimmer sweep */}
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-[#db6f57]/5 to-transparent pointer-events-none"
+                            initial={{ x: "-100%" }}
+                            animate={{ x: "200%" }}
+                            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                          />
+
+                          <div className={`p-4 ${item.key === 'publicoAlvo' ? 'grid grid-cols-2 gap-x-4 gap-y-1' : 'flex flex-col gap-1'} relative z-10`}>
+                            {menuData[item.key as keyof typeof menuData] && 'items' in menuData[item.key as keyof typeof menuData] && (menuData[item.key as keyof typeof menuData] as { items: Array<{ icon: any; title: string; description: string; href: string; badge?: string }> }).items.map((dropdownItem, index) => {
                               const Icon = dropdownItem.icon
                               return (
                                 <motion.a
@@ -415,92 +557,56 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                   href={dropdownItem.href}
                                   variants={dropdownItemVariants}
                                   whileHover={{
-                                    x: 6,
+                                    x: 4,
                                     backgroundColor: "rgba(219, 111, 87, 0.06)",
-                                    transition: {
-                                      type: "spring",
-                                      stiffness: 400,
-                                      damping: 25,
-                                    }
+                                    transition: { type: "spring", stiffness: 400, damping: 25 }
                                   }}
-                                  className="flex items-start gap-4 p-3 rounded-xl group relative overflow-hidden cursor-pointer"
+                                  className="flex items-center gap-2 p-1 rounded-xl group cursor-pointer"
                                 >
-                                  {/* Borda lateral animada no hover */}
-                                  <motion.div
-                                    className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-full bg-gradient-to-b ${theme.navUnderline}`}
-                                    initial={{ height: 0, opacity: 0 }}
-                                    whileHover={{ height: "60%", opacity: 1 }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                                  />
-
-                                  <motion.div
-                                    whileHover={{
-                                      scale: 1.12,
-                                      rotate: -8,
-                                    }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                                    className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${theme.dropdownIconBg} flex items-center justify-center ${theme.dropdownIconText} shadow-lg relative z-10`}
-                                  >
-                                    <Icon className="w-5 h-5" />
-                                  </motion.div>
-
-                                  <div className="flex-1 min-w-0 relative z-10">
-                                    <div className="flex items-center gap-2">
-                                      <h5 className={`font-semibold ${theme.dropdownTitleText} ${theme.dropdownTitleHover} transition-colors`}>
+                                  <div className="rounded-lg flex items-center justify-center transition-transform group-hover:scale-110 group-hover:-rotate-6">
+                                    <Icon size={16} color="#db6f57" />
+                                  </div>
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className={`text-xs font-semibold ${theme.dropdownTitleText} group-hover:text-[#db6f57] transition-colors`}>
                                         {dropdownItem.title}
-                                      </h5>
+                                      </span>
                                       {'badge' in dropdownItem && dropdownItem.badge && (
-                                        <motion.span
-                                          initial={{ scale: 0, opacity: 0 }}
-                                          animate={{ scale: 1, opacity: 1 }}
-                                          transition={{
-                                            type: "spring",
-                                            stiffness: 500,
-                                            damping: 15,
-                                            delay: index * 0.06 + 0.3,
-                                          }}
-                                          whileHover={{ scale: 1.15 }}
-                                          className={`text-xs px-2 py-0.5 rounded-full ${theme.dropdownBadgeBg} text-white font-semibold shadow-sm`}
-                                        >
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#db6f57] text-white font-bold leading-none">
                                           {dropdownItem.badge}
-                                        </motion.span>
+                                        </span>
                                       )}
                                     </div>
-                                    <p className={`text-xs ${theme.dropdownDescText}`}>
+                                    <p className={`text-[11px] ${theme.dropdownDescText} leading-tight`}>
                                       {dropdownItem.description}
                                     </p>
                                   </div>
-
-                                  <motion.div
-                                    className="flex-shrink-0 mt-1 relative z-10"
-                                    initial={{ opacity: 0, x: -8 }}
-                                    whileHover={{ opacity: 1, x: 0 }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                                  >
-                                    <ArrowRight className={`w-4 h-4 ${theme.dropdownArrow}`} />
-                                  </motion.div>
                                 </motion.a>
                               )
                             })}
                           </div>
 
                           {/* Footer do Dropdown */}
-                          {item.key === 'planos' && (
-                            <motion.div
-                              variants={dropdownItemVariants}
-                              className={`mt-4 pt-3 border-t ${theme.dropdownFooterBorder} relative z-10`}
+                          <motion.div
+                            variants={dropdownItemVariants}
+                            className={`px-6 py-3 border-t ${theme.dropdownFooterBorder} bg-[#faf8f6] relative z-10 flex items-center justify-between`}
+                          >
+                            
+                            <Link
+                              href={item.key === 'planos' ? '/#planos' : '/#publicoAlvo'}
+                              className={`text-xs ${theme.dropdownFooterText} font-semibold flex items-center gap-2 group`}
                             >
-                              <Link href="/comparar-planos" className={`text-sm ${theme.dropdownFooterText} font-semibold flex items-center justify-center gap-2 group`}>
-                                Ver comparacao completa de planos
-                                <motion.div
-                                  whileHover={{ x: 5 }}
-                                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                                >
-                                  <ArrowRight className="w-4 h-4" />
-                                </motion.div>
-                              </Link>
-                            </motion.div>
-                          )}
+                              <span className="text-xs text-[#6b5d57]">
+                                {item.key === 'planos' ? 'Compare os planos e escolha o melhor' : 'Soluções para cada tipo de negócio'}
+                              </span>
+                              <motion.div
+                                whileHover={{ x: 5 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                              >
+                                <ArrowRight size={16} />
+                              </motion.div>
+                            </Link>
+                          </motion.div>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -546,8 +652,8 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                   thickness={2}
                   onClick={() => { trackClick("btn-header-entrar", "Entrar", "header"); router.push('https://app.bellory.com.br') }}
                 > 
-                  <div className="flex items-center gap-2 bg-white py-[10px] px-[26px] text-center text-[16px] rounded-[18px] font-semibold bg-gradient-to-b from-white to-gray-white border-2 border-[#8b3d35]/30 text-[#8b3d35] text-center text-[16px]  rounded-[16px]">
-                    <LogIn className="w-4 h-4 transition-transform group-hover:translate-x-[-2px]" />
+                  <div className="flex items-center gap-2 bg-white py-[6px] px-[20px] text-center text-[14px] rounded-[12px] font-semibold bg-gradient-to-b from-white to-gray-white border-2 border-[#8b3d35]/30 text-[#8b3d35]">
+                    <LogIn size={18} className="transition-transform group-hover:translate-x-[-2px]" />
                     <span>Entrar</span>
                   </div>
                 </StarBorder>
@@ -562,21 +668,6 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                     transition={{ duration: 0.2 }}
                     className="relative group"
                   >
-                    {/* <button
-                      className={`
-                        relative flex items-center gap-2 px-6 py-2.5 rounded-xl
-                        font-semibold text-sm cursor-pointer
-                        bg-gradient-to-r ${theme.ctaBtnGradient}
-                        ${theme.ctaBtnText} ${theme.ctaBtnShadow}
-                        transition-all duration-300
-                        ${theme.ctaBtnGlow}
-                        overflow-hidden
-                      `}
-                    >
-                      
-
-                      
-                    </button> */}
                     <StarBorder
                       as="button"
                       className="bg-transparent cursor-pointer relative"
@@ -596,10 +687,9 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                         }}
                         style={{ transform: "skewX(-20deg)" }}
                       />
-                      <div className={` border-[#8b3d35]/30 text-[#8b3d35] text-center text-[16px]  flex items-center gap-2 
-                        py-[12px] px-[26px] text-center text-[16px] rounded-[16px] font-semibold 
-                        relative flex items-center gap-2 
-                        font-semibold text-sm cursor-pointer
+                      <div className={`  flex items-center gap-2 
+                        py-[8px] px-[20px] text-center text-[14px] rounded-[12px] font-semibold 
+                        relative text-sm cursor-pointer
                         bg-gradient-to-r ${theme.ctaBtnGradient}
                         ${theme.ctaBtnText} ${theme.ctaBtnShadow}
                         transition-all duration-300
@@ -668,7 +758,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
               transition={{ delay: 0.2 }}
               className="container mx-auto px-4 py-6"
             >
-              <nav className="flex flex-col gap-4 mb-6">
+              <nav className="flex flex-col gap-2 mb-6">
                 {navItems.map((item, index) => (
                   <motion.div
                     key={item.label}
@@ -680,21 +770,102 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                       ease: [0.22, 1, 0.36, 1]
                     }}
                   >
-                    {item.href ? (
+                    {item.hasDropdown ? (
+                      <div>
+                        <button
+                          onClick={() => setMobileSubmenu(mobileSubmenu === item.key ? null : item.key)}
+                          className={`text-lg font-medium ${theme.navText} py-3 px-4 rounded-xl ${theme.mobileItemBg} transition-all w-full text-left flex items-center justify-between`}
+                        >
+                          {item.label}
+                          <motion.div
+                            animate={{ rotate: mobileSubmenu === item.key ? 180 : 0 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <ChevronDown className="w-5 h-5 text-[#6b5d57]" />
+                          </motion.div>
+                        </button>
+
+                        <AnimatePresence>
+                          {mobileSubmenu === item.key && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                              className="overflow-hidden"
+                            >
+                              <div className="pl-4 py-2 flex flex-col gap-1">
+                                {/* Funcionalidades - categorias */}
+                                {item.key === 'funcionalidades' && menuData.funcionalidades.categories.map((category, catIdx) => (
+                                  <div key={catIdx}>
+                                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#db6f57]/70 px-3 pt-2 pb-1 block">
+                                      {category.label}
+                                    </span>
+                                    {category.items.map((feat, featIdx) => {
+                                      const FeatIcon = feat.icon
+                                      return (
+                                        <Link
+                                          key={featIdx}
+                                          href={feat.href}
+                                          onClick={() => setIsMobileMenuOpen(false)}
+                                          className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-[#faf8f6] transition-colors"
+                                        >
+                                          <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${theme.dropdownIconBg} flex items-center justify-center text-white flex-shrink-0`}>
+                                            <FeatIcon className="w-3.5 h-3.5" />
+                                          </div>
+                                          <div>
+                                            <div className="flex items-center gap-1.5">
+                                              <span className="text-sm font-medium text-[#2a2420]">{feat.title}</span>
+                                              {'badge' in feat && feat.badge && (
+                                                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#db6f57] text-white font-bold">{feat.badge}</span>
+                                              )}
+                                            </div>
+                                            <p className="text-[11px] text-[#6b5d57]">{feat.description}</p>
+                                          </div>
+                                        </Link>
+                                      )
+                                    })}
+                                  </div>
+                                ))}
+
+                                {/* Outros dropdowns (publicoAlvo, planos) */}
+                                {item.key !== 'funcionalidades' && menuData[item.key as keyof typeof menuData] && 'items' in menuData[item.key as keyof typeof menuData] && (menuData[item.key as keyof typeof menuData] as { items: Array<{ icon: any; title: string; description: string; href: string; badge?: string }> }).items.map((subItem, subIdx) => {
+                                  const SubIcon = subItem.icon
+                                  return (
+                                    <Link
+                                      key={subIdx}
+                                      href={subItem.href}
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                      className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-[#faf8f6] transition-colors"
+                                    >
+                                      <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${theme.dropdownIconBg} flex items-center justify-center text-white flex-shrink-0`}>
+                                        <SubIcon className="w-3.5 h-3.5" />
+                                      </div>
+                                      <div>
+                                        <div className="flex items-center gap-1.5">
+                                          <span className="text-sm font-medium text-[#2a2420]">{subItem.title}</span>
+                                          {'badge' in subItem && subItem.badge && (
+                                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#db6f57] text-white font-bold">{subItem.badge}</span>
+                                          )}
+                                        </div>
+                                        <p className="text-[11px] text-[#6b5d57]">{subItem.description}</p>
+                                      </div>
+                                    </Link>
+                                  )
+                                })}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    ) : (
                       <Link
-                        href={item.href}
+                        href={item.href || "/"}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={`text-lg font-medium ${theme.navText} py-3 px-4 rounded-xl ${theme.mobileItemBg} transition-all block`}
                       >
                         {item.label}
                       </Link>
-                    ) : (
-                      <button
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className={`text-lg font-medium ${theme.navText} py-3 px-4 rounded-xl ${theme.mobileItemBg} transition-all block w-full text-left`}
-                      >
-                        {item.label}
-                      </button>
                     )}
                   </motion.div>
                 ))}
@@ -806,7 +977,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                   transition={{ delay: 0.3 }}
                   className="font-semibold"
                 >
-                  Oferta especial: 14 dias gratis + até 15% de desconto no plano anual
+                  Oferta especial: 14 dias gratis + até 10% de desconto no plano anual
                 </motion.span>
 
                 <motion.div
