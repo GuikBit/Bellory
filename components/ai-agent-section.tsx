@@ -687,7 +687,7 @@ export function AIAgentSection() {
 
         {/* Animated blobs */}
         <motion.div
-          className="absolute -top-20 -left-20 w-[500px] h-[500px] bg-gradient-to-br from-[#4f6f64]/[0.06] to-[#3d574f]/[0.04] rounded-full blur-3xl"
+          className="absolute top-110 -left-20 w-[500px] h-[500px] bg-gradient-to-br from-[#4f6f64]/[0.06] to-[#3d574f]/[0.04] rounded-full blur-3xl"
           animate={
             prefersReduced
               ? {}
@@ -831,34 +831,35 @@ export function AIAgentSection() {
             </div>
           </div>
         </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="mt-30 px-4 relative z-10"
+        >
+          <Link
+            href="/agente-virtual"
+            className="group/cta block w-full max-w-4xl mx-auto bg-gradient-to-r from-[#4f6f64] to-[#3d574f] text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <Bot className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 flex-shrink-0" />
+                <div className="text-left">
+                  <h3 className="text-base sm:text-xl lg:text-2xl font-bold mb-0.5 sm:mb-1">
+                      Teste o agente inteligente agora mesmo
+                    </h3>
+                    <p className="text-white/80 text-xs sm:text-sm lg:text-base">
+                      Veja como a IA pode transformar seu atendimento. Sem compromisso!
+                    </p>
+                </div>
+              </div>
+              <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 transition-transform duration-300 group-hover/cta:translate-x-1" />
+            </div>
+          </Link>
+        </motion.div>
       </section>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-        transition={{ duration: 0.6, delay: 0.8 }}
-        className="mt-10 mb-16 md:mb-20 px-4 relative z-10"
-      >
-        <Link
-          href="/agente-virtual"
-          className="group/cta block w-full max-w-4xl mx-auto bg-gradient-to-r from-[#4f6f64] to-[#3d574f] text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <Bot className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 flex-shrink-0" />
-              <div className="text-left">
-                 <h3 className="text-base sm:text-xl lg:text-2xl font-bold mb-0.5 sm:mb-1">
-                    Teste o agente inteligente agora mesmo
-                  </h3>
-                  <p className="text-white/80 text-xs sm:text-sm lg:text-base">
-                    Veja como a IA pode transformar seu atendimento. Sem compromisso!
-                  </p>
-              </div>
-            </div>
-            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 transition-transform duration-300 group-hover/cta:translate-x-1" />
-          </div>
-        </Link>
-      </motion.div>
+      
       
 
       {/* ─── CTA final ─── */}

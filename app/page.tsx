@@ -36,7 +36,7 @@ export default function Home() {
       {/* <ComparisonSection /> */}
 
       {/* AIAgentSection (#faf8f6) → Pricing (#f3eeea) */}
-      <SectionTransition variant="peaks" colorFrom="#faf8f6" colorTo="#f3eeea" accentColor="#8b3d35" />
+      {/* <SectionTransition variant="peaks" colorFrom="#faf8f6" colorTo="#f3eeea" accentColor="#8b3d35" /> */}
 
       <Pricing />
 
@@ -46,7 +46,7 @@ export default function Home() {
       <Contact />
 
       {/* Contact (#faf8f6) → Footer (#f3eeea) */}
-      <SectionTransition variant="mesh" colorFrom="#faf8f6" colorTo="#f3eeea" accentColor="#4f6f64" />
+      <SectionTransition variant="peaks" colorFrom="#faf8f6" colorTo="#f3eeea" accentColor="#4f6f64" />
 
       {/* <FinalCTA /> */}
       <Footer />

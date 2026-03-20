@@ -156,11 +156,41 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
           href: "#planos"
         }
       ]
+    },
+    funcionalidades: {
+      items: [
+        {
+          icon: Gift,
+          title: "Plano Gratuito",
+          description: "Ideal para começar",
+          href: "#planos",
+          badge: "Gratis"
+        },
+        {
+          icon: Zap,
+          title: "Plano Básico",
+          description: "Para começar a crescer",
+          href: "#planos",
+        },
+        {
+          icon: Sparkles,
+          title: "Plano Profissional",
+          description: "O plano que você precisa",
+          href: "#planos",
+          badge: "Popular"
+        },
+        {
+          icon: Crown,
+          title: "Plano Premium",
+          description: "Solução completa para estabelecimentos",
+          href: "#planos"
+        }
+      ]
     }
   }
 
   const navItems = [
-    { label: "Funcionalidades", href: "/#funcionalidades", key: "funcionalidades" },
+    { label: "Nossas Solucoes", href: "/#funcionalidades", key: "funcionalidades", hasDropdown: true },
     { label: "Agente IA", href: "/#ai-agent", key: "agenteIA" },
     { label: "Público-Alvo", key: "publicoAlvo", hasDropdown: true },
     { label: "Planos", key: "planos", hasDropdown: true },

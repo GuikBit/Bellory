@@ -394,7 +394,7 @@ export function Pricing() {
       />
 
       {/* Animated blobs */}
-      <motion.div
+      {/* <motion.div
         className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-[#db6f57]/[0.06] to-[#8b3d35]/[0.04] rounded-full blur-3xl"
         animate={
           prefersReduced
@@ -411,7 +411,7 @@ export function Pricing() {
             : { scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }
         }
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-      />
+      /> */}
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}

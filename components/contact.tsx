@@ -104,7 +104,7 @@ export function Contact() {
       />
 
       {/* Animated blobs */}
-      <motion.div
+      {/* <motion.div
         className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-[#db6f57]/[0.06] to-[#8b3d35]/[0.04] rounded-full blur-3xl"
         animate={
           prefersReduced
@@ -112,8 +112,8 @@ export function Contact() {
             : { scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }
         }
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
+      /> */}
+      {/* <motion.div
         className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-gradient-to-tr from-[#4f6f64]/[0.06] to-[#db6f57]/[0.04] rounded-full blur-3xl"
         animate={
           prefersReduced
@@ -126,7 +126,7 @@ export function Contact() {
           ease: "easeInOut",
           delay: 2,
         }}
-      />
+      /> */}
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}

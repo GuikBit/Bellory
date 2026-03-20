@@ -78,7 +78,7 @@ export function Footer() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Newsletter CTA */}
-        <div className="py-14 border-b" style={{ borderColor: "#8b3d3515" }}>
+        <div className="pb-14 border-b" style={{ borderColor: "#8b3d3515" }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
