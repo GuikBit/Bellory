@@ -1,6 +1,6 @@
 "use client"
 
-import { motion, useInView, useReducedMotion } from "framer-motion"
+import { motion, useInView } from "framer-motion"
 import {
   Check,
   X,
@@ -10,8 +10,6 @@ import {
   Gift,
   ArrowRight,
   HelpCircle,
-  Calculator,
-  TrendingUp,
   QrCode,
   BadgeCheck,
   Shield,
@@ -22,365 +20,574 @@ import {
   Diamond,
   CreditCard,
   Tag,
+  Users,
+  ChevronRight,
 } from "lucide-react"
-import { Card } from "primereact/card"
-import { Button } from "primereact/button"
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { useInteractionTracker, useConversionTracker } from "@/hooks/tracking"
+import { useInteractionTracker } from "@/hooks/tracking"
 import { useGetPlanos } from "@/service/Querys/Organizacao"
+import Counter from "./Counter"
+import GradientText from "./GradientText"
+import { AnimatedPrice } from "./AnimatedPrice"
 
-// Mapeamento de nomes de ícones (string da API) para componentes Lucide
+// Mapeamento de nomes de ícones
 const iconMap: Record<string, any> = {
-  Gift,
-  Zap,
-  Sparkles,
-  Crown,
-  Star,
-  Rocket,
-  Heart,
-  Shield,
-  Diamond,
-  CreditCard,
+  Gift, Zap, Sparkles, Crown, Star, Rocket, Heart, Shield, Diamond, CreditCard,
 }
 
-// FAQ
 const planFAQs = [
   {
     question: "Posso mudar de plano depois?",
-    answer:
-      "Sim! Você pode fazer upgrade ou downgrade a qualquer momento. As mudanças são aplicadas imediatamente.",
+    answer: "Sim! Você pode fazer upgrade ou downgrade a qualquer momento. As mudanças são aplicadas imediatamente.",
   },
   {
     question: "O que acontece após o período gratuito?",
-    answer:
-      "Após 14 dias, você escolhe se quer continuar. Não cobramos automaticamente - você decide.",
+    answer: "Após 14 dias, você escolhe se quer continuar. Não cobramos automaticamente - você decide.",
   },
   {
     question: "Posso cancelar quando quiser?",
-    answer:
-      "Sim, sem multas ou taxas. Cancele a qualquer momento direto no sistema.",
+    answer: "Sim, sem multas ou taxas. Cancele a qualquer momento direto no sistema.",
   },
   {
     question: "Há taxa de configuração?",
-    answer:
-      "Não! Não cobramos taxa de setup, implementação ou treinamento. Está tudo incluído.",
+    answer: "Não! Não cobramos taxa de setup, implementação ou treinamento. Está tudo incluído.",
   },
   {
     question: "Quais formas de pagamento são aceitas?",
-    answer:
-      "Aceitamos Pix (com ativação instantânea), cartão de crédito e boleto bancário. Pagamentos via Pix são confirmados na hora.",
+    answer: "Aceitamos Pix (com ativação instantânea), cartão de crédito e boleto bancário. Pagamentos via Pix são confirmados na hora.",
   },
 ]
 
-// Card de plano
-export const PlanCard = ({ plan, isAnnual, index, isCadastro }: any) => {
-  const cardRef = useRef(null)
-  const isInView = useInView(cardRef, { once: true, margin: "-50px" })
+// ─── FREE CARD ────────────────────────────────────────────────────────────────
+function FreeCard({ plan }: { plan: any }) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, amount: 0.1 })
   const { trackPlanClick } = useInteractionTracker()
 
-  const hasMonthlyPromo = !isAnnual && plan.promoMensalAtiva && plan.promoMensalPreco > 0
-  const displayPrice = hasMonthlyPromo
-    ? plan.promoMensalPreco
-    : isAnnual
-      ? plan.priceAnnual
-      : plan.price
-  const savings =
-    plan.price > 0
-      ? ((plan.price - plan.priceAnnual) * 12).toFixed(0)
-      : 0
-  const discountPercent =
-    plan.price > 0
-      ? Math.round(((plan.price - plan.priceAnnual) / plan.price) * 100)
-      : 0
-  const promoDiscountPercent =
-    hasMonthlyPromo && plan.price > 0
-      ? Math.round(((plan.price - plan.promoMensalPreco) / plan.price) * 100)
-      : 0
-  const totalAnnual = plan.priceAnnual * 12
-
-  const getIcone = (iconName: string, color: string) => {
-    const IconComponent = iconMap[iconName]
-    if (!IconComponent) return null
-    return <IconComponent className="w-8 h-8" style={{ color }} />
-  }
+  // Guard AFTER todos os hooks (regra dos hooks do React)
+  if (!plan) return null
 
   return (
     <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      className={`relative group ${
-        !isCadastro && plan.popular ? "" : ""
-      }`}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.6 }}
+      className="bg-white rounded-2xl sm:rounded-3xl shadow-lg p-6 sm:p-8 flex flex-col h-full text-[#2a2420] relative"
     >
-      {/* Badge popular */}
-      {plan.badge && (
-        <div
-          className={`absolute ${
-            !isCadastro && plan.popular
-              ? "group-hover:-top-14 -top-9"
-              : "group-hover:-top-6 -top-4"
-          }  left-1/2 -translate-x-1/2 px-6 py-2 rounded-full font-bold text-sm text-white shadow-xl z-10 transition-all duration-300`}
-          style={{
-            background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
-          }}
-        >
-          {plan.badge}
-        </div>
-      )}
-
-      <Card
-        className={`h-full p-5 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl transition-all duration-300 ${
-          plan.popular
-            ? `bg-white border-2 hover:shadow-xl lg:scale-105 lg:hover:scale-110`
-            : `bg-white border border-[#d8ccc4] shadow-lg shadow-[#2a2420]/5 hover:shadow-xl hover:-translate-y-2`
-        }`}
-        style={plan.popular ? { borderColor: plan.color } : {}}
-      >
-        {/* Icon */}
-        <div className="flex items-center justify-start gap-4">
+      {/* Header */}
+      <div className="mb-2">
+        <div className="flex items-center gap-3 justify-start mb-2">
           <div
-            className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center mb-2 shadow-lg"
-            style={{
-              background: `linear-gradient(135deg, ${plan.color}20, ${plan.color}40)`,
-            }}
+            className="w-11 h-11 rounded-xl flex items-center justify-center"
+            style={{ background: `linear-gradient(135deg, ${plan.color}20, ${plan.color}40)` }}
           >
-            {getIcone(plan.icon, plan.color)}
+            <Gift className="w-5 h-5" style={{ color: plan.color }} />
             
           </div>
-          <h3 className="text-2xl sm:text-3xl font-bold text-[#2a2420]">
-            {plan.name}
-          </h3>
+          <h3 className="text-3xl sm:text-4xl font-bold text-[#2a2420] mb-1">{plan.name}</h3>
         </div>
-        {/* Nome e tagline */}
-        
-        <p className="text-sm sm:text-base text-[#5a7d71] mb-4 sm:mb-6">{plan.tagline}</p>
+        <p className="text-sm text-[#5a7d71]">{plan.tagline}</p>
+      </div>
 
-        {/* Preço */}
-        <div className="mb-6 sm:mb-8">
-          {/* Badge de promoção mensal */}
-          {hasMonthlyPromo && plan.promoMensalTexto && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, delay: index * 0.1 + 0.3 }}
-              className="mb-3"
-            >
-              <span
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-bold text-white shadow-lg animate-pulse"
-                style={{
-                  background: `linear-gradient(135deg, ${plan.color}, ${plan.color}cc)`,
-                }}
-              >
-                <Tag className="w-3.5 h-3.5" />
-                {plan.promoMensalTexto}
-              </span>
-            </motion.div>
-          )}
+      {/* Price */}
+      <div className="mb-4">
+        {/* <p className="text-xs uppercase tracking-widest font-semibold text-[#5a4a42]/50 mb-1">
+          GRATUITO
+        </p> */}
+        <p className="text-sm text-[#5a4a42]/60 mb-3">{plan.description}</p>
+        <div className="flex items-baseline gap-1">
+          <AnimatedPrice value={plan.price.toFixed(2).replace(".", ",")} gradient className="text-4xl font-bold" />
+          {/* <span className="text-4xl font-bold text-[#2a2420]">R$</span>1 */}
+        </div>
+        {/* <p className="text-xs text-[#5a4a42]/60 mt-1">Sem cartão de crédito</p> */}
+      </div>
 
-          {/* Preço original riscado (promo mensal) */}
-          {hasMonthlyPromo && (
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-base sm:text-lg text-gray-400 line-through">
-                R$ {plan.price.toFixed(2).replace(".", ",")}
-              </span>
-              <span
-                className="px-2 py-0.5 text-xs font-bold rounded-full text-white"
-                style={{ backgroundColor: plan.color }}
-              >
-                -{promoDiscountPercent}%
-              </span>
-            </div>
-          )}
+      {/* Divider */}
+      {/* <div className="border-t border-[#d8ccc4] mb-6 mt-3" /> */}
 
-          <div className="flex items-baseline gap-1 sm:gap-2">
-            <span
-              className={`text-3xl sm:text-4xl lg:text-4xl font-bold ${
-                hasMonthlyPromo ? "text-[#db6f57]" : "text-[#2a2420]"
-              }`}
-            >
-              R$ {displayPrice.toFixed(2).replace(".", ",")}
-            </span>
-            {plan.price > 0 && (
-              <span className="text-sm sm:text-base text-[#5a7d71]">/mês</span>
+      {/* Features */}
+      <ul className="space-y-2.5 mb-8 flex-1">
+        {plan.features?.map((f: any, i: number) => (
+          <li key={i} className="flex items-start gap-2.5">
+            {f.included ? (
+              <Check className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: plan.color }} />
+            ) : (
+              <X className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#c8bfb8]" />
             )}
-          </div>
+            <span className={`text-sm ${f.included ? "text-[#2a2420]" : "text-[#c8bfb8] line-through"}`}>
+              {f.text}
+            </span>
+          </li>
+        ))}
+      </ul>
 
-          {/* Info anual */}
-          {isAnnual && plan.price > 0 && (
-            <div className="mt-2 sm:mt-3 space-y-1.5 sm:space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-base sm:text-lg text-gray-400 line-through">
-                  R$ {plan.price.toFixed(2).replace(".", ",")}/mês
-                </span>
-                <span
-                  className="px-2 py-0.5 text-xs font-bold rounded-full text-white"
-                  style={{ backgroundColor: plan.color }}
-                >
-                  -{discountPercent}%
-                </span>
-              </div>
-              <div className="text-sm text-[#5a7d71]">
-                <span className="font-semibold text-[#2a2420]">
-                  R$ {totalAnnual.toFixed(2).replace(".", ",")}
-                </span>{" "}
-                cobrado anualmente
-              </div>
-              {Number(savings) > 0 && (
-                <div
-                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold"
-                  style={{
-                    backgroundColor: `${plan.color}15`,
-                    color: plan.color,
-                  }}
-                >
-                  💰 Economize R$ {savings}/ano
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Mensal — info de flexibilidade (sutil) */}
-          {!isAnnual && !hasMonthlyPromo && (
-            <div className="mt-3">
-              <span className="inline-flex items-center gap-1.5 text-sm text-[#5a7a6e] font-medium">
-                <Shield className="w-4 h-4" />
-                Sem compromisso — cancele quando quiser
-              </span>
-            </div>
-          )}
-
-          {/* Mensal com promo — info de economia */}
-          {hasMonthlyPromo && plan.price > 0 && (
-            <div className="mt-3">
-              <span
-                className="inline-flex items-center gap-1.5 text-sm font-semibold"
-                style={{ color: plan.color }}
-              >
-                💰 Economize R${" "}
-                {(plan.price - plan.promoMensalPreco)
-                  .toFixed(2)
-                  .replace(".", ",")}{" "}
-                por mês
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* CTA */}
-        {!isCadastro && (
-          <Link
-            href={`/cadastro?plano=${plan.id}&recorrencia=${
-              isAnnual ? "anual" : "mensal"
-            }`}
-            onClick={() =>
-              trackPlanClick(
-                plan.id,
-                plan.name,
-                isAnnual ? "annual" : "monthly"
-              )
-            }
-          >
-            <Button
-              label={plan.cta}
-              icon={<ArrowRight className="mx-1 sm:mx-2" size={14} />}
-              iconPos="right"
-              className={`w-full mb-6 sm:mb-8 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl font-medium text-sm  transition-all duration-300 ${
-                plan.popular
-                  ? "bg-gradient-to-r text-white border-0 hover:scale-105 shadow-lg"
-                  : " border-2 hover:scale-105"
-              }`}
-              style={
-                plan.popular
-                  ? {
-                      background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
-                    }
-                  : {
-                      color: plan.color,
-                      borderColor: plan.color,
-                      background: "white",
-                    }
-              }
-            />
-          </Link>
-        )}
-
-        {/* Features */}
-        {!isCadastro && (
-          <ul className="space-y-2.5 sm:space-y-3">
-            {plan.features.map((feature: any, i: number) => (
-              <li key={i} className="flex items-start gap-2 sm:gap-3">
-                {feature.included ? (
-                  <Check
-                    className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0"
-                    style={{ color: plan.color }}
-                  />
-                ) : (
-                  <X className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0 text-[#99A1AF]" />
-                )}
-                <span
-                  className={`text-sm sm:text-base ${
-                    feature.included
-                      ? "text-[#2a2420]"
-                      : "text-[#99A1AF] line-through"
-                  }`}
-                >
-                  {feature.text}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
+      {/* CTA */}
+      <Link href={`/cadastro?plano=${plan.id}&recorrencia=mensal`} onClick={() => trackPlanClick(plan.id, plan.name, "monthly")}>
+        <button
+          className="w-full py-3 text-white rounded-xl font-semibold text-sm border-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          style={{ background: plan.color, borderColor: plan.color }}
+        >
+          {plan.cta}
+        </button>
+      </Link>
     </motion.div>
   )
 }
 
+// ─── PAID PLANS CARD (single card with 3 sub-plans) ──────────────────────────
+// function PaidPlansCard({ plans, isAnnual, setIsAnnual }: { plans: any[]; isAnnual: boolean; setIsAnnual: (v: boolean) => void }) {
+//   const ref = useRef(null)
+//   const isInView = useInView(ref, { once: true, amount: 0.1 })
+//   const { trackPlanClick } = useInteractionTracker()
+//   const [activePlan, setActivePlan] = useState<string | null>(null)
+
+//   useEffect(() => {
+//     if (plans.length > 0 && !activePlan) {
+//       const popular = plans.find((p) => p.popular)
+//       setActivePlan(popular?.id ?? plans[0]?.id)
+//     }
+//   }, [plans])
+
+//   const selectedPlan = plans.find((p) => p.id === activePlan) ?? plans[0]
+
+//   if (!plans.length || !selectedPlan) return null
+
+//   const getDisplayPrice = (plan: any) => {
+//     const hasMonthlyPromo = !isAnnual && plan.promoMensalAtiva && plan.promoMensalPreco > 0
+//     if (hasMonthlyPromo) return plan.promoMensalPreco
+//     return isAnnual ? plan.priceAnnual : plan.price
+//   }
+
+//   const getOriginalPrice = (plan: any) => {
+//     if (isAnnual) return plan.price
+//     if (!isAnnual && plan.promoMensalAtiva && plan.promoMensalPreco > 0) return plan.price
+//     return null
+//   }
+
+//   const displayPrice = getDisplayPrice(selectedPlan)
+//   const originalPrice = getOriginalPrice(selectedPlan)
+
+//   const getIcon = (iconName: string, color: string) => {
+//     const Icon = iconMap[iconName]
+//     return Icon ? <Icon className="w-4 h-4" style={{ color }} /> : null
+//   }
+
+//   return (
+//     <motion.div
+//       initial={{ opacity: 0, y: 40 }}
+//       whileInView={{ opacity: 1, y: 0 }}
+//       viewport={{ once: true, amount: 0.1 }}
+//       transition={{ duration: 0.6, delay: 0.1 }}
+//       className="bg-[#1e1a17] rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col h-full text-white relative overflow-hidden"
+//       style={{ borderColor: selectedPlan.color + "40" }}
+//     >
+//       {/* Subtle bg glow */}
+//       <div
+//         className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none"
+//         style={{ background: `radial-gradient(circle, ${selectedPlan.color}, transparent)` }}
+//       />
+
+//       {/* Top row: description + toggle */}
+//       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 relative z-10">
+//         <div className="max-w-sm">
+//           <p className="text-white/70 text-sm leading-relaxed">{selectedPlan.description}</p>
+//         </div>
+
+//         {/* Yearly/Monthly toggle */}
+//         <div className="inline-flex items-center rounded-full p-1 bg-white/10 border border-white/10 self-start flex-shrink-0">
+//           <button
+//             onClick={() => setIsAnnual(true)}
+//             className="px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200"
+//             style={{
+//               backgroundColor: isAnnual ? "white" : "transparent",
+//               color: isAnnual ? "#2a2420" : "rgba(255,255,255,0.5)",
+//             }}
+//           >
+//             Anual
+//           </button>
+//           <button
+//             onClick={() => setIsAnnual(false)}
+//             className="px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200"
+//             style={{
+//               backgroundColor: !isAnnual ? "white" : "transparent",
+//               color: !isAnnual ? "#2a2420" : "rgba(255,255,255,0.5)",
+//             }}
+//           >
+//             Mensal
+//           </button>
+//         </div>
+//       </div>
+
+//       {/* Plan selector tabs */}
+//       <div className="grid grid-cols-3 gap-2 mb-6 relative z-10">
+//         {plans.map((plan) => {
+//           const isActive = activePlan === plan.id
+//           const price = getDisplayPrice(plan)
+//           return (
+//             <button
+//               key={plan.id}
+//               onClick={() => setActivePlan(plan.id)}
+//               className="relative rounded-xl sm:rounded-2xl p-3 sm:p-4 text-left transition-all duration-200 border"
+//               style={{
+//                 backgroundColor: isActive ? `${plan.color}18` : "rgba(255,255,255,0.04)",
+//                 borderColor: isActive ? `${plan.color}60` : "rgba(255,255,255,0.08)",
+//               }}
+//             >
+//               {plan.badge && isActive && (
+//                 <span
+//                   className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[9px] font-bold text-white whitespace-nowrap"
+//                   style={{ backgroundColor: plan.color }}
+//                 >
+//                   {plan.badge}
+//                 </span>
+//               )}
+//               <div className="flex items-center gap-1.5 mb-1.5">
+//                 {getIcon(plan.icon, isActive ? plan.color : "rgba(255,255,255,0.4)")}
+//                 <span
+//                   className="text-xs sm:text-sm font-bold"
+//                   style={{ color: isActive ? plan.color : "rgba(255,255,255,0.5)" }}
+//                 >
+//                   {plan.name.toUpperCase()}
+//                 </span>
+//               </div>
+//               <div className="flex items-baseline gap-0.5">
+//                 {originalPrice && isActive && (
+//                   <span className="text-[10px] text-white/30 line-through mr-0.5">
+//                     R${plan.price.toFixed(0)}
+//                   </span>
+//                 )}
+//                 <span className="text-base sm:text-xl font-bold text-white">
+//                   R${price.toFixed(0)}
+//                 </span>
+//                 <span className="text-[10px] text-white/40">/mês</span>
+//               </div>
+//               <p className="text-[10px] sm:text-xs text-white/40 mt-0.5 leading-tight hidden sm:block">
+//                 {plan.tagline}
+//               </p>
+//             </button>
+//           )
+//         })}
+//       </div>
+
+//       {/* Selected plan detail */}
+//       <div className="flex-1 relative z-10">
+//         {/* Price big */}
+//         <div className="mb-5">
+//           <div className="flex items-baseline gap-2">
+//             {originalPrice && (
+//               <span className="text-lg text-white/30 line-through">
+//                 R${originalPrice.toFixed(2).replace(".", ",")}
+//               </span>
+//             )}
+//             <span className="text-4xl sm:text-5xl font-bold text-white">
+//               R${displayPrice.toFixed(2).replace(".", ",")}
+//             </span>
+//             <span className="text-sm text-white/50">/mês</span>
+//             {selectedPlan.promoMensalAtiva && !isAnnual && selectedPlan.promoMensalTexto && (
+//               <span
+//                 className="ml-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
+//                 style={{ backgroundColor: selectedPlan.color }}
+//               >
+//                 {selectedPlan.promoMensalTexto}
+//               </span>
+//             )}
+//           </div>
+//           {isAnnual && selectedPlan.price > 0 && (
+//             <p className="text-xs text-white/40 mt-1">
+//               R${(selectedPlan.priceAnnual * 12).toFixed(2).replace(".", ",")} cobrado anualmente
+//               <span
+//                 className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold"
+//                 style={{ backgroundColor: `${selectedPlan.color}30`, color: selectedPlan.color }}
+//               >
+//                 -{selectedPlan.yearlyDiscount.toFixed(0)}%
+//               </span>
+//             </p>
+//           )}
+//         </div>
+
+//         {/* Features */}
+//         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 mb-6">
+//           {selectedPlan.features?.map((f: any, i: number) => (
+//             <li key={i} className="flex items-start gap-2">
+//               {f.included ? (
+//                 <Check className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: selectedPlan.color }} />
+//               ) : (
+//                 <X className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-white/20" />
+//               )}
+//               <span className={`text-xs sm:text-sm ${f.included ? "text-white/80" : "text-white/25 line-through"}`}>
+//                 {f.text}
+//               </span>
+//             </li>
+//           ))}
+//         </ul>
+
+//         {/* CTA */}
+//         <Link
+//           href={`/cadastro?plano=${selectedPlan.id}&recorrencia=${isAnnual ? "anual" : "mensal"}`}
+//           onClick={() => trackPlanClick(selectedPlan.id, selectedPlan.name, isAnnual ? "annual" : "monthly")}
+//         >
+//           <button
+//             className="w-full py-3.5 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+//             style={{ background: `linear-gradient(135deg, ${selectedPlan.color}, ${selectedPlan.color}bb)` }}
+//           >
+//             {selectedPlan.cta}
+//             <ArrowRight className="w-4 h-4" />
+//           </button>
+//         </Link>
+//       </div>
+//     </motion.div>
+//   )
+// }
+function PaidCard({ plan, isAnnual }: { plan: any; isAnnual: boolean }) {
+  const { trackPlanClick } = useInteractionTracker()
+
+  if (!plan) return null
+
+  const price = isAnnual ? plan.priceAnnual : plan.price
+  const Icon = iconMap[plan.icon];
+
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.6 }}
+      className={`
+        relative rounded-2xl min-w-xs p-6 sm:p-7 flex flex-col h-full
+        border transition-all duration-300 z-[999]
+        ${plan.popular 
+          ? "bg-white shadow-lg scale-[1.04] z-20  border-[#e5ddd6] shadow-primary hover:scale-[1.05]" 
+          : "bg-white border-[#e5ddd6] shadow-md hover:shadow-lg hover:scale-[1.01]"
+        }
+      `}
+      style={{ zIndex: plan.popular ? 20 : 10, borderColor: plan.color + "80" }}
+    >
+
+      
+
+      {/* Header */}
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <div
+            className="w-11 h-11 rounded-xl flex items-center justify-center"
+            style={{ background: `linear-gradient(135deg, ${plan.color}20, ${plan.color}40)` }}
+          >
+            {Icon && (
+              <Icon className="w-5 h-5" style={{ color: plan.color }} />
+            )}
+          </div>
+
+          <h3 className="text-2xl font-bold">{plan.name}</h3>
+        </div>
+
+        <p className="text-sm text-[#5a7d71]">{plan.tagline}</p>
+      </div>
+
+      {/* Price */}
+      <div className="mb-4">
+        <div className="flex items-end gap-1">
+          <div className="flex flex-col">
+            {/* <AnimatedPrice value={price.toFixed(2).replace(".", ",")} className="text-sm" /> */}
+            <AnimatedPrice 
+              value={price.toFixed(2).replace(".", ",")} 
+              gradient 
+              className={`text-4xl font-bold ${
+                plan.popular ? "scale-110" : ""
+              }`} 
+            />
+          </div>
+          <span className="text-sm text-[#5a4a42]/60">/mês</span>
+        </div>
+        {isAnnual && (
+          <p className="text-xs text-[#5a4a42]/60 mt-1">
+            {plan.yearlyPrice.toFixed(2).replace(".", ",")} Cobrado anualmente
+          </p>
+        )}
+      </div>
+
+      {/* Features SEMPRE VISÍVEIS */}
+      <ul className="space-y-2.5 mb-8 flex-1">
+        {plan.features?.map((f: any, i: number) => (
+          <li key={i} className="flex items-start gap-2.5">
+            {f.included ? (
+              <Check className="w-4 h-4 mt-0.5" style={{ color: plan.color }} />
+            ) : (
+              <X className="w-4 h-4 mt-0.5 text-[#c8bfb8]" />
+            )}
+
+            <span
+              className={`text-sm ${
+                f.included
+                  ? "text-[#2a2420]"
+                  : "text-[#c8bfb8] line-through"
+              }`}
+            >
+              {f.text}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      {plan.popular && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+          <span
+            className="px-3 py-1 text-xs font-bold text-white rounded-full shadow-md"
+            style={{
+              background: `linear-gradient(135deg, ${plan.color}, ${plan.color}cc)`
+            }}
+          >
+            Mais popular
+          </span>
+        </div>
+      )}
+
+      {/* CTA */}
+      <Link
+        href={`/cadastro?plano=${plan.id}&recorrencia=${
+          isAnnual ? "anual" : "mensal"
+        }`}
+        onClick={() =>
+          trackPlanClick(plan.id, plan.name, isAnnual ? "annual" : "monthly")
+        }
+      >
+        <button
+          className={`w-full py-3 rounded-xl font-semibold text-sm text-white transition-all
+            ${plan.popular 
+              ? "shadow-xl scale-[1.03] hover:scale-[1.06]" 
+              : "hover:scale-[1.02]"
+            }
+          `}
+          style={{
+            background: `linear-gradient(135deg, ${plan.color}, ${plan.color}cc)`,
+          }}
+        >
+          {plan.cta}
+        </button>
+      </Link>
+    </motion.div>
+  )
+}
+
+// ─── ENTERPRISE BANNER ────────────────────────────────────────────────────────
+function EnterpriseBanner() {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-50px" })
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.3 }}
+      className="mt-4 bg-white rounded-2xl sm:rounded-3xl border border-[#d8ccc4] shadow-sm px-6 sm:px-8 py-5 flex flex-col sm:flex-row items-center gap-4 justify-between"
+    >
+      <div className="flex items-center gap-4">
+        <div className="w-10 h-10 rounded-xl bg-[#4f6f64]/10 flex items-center justify-center flex-shrink-0">
+          <Users className="w-5 h-5 text-[#4f6f64]" />
+        </div>
+        <div>
+          <p className="font-bold text-[#2a2420] text-sm sm:text-base">Rede de salões ou barbearias?</p>
+          <p className="text-xs sm:text-sm text-[#5a4a42]/60">
+            Desconto especial para grupos com múltiplas unidades.
+          </p>
+        </div>
+      </div>
+      <Link href="/contato?origem=pricing-enterprise">
+        <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#db6f57] via-[#c55a42] to-[#8b3d35] text-white text-sm font-semibold transition-all duration-300 whitespace-nowrap cursor-pointer hover:scale-103 ease-in-out hover:from-[#c55a42] hover:to-[#8b3d35]">
+          Falar com especialista
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </Link>
+    </motion.div>
+  )
+}
+
+// ─── PIX BANNER ───────────────────────────────────────────────────────────────
+function PixBanner() {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-50px" })
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.4 }}
+      className="max-w-4xl mx-auto mb-12"
+    >
+      <div
+        className="relative overflow-hidden rounded-2xl sm:rounded-3xl border p-5 sm:p-7 group"
+        style={{
+          backgroundColor: "rgba(255, 255, 255, 0.85)",
+          backdropFilter: "blur(12px)",
+          borderColor: "#10b98120",
+          boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
+        }}
+      >
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+          <div
+            className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ backgroundColor: "#10b98112", border: "1.5px solid #10b98125" }}
+          >
+            <QrCode className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-600" />
+          </div>
+          <div className="flex-1 text-center sm:text-left">
+            <h4 className="text-base sm:text-lg font-bold text-[#2a2420] mb-1">
+              Pague com Pix e comece na hora
+            </h4>
+            <p className="text-sm text-[#5a4a42]/70 leading-relaxed">
+              Pagamentos via Pix são confirmados instantaneamente — seu plano é ativado em segundos.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 flex-shrink-0">
+            {[
+              { icon: BadgeCheck, text: "Ativação imediata" },
+              { icon: Clock, text: "Sem espera" },
+            ].map((item, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold"
+                style={{ backgroundColor: "#10b98115", color: "#10b981" }}
+              >
+                <item.icon className="w-3.5 h-3.5" />
+                {item.text}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 h-0.5 w-0 group-hover:w-full transition-all duration-700 bg-emerald-500" />
+      </div>
+    </motion.div>
+  )
+}
+
+// ─── MAIN PRICING COMPONENT ───────────────────────────────────────────────────
 export function Pricing() {
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
-  const prefersReduced = useReducedMotion()
   const [isAnnual, setIsAnnual] = useState(false)
-  const [showROI, setShowROI] = useState(false)
-  const [monthlyRevenue, setMonthlyRevenue] = useState(10000)
   const { trackInteraction } = useInteractionTracker()
 
-  const { data, isLoading, isError, isSuccess } = useGetPlanos();
+  const { data, isLoading, isSuccess } = useGetPlanos()
+  const [planos, setPlanos] = useState<any[]>([])
 
-  const [planos, setPlanos] = useState<any>([]);
-
-  useEffect(()=> {
+  useEffect(() => {
     if (data && data.success && isSuccess) {
       const transformed = data.dados.map((plan: any) => ({
         ...plan,
         priceAnnual: plan.yearlyPrice > 0 ? plan.yearlyPrice / 12 : 0,
       }))
-      setPlanos(transformed);
+      setPlanos(transformed)
     }
-  },[data, isSuccess])
+  }, [data, isSuccess])
 
-  const calculateROI = () => {
-    const timeSaved = 40
-    const hourlyValue = 50
-    const noShowReduction = monthlyRevenue * 0.35
-    const newCustomers = monthlyRevenue * 0.25
+  const freePlan = planos.find((p) => p.id === "gratuito")
+  const paidPlans = planos.filter((p) => p.id !== "gratuito")
 
-    const totalGain = timeSaved * hourlyValue + noShowReduction + newCustomers
-    const systemCost = 139.9
-    const roi = ((totalGain - systemCost) / systemCost * 100).toFixed(0)
-
-    return {
-      timeSaved: (timeSaved * hourlyValue).toFixed(0),
-      noShowReduction: noShowReduction.toFixed(0),
-      newCustomers: newCustomers.toFixed(0),
-      totalGain: totalGain.toFixed(0),
-      roi,
-    }
-  }
-
-  const roiData = calculateROI()
+  // console.log("planos do sistema: ",freePlan, paidPlans, planos)
 
   return (
     <section
@@ -396,33 +603,13 @@ export function Pricing() {
         }}
       />
 
-      {/* Animated blobs */}
-      {/* <motion.div
-        className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-[#db6f57]/[0.06] to-[#8b3d35]/[0.04] rounded-full blur-3xl"
-        animate={
-          prefersReduced
-            ? {}
-            : { scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }
-        }
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-gradient-to-tr from-[#4f6f64]/[0.06] to-[#db6f57]/[0.04] rounded-full blur-3xl"
-        animate={
-          prefersReduced
-            ? {}
-            : { scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }
-        }
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-      /> */}
-
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.7 }}
-          className="text-center mb-16 md:mb-20"
+          className="text-center mb-14 md:mb-16"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8b3d35]/[0.08] border border-[#8b3d35]/20 mb-6">
             <Crown className="w-4 h-4 text-[#db6f57]" />
@@ -438,283 +625,77 @@ export function Pricing() {
             </span>
           </h2>
 
-          <p className="text-base sm:text-lg text-[#5a4a42]/70 leading-relaxed max-w-2xl mx-auto mb-8">
+          <p className="text-base sm:text-lg text-[#5a4a42]/70 leading-relaxed max-w-2xl mx-auto">
             Sem surpresas. Sem taxas escondidas.{" "}
-            <span className="text-[#8b3d35] font-semibold">
-              Cancele quando quiser
-            </span>
-            .
+            <span className="text-[#8b3d35] font-semibold">Cancele quando quiser</span>.
           </p>
-
-          {/* Toggle mensal/anual */}
-          <div className="inline-flex items-center rounded-full p-1 border"
-            style={{
-              backgroundColor: "rgba(255, 255, 255, 0.85)",
-              backdropFilter: "blur(12px)",
-              borderColor: "#2a242015",
-              boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
-            }}
-          >
-            <button
-              onClick={() => {
-                if (isAnnual) {
-                  setIsAnnual(false)
-                  trackInteraction("plan_toggle_monthly", "pricing-billing-toggle", { section: "pricing" })
-                }
-              }}
-              className="relative px-5 sm:px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300"
-              style={{
-                backgroundColor: !isAnnual ? "#4f6f64" : "transparent",
-                color: !isAnnual ? "#ffffff" : "#5a4a42aa",
-              }}
-            >
-              Mensal
-            </button>
-            <button
-              onClick={() => {
-                if (!isAnnual) {
-                  setIsAnnual(true)
-                  trackInteraction("plan_toggle_annual", "pricing-billing-toggle", { section: "pricing" })
-                }
-              }}
-              className="relative flex items-center gap-2 px-5 sm:px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300"
-              style={{
-                backgroundColor: isAnnual ? "#db6f57" : "transparent",
-                color: isAnnual ? "#ffffff" : "#5a4a42aa",
-              }}
-            >
-              Anual
-              <span
-                className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                style={{
-                  backgroundColor: isAnnual ? "rgba(255,255,255,0.25)" : "#db6f5715",
-                  color: isAnnual ? "#ffffff" : "#db6f57",
-                }}
-              >
-                Até -10%
-              </span>
-            </button>
-          </div>
         </motion.div>
 
-        {/* Grid de planos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mb-14 max-w-8xl mx-auto">
-          {planos && planos.map((plan: any, index: number) => (
-            <PlanCard
-              key={plan.id}
-              plan={plan}
-              isAnnual={isAnnual}
-              index={index}
-            />
-          ))}
+        {/* ── Main layout: Free card + Paid card ── */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="w-8 h-8 border-2 border-[#db6f57] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-8xl mx-auto">
+              {/* Left: Free */}
+              <div className="flex flex-col lg:col-span-3 gap-4">
+                <FreeCard plan={freePlan} />
+              </div>
+
+              {/* Right: Paid plans */}
+              <div className="flex flex-col lg:col-span-9 gap-4 bg-white rounded-2xl sm:rounded-3xl shadow-lg p-6 sm:p-8 flex flex-col h-full text-[#2a2420] border border-[#e5ddd6] hover:shadow-xl transition-all"> 
+                <div className="flex justify-between mb-3">
+                  <div>
+                    <h3 className="text-3xl sm:text-4xl font-bold text-[#2a2420] mb-1">Planos</h3>
+                  </div>
+                  <div className="inline-flex bg-white rounded-full p-1 border border-[#e5ddd6] shadow">
+                    <button
+                      onClick={() => setIsAnnual(false)}
+                      className={`px-4 py-2 text-sm rounded-full ${
+                        !isAnnual ? "bg-gradient-to-r from-[#db6f57] via-[#c55a42] to-[#8b3d35] font-semibold text-white" : "text-gray-500"
+                      }`}
+                    >
+                      Mensal
+                    </button>
+
+                    <button
+                      onClick={() => setIsAnnual(true)}
+                      className={`px-4 py-2 text-sm rounded-full ${
+                        isAnnual ? "bg-gradient-to-r from-[#db6f57] via-[#c55a42] to-[#8b3d35] font-semibold text-white" : "text-gray-500"
+                      }`}
+                    >
+                      Anual 
+                      {/* <span className="text-xs font-normal"> 10% OFF</span> */}
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+                  {paidPlans.map((plan) => (
+                    <PaidCard key={plan.id} plan={plan} isAnnual={isAnnual} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Enterprise banner — full width under both cards */}
+            <div className="max-w-8xl mx-auto">
+              <EnterpriseBanner />
+            </div>
+          </>
+        )}
+
+        {/* Pix Banner */}
+        <div className="mt-14">
+          <PixBanner />
         </div>
-
-        {/* ===== BANNER PIX ===== */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="max-w-4xl mx-auto mb-14"
-        >
-          <div
-            className="relative overflow-hidden rounded-3xl border p-5 sm:p-7"
-            style={{
-              backgroundColor: "rgba(255, 255, 255, 0.85)",
-              backdropFilter: "blur(12px)",
-              borderColor: "#10b98120",
-              boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
-            }}
-          >
-            <div
-              className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-3xl"
-              style={{
-                background: "radial-gradient(ellipse at center, #10b98106 0%, transparent 70%)",
-              }}
-            />
-
-            <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-              <div
-                className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{
-                  backgroundColor: "#10b98112",
-                  border: "1.5px solid #10b98125",
-                }}
-              >
-                <QrCode className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-600" />
-              </div>
-
-              <div className="flex-1 text-center sm:text-left">
-                <h4 className="text-base sm:text-lg font-bold text-[#2a2420] mb-1">
-                  Pague com Pix e comece na hora
-                </h4>
-                <p className="text-sm text-[#5a4a42]/70 leading-relaxed">
-                  Pagamentos via Pix são confirmados instantaneamente — seu
-                  plano é ativado em segundos.
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-2 flex-shrink-0">
-                {[
-                  { icon: Zap, text: "Ativação imediata" },
-                  { icon: BadgeCheck, text: "Confirmação garantida" },
-                  { icon: Clock, text: "Sem espera" },
-                ].map((item, idx) => (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold"
-                    style={{
-                      backgroundColor: "#10b98115",
-                      color: "#10b981",
-                    }}
-                  >
-                    <item.icon className="w-3.5 h-3.5" />
-                    {item.text}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div
-              className="absolute bottom-0 left-0 h-0.5 w-0 group-hover:w-full transition-all duration-700 bg-emerald-500"
-            />
-          </div>
-        </motion.div>
-
-        {/* Calculadora de ROI */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, delay: 0.6 }}
-          className="max-w-4xl mx-auto mb-14"
-        >
-          <button
-            onClick={() => {
-              const next = !showROI
-              setShowROI(next)
-              if (next)
-                trackInteraction(
-                  "roi_calculator_open",
-                  "roi-calculator",
-                  { section: "pricing" }
-                )
-            }}
-            className="w-full bg-gradient-to-r from-[#4f6f64] to-[#3d574f] text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <Calculator className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 flex-shrink-0" />
-                <div className="text-left">
-                  <h3 className="text-base sm:text-xl lg:text-2xl font-bold mb-0.5 sm:mb-1">
-                    Calcule seu retorno sobre investimento
-                  </h3>
-                  <p className="text-white/80 text-xs sm:text-sm lg:text-base">
-                    Veja quanto você pode economizar e ganhar com o Bellory
-                  </p>
-                </div>
-              </div>
-              <ArrowRight
-                className={`w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 transition-transform duration-300 ${
-                  showROI ? "rotate-90" : ""
-                }`}
-              />
-            </div>
-          </button>
-
-          {showROI && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              className="rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 mt-4 border"
-              style={{
-                backgroundColor: "rgba(255, 255, 255, 0.85)",
-                backdropFilter: "blur(12px)",
-                borderColor: "#4f6f6420",
-                boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
-              }}
-            >
-              <div className="mb-6">
-                <label className="block text-sm font-semibold mb-2 text-[#2a2420]">
-                  Qual seu faturamento mensal médio?
-                </label>
-                <input
-                  type="range"
-                  min="5000"
-                  max="50000"
-                  step="1000"
-                  value={monthlyRevenue}
-                  onChange={(e) =>
-                    setMonthlyRevenue(Number(e.target.value))
-                  }
-                  className="w-full"
-                />
-                <div className="text-center text-2xl sm:text-3xl font-bold text-[#db6f57] mt-2">
-                  R$ {monthlyRevenue.toLocaleString("pt-BR")}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
-                <div
-                  className="rounded-2xl border p-4 sm:p-6"
-                  style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.6)",
-                    borderColor: "#4f6f6420",
-                  }}
-                >
-                  <h4 className="font-bold text-[#2a2420] mb-4 flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-[#4f6f64]" />
-                    Ganhos Mensais
-                  </h4>
-                  <ul className="space-y-3 text-sm">
-                    <li className="flex justify-between">
-                      <span className="text-[#5a4a42]/70">Tempo economizado:</span>
-                      <span className="font-bold text-[#2a2420]">R$ {roiData.timeSaved}</span>
-                    </li>
-                    <li className="flex justify-between">
-                      <span className="text-[#5a4a42]/70">Redução de faltas:</span>
-                      <span className="font-bold text-[#2a2420]">R$ {roiData.noShowReduction}</span>
-                    </li>
-                    <li className="flex justify-between">
-                      <span className="text-[#5a4a42]/70">Novos clientes:</span>
-                      <span className="font-bold text-[#2a2420]">R$ {roiData.newCustomers}</span>
-                    </li>
-                    <li className="flex justify-between pt-3" style={{ borderTop: "1px solid #4f6f6420" }}>
-                      <span className="font-bold text-[#2a2420]">Total:</span>
-                      <span className="font-bold text-[#4f6f64]">R$ {roiData.totalGain}</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="bg-gradient-to-br from-[#4f6f64] to-[#3d574f] rounded-2xl p-4 sm:p-6 text-white">
-                  <h4 className="font-bold mb-3 sm:mb-4">Seu ROI</h4>
-                  <div className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-2">
-                    {roiData.roi}%
-                  </div>
-                  <p className="text-white/80 mb-3 sm:mb-4 text-sm sm:text-base">
-                    de retorno sobre investimento
-                  </p>
-                  <div className="bg-white/15 rounded-xl p-3 sm:p-4">
-                    <p className="text-sm">
-                      Com o plano Plus (R$ 139,90/mês), você pode ganhar até{" "}
-                      <span className="font-bold">
-                        R$ {(Number(roiData.totalGain) - 139.9).toFixed(0)}/mês
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-center text-sm text-[#5a4a42]/50">
-                *Cálculo baseado em médias de clientes reais. Resultados podem variar.
-              </p>
-            </motion.div>
-          )}
-        </motion.div> */}
 
         {/* FAQ */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.7, delay: 0.7 }}
+          transition={{ duration: 0.7, delay: 0.5 }}
           className="max-w-3xl mx-auto"
         >
           <h3 className="font-serif text-center text-2xl sm:text-3xl font-bold text-[#2a2420] mb-6">
@@ -737,12 +718,8 @@ export function Pricing() {
               >
                 <HelpCircle className="w-4 h-4 text-[#db6f57] flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-semibold text-[#2a2420] mb-0.5">
-                    {faq.question}
-                  </h4>
-                  <p className="text-xs text-[#5a4a42]/70 leading-relaxed">
-                    {faq.answer}
-                  </p>
+                  <h4 className="text-sm font-semibold text-[#2a2420] mb-0.5">{faq.question}</h4>
+                  <p className="text-xs text-[#5a4a42]/70 leading-relaxed">{faq.answer}</p>
                 </div>
               </div>
             ))}

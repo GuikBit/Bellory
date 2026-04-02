@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Menu, X, ArrowRight, Sparkles, LogIn, ChevronDown, Scissors, Sparkle, Building2, Palette, Smartphone, Users, Calendar, MessageSquare, BarChart3, CreditCard, Zap, Bot, Brain, Target, Gift, Crown, Clock, Bell, Star, TrendingUp, Shield, Layers } from "lucide-react"
+import { Menu, X, ArrowRight, Sparkles, LogIn, ChevronDown, Scissors, Sparkle, Building2, Palette, Smartphone, Users, Calendar, MessageSquare, BarChart3, CreditCard, Zap, Bot, Brain, Target, Gift, Crown, Clock, Bell, Star, TrendingUp, Shield, Layers, UsersRound } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion"
 import Link from "next/link"
 import { Button } from "primereact/button"
@@ -166,6 +166,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
             { icon: Calendar, title: "Agendamento Online", description: "Agenda inteligente 24/7", href: "/#funcionalidades" },
             { icon: Users, title: "Gestão de Clientes", description: "CRM completo para seu negócio", href: "/#funcionalidades" },
             { icon: CreditCard, title: "Controle Financeiro", description: "Fluxo de caixa e relatórios", href: "/#funcionalidades" },
+            { icon: UsersRound, title: "Gestão de Equipe", description: "Agenda individual e bloqueios", href: "/#funcionalidades" },
           ]
         },
         {
@@ -300,7 +301,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
           duration: 0.35,
           ease: "easeInOut",
         }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-2 sm:px-4 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-2 sm:px-6 ${
           isScrolled
             ? `${theme.headerBg} ${theme.headerShadow} ${theme.headerBorder}`
             : theme.headerBgTransparent
@@ -348,7 +349,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                           }}
                           transition={{ duration: 0.3, ease: "easeInOut" }}
                         >
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDown size={16} />
                         </motion.div>
                         <motion.span
                           className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r ${theme.navUnderline}`}
@@ -384,7 +385,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                           initial="hidden"
                           animate="visible"
                           exit="exit"
-                          className={`absolute top-full right-0 xl:left-1/2 xl:-translate-x-1/2 mt-4 w-[calc(100vw-2rem)] max-w-[780px] ${theme.dropdownBg} rounded-2xl border ${theme.dropdownBorder} overflow-hidden`}
+                          className={`absolute top-full right-0 xl:left-3/3 xl:-translate-x-1/2 mt-4 w-[calc(100vw-2rem)] max-w-[980px] ${theme.dropdownBg} rounded-2xl border ${theme.dropdownBorder} overflow-hidden`}
                           style={{
                             boxShadow: "0 25px 80px -15px rgba(219, 111, 87, 0.25), 0 15px 30px -10px rgba(0, 0, 0, 0.12)",
                             transformOrigin: "top center",
@@ -417,7 +418,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#db6f57]/70 mb-3 block px-1 ">
                                     {category.label}
                                   </span>
-                                  <div className="flex flex-col gap-1">
+                                  <div className="flex flex-col gap-2.5">
                                     {category.items.map((feat, featIdx) => {
                                       const FeatIcon = feat.icon
                                       return (
@@ -429,14 +430,14 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                             backgroundColor: "rgba(219, 111, 87, 0.06)",
                                             transition: { type: "spring", stiffness: 400, damping: 25 }
                                           }}
-                                          className="flex items-center gap-2 p-1 rounded-xl group cursor-pointer"
+                                          className="flex items-center gap-3 p-1 rounded-xl group cursor-pointer"
                                         >
                                           <div className={`rounded-lg flex items-center justify-center transition-transform group-hover:scale-110 group-hover:-rotate-6`}>
                                             <FeatIcon size={16} color="#db6f57"/>
                                           </div>
                                           <div className="min-w-0">
                                             <div className="flex items-center gap-1.5">
-                                              <span className={`text-xs font-semibold ${theme.dropdownTitleText} group-hover:text-[#db6f57] transition-colors`}>
+                                              <span className={`text-[13px] font-semibold ${theme.dropdownTitleText} group-hover:text-[#db6f57] transition-colors`}>
                                                 {feat.title}
                                               </span>
                                               {'badge' in feat && feat.badge && (
@@ -527,7 +528,7 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                           initial="hidden"
                           animate="visible"
                           exit="exit"
-                          className={`absolute top-full left-1/2 -translate-x-1/2 mt-4 ${item.key === 'publicoAlvo' ? 'w-[460px]' : 'w-[340px]'} ${theme.dropdownBg} rounded-2xl border ${theme.dropdownBorder} overflow-hidden`}
+                          className={`absolute top-full left-1/2 -translate-x-1/2 mt-4 ${item.key === 'publicoAlvo' ? 'w-[590px]' : 'w-[340px]'} ${theme.dropdownBg} rounded-2xl border ${theme.dropdownBorder} overflow-hidden`}
                           style={{
                             boxShadow: "0 25px 80px -15px rgba(219, 111, 87, 0.25), 0 15px 30px -10px rgba(0, 0, 0, 0.12)",
                             transformOrigin: "top center",
@@ -561,14 +562,14 @@ export function Header({isMenu, isCadastro}:{isMenu?:boolean, isCadastro?: boole
                                     backgroundColor: "rgba(219, 111, 87, 0.06)",
                                     transition: { type: "spring", stiffness: 400, damping: 25 }
                                   }}
-                                  className="flex items-center gap-2 p-1 rounded-xl group cursor-pointer"
+                                  className="flex items-center gap-3 p-1 rounded-xl group cursor-pointer"
                                 >
                                   <div className="rounded-lg flex items-center justify-center transition-transform group-hover:scale-110 group-hover:-rotate-6">
                                     <Icon size={16} color="#db6f57" />
                                   </div>
                                   <div className="min-w-0">
                                     <div className="flex items-center gap-1.5">
-                                      <span className={`text-xs font-semibold ${theme.dropdownTitleText} group-hover:text-[#db6f57] transition-colors`}>
+                                      <span className={`text-[13px] font-semibold ${theme.dropdownTitleText} group-hover:text-[#db6f57] transition-colors`}>
                                         {dropdownItem.title}
                                       </span>
                                       {'badge' in dropdownItem && dropdownItem.badge && (
