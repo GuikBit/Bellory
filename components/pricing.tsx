@@ -36,6 +36,101 @@ const iconMap: Record<string, any> = {
   Gift, Zap, Sparkles, Crown, Star, Rocket, Heart, Shield, Diamond, CreditCard,
 }
 
+// Metadados visuais por código de plano (a API não retorna cor/ícone)
+const planMeta: Record<
+  string,
+  { color: string; icon: string; tagline: string; cta: string; popular?: boolean; badge?: string }
+> = {
+  gratuito: {
+    color: "#5a7d71",
+    icon: "Gift",
+    tagline: "Para começar sem custo",
+    cta: "Começar grátis",
+  },
+  basico: {
+    color: "#db6f57",
+    icon: "Zap",
+    tagline: "Para quem está começando",
+    cta: "Assinar Básico",
+  },
+  plus: {
+    color: "#8b3d35",
+    icon: "Sparkles",
+    tagline: "Para escalar com IA",
+    cta: "Assinar Plus",
+    popular: true,
+    badge: "Mais popular",
+  },
+  premium: {
+    color: "#c19a4a",
+    icon: "Crown",
+    tagline: "Máximo profissionalismo",
+    cta: "Assinar Premium",
+  },
+}
+
+function isPromoVigente(ativa: boolean, preco: any, inicio: string | null, fim: string | null) {
+  if (!ativa || preco == null || preco <= 0) return false
+  const now = Date.now()
+  if (inicio && now < new Date(inicio).getTime()) return false
+  if (fim && now > new Date(fim).getTime()) return false
+  return true
+}
+
+function transformPlan(p: any) {
+  const meta =
+    planMeta[p.codigo] ?? {
+      color: "#8b3d35",
+      icon: "Star",
+      tagline: p.description ?? "",
+      cta: "Assinar",
+    }
+
+  const priceAnnualMonthly = p.precoAnual && p.precoAnual > 0 ? p.precoAnual / 12 : 0
+
+  return {
+    id: p.codigo,
+    rawId: p.id,
+    name: p.name,
+    description: p.description,
+    tagline: meta.tagline,
+    color: meta.color,
+    icon: meta.icon,
+    popular: meta.popular ?? false,
+    cta: meta.cta,
+    badge: meta.badge,
+    tierOrder: p.tierOrder ?? 0,
+    price: p.precoMensal ?? 0,
+    priceAnnual: priceAnnualMonthly,
+    yearlyPrice: p.precoAnual ?? 0,
+    yearlyDiscount: p.descontoPercentualAnual ?? 0,
+    promoMensalAtiva: isPromoVigente(
+      !!p.promoMensalAtiva,
+      p.promoMensalPreco,
+      p.promoMensalInicio,
+      p.promoMensalFim,
+    ),
+    promoMensalPreco: p.promoMensalPreco ?? null,
+    promoMensalTexto: p.promoMensalTexto ?? null,
+    promoMensalInicio: p.promoMensalInicio ?? null,
+    promoMensalFim: p.promoMensalFim ?? null,
+    promoAnualAtiva: isPromoVigente(
+      !!p.promoAnualAtiva,
+      p.promoAnualPreco,
+      p.promoAnualInicio,
+      p.promoAnualFim,
+    ),
+    promoAnualPreco: p.promoAnualPreco ?? null,
+    promoAnualTexto: p.promoAnualTexto ?? null,
+    promoAnualInicio: p.promoAnualInicio ?? null,
+    promoAnualFim: p.promoAnualFim ?? null,
+    features: (p.features ?? []).map((f: any) => ({
+      text: f.label,
+      included: !!f.enabled,
+    })),
+  }
+}
+
 const planFAQs = [
   {
     question: "Posso mudar de plano depois?",
@@ -345,7 +440,23 @@ function PaidCard({ plan, isAnnual }: { plan: any; isAnnual: boolean }) {
 
   if (!plan) return null
 
-  const price = isAnnual ? plan.priceAnnual : plan.price
+  const hasMonthlyPromo =
+    !isAnnual && plan.promoMensalAtiva && plan.promoMensalPreco != null && plan.promoMensalPreco > 0
+  const hasAnnualPromo =
+    isAnnual && plan.promoAnualAtiva && plan.promoAnualPreco != null && plan.promoAnualPreco > 0
+  const basePrice = isAnnual ? plan.priceAnnual : plan.price
+  const price = hasMonthlyPromo
+    ? plan.promoMensalPreco
+    : hasAnnualPromo
+      ? plan.promoAnualPreco / 12
+      : basePrice
+  const originalPrice = hasMonthlyPromo
+    ? plan.price
+    : hasAnnualPromo
+      ? plan.priceAnnual
+      : null
+  const hasPromo = hasMonthlyPromo || hasAnnualPromo
+  const promoTexto = hasMonthlyPromo ? plan.promoMensalTexto : plan.promoAnualTexto
   const Icon = iconMap[plan.icon];
 
 
@@ -388,22 +499,43 @@ function PaidCard({ plan, isAnnual }: { plan: any; isAnnual: boolean }) {
 
       {/* Price */}
       <div className="mb-4">
+        {hasPromo && (
+          <div className="flex items-center gap-2 mb-1.5">
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow"
+              style={{ background: `linear-gradient(135deg, ${plan.color}, ${plan.color}cc)` }}
+            >
+              <Tag className="w-3 h-3" />
+              {promoTexto ?? "Promoção"}
+            </span>
+            {originalPrice != null && (
+              <span className="text-sm text-[#5a4a42]/50 line-through">
+                R$ {originalPrice.toFixed(2).replace(".", ",")}
+              </span>
+            )}
+          </div>
+        )}
         <div className="flex items-end gap-1">
           <div className="flex flex-col">
-            {/* <AnimatedPrice value={price.toFixed(2).replace(".", ",")} className="text-sm" /> */}
-            <AnimatedPrice 
-              value={price.toFixed(2).replace(".", ",")} 
-              gradient 
-              className={`text-4xl font-bold ${
-                plan.popular ? "scale-110" : ""
-              }`} 
+            <AnimatedPrice
+              value={price.toFixed(2).replace(".", ",")}
+              gradient
+              className={`text-4xl font-bold ${plan.popular || hasPromo ? "scale-110" : ""}`}
             />
           </div>
           <span className="text-sm text-[#5a4a42]/60">/mês</span>
         </div>
-        {isAnnual && (
+        {isAnnual && plan.yearlyPrice > 0 && (
           <p className="text-xs text-[#5a4a42]/60 mt-1">
-            {plan.yearlyPrice.toFixed(2).replace(".", ",")} Cobrado anualmente
+            R$ {plan.yearlyPrice.toFixed(2).replace(".", ",")} cobrado anualmente
+            {plan.yearlyDiscount > 0 && (
+              <span
+                className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold"
+                style={{ backgroundColor: `${plan.color}20`, color: plan.color }}
+              >
+                -{plan.yearlyDiscount.toFixed(0)}%
+              </span>
+            )}
           </p>
         )}
       </div>
@@ -576,10 +708,10 @@ export function Pricing() {
 
   useEffect(() => {
     if (data && data.success && isSuccess) {
-      const transformed = data.dados.map((plan: any) => ({
-        ...plan,
-        priceAnnual: plan.yearlyPrice > 0 ? plan.yearlyPrice / 12 : 0,
-      }))
+      const transformed = (data.dados ?? [])
+        .filter((p: any) => p.active && p.codigo !== "IMPORTED_ASAAS")
+        .map(transformPlan)
+        .sort((a: any, b: any) => a.tierOrder - b.tierOrder)
       setPlanos(transformed)
     }
   }, [data, isSuccess])

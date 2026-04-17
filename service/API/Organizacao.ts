@@ -114,12 +114,17 @@ export async function getBuscarCEP(cep: any): Promise<any> {
 
 export async function validarCupom(payload: { codigoCupom: string, planoCodigo: string, cicloCobranca: string }): Promise<Response> {
   try {
-    const response = await api.post<Response>('/public/planos/validar-cupom', JSON.stringify(payload));
+    const cycle = payload.cicloCobranca?.toUpperCase() === 'ANUAL' ? 'ANNUAL' : 'MONTHLY';
+    const response = await axios.post<Response>('/api/cupom/validate', {
+      couponCode: payload.codigoCupom.toUpperCase(),
+      planCode: payload.planoCodigo,
+      cycle,
+    });
     return {
       success: response.data.success,
       message: response.data.message,
       errorCode: response.data.errorCode,
-      dados: response.data.dados
+      dados: response.data.dados,
     };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -131,18 +136,17 @@ export async function validarCupom(payload: { codigoCupom: string, planoCodigo: 
 
 export async function getPlanos(): Promise<Response> {
   try {
-    
-    const response = await api.get<Response>(`public/planos`);
-    
+    const response = await axios.get<Response>(`/api/planos`);
+
     return {
       success: response.data.success,
       message: response.data.message,
       errorCode: response.data.errorCode,
-      dados: response.data.dados
+      dados: response.data.dados,
     };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.message || 'Erro ao buscar serviços.');
+      throw new Error(error.response.data.message || 'Erro ao buscar planos.');
     }
     throw new Error('Erro de rede ou inesperado.');
   }

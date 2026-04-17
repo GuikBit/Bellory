@@ -240,7 +240,7 @@ export default function Cadastro() {
   const { trackCadastroStarted, trackCadastroStep, trackCadastroCompleted, trackCadastroAbandoned, trackPlanSelected } = useConversionTracker()
   const cadastroTracked = useRef(false)
 
-  const [activeStep, setActiveStep] = useState(0)
+  const [activeStep, setActiveStep] = useState(4)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfPassword, setShowConfPassword] = useState(false)
@@ -301,12 +301,77 @@ export default function Cadastro() {
     Gift, Zap, Sparkles, Crown,
   }
 
+  const isPromoVigente = (ativa: boolean, preco: any, inicio: string | null, fim: string | null) => {
+    if (!ativa || preco == null || preco <= 0) return false
+    const now = Date.now()
+    if (inicio && now < new Date(inicio).getTime()) return false
+    if (fim && now > new Date(fim).getTime()) return false
+    return true
+  }
+
+  const planMetaMap: Record<
+    string,
+    { color: string; icon: any; tagline: string; badge?: string }
+  > = {
+    gratuito: { color: "#5a7d71", icon: Gift, tagline: "Para começar sem custo" },
+    basico:   { color: "#db6f57", icon: Zap,  tagline: "Para quem está começando" },
+    plus:     { color: "#8b3d35", icon: Sparkles, tagline: "Para escalar com IA", badge: "Mais popular" },
+    premium:  { color: "#c19a4a", icon: Crown, tagline: "Máximo profissionalismo" },
+  }
+
   useEffect(()=> {
     if (data && data.success && isSuccess) {
-      const transformed = data.dados.map((plan: any) => ({
-        ...plan,
-        icon: planIconMap[plan.icon] || Zap,
-      }))
+      const transformed = (data.dados ?? [])
+        .filter((p: any) => p.active && p.codigo !== "IMPORTED_ASAAS")
+        .map((p: any) => {
+          const meta =
+            planMetaMap[p.codigo] ?? {
+              color: "#8b3d35",
+              icon: Zap,
+              tagline: p.description ?? "",
+            }
+          const monthlyEqOfAnnual = p.precoAnual && p.precoAnual > 0 ? p.precoAnual / 12 : 0
+          return {
+            id: p.codigo,
+            rawId: p.id,
+            name: p.name,
+            description: p.description,
+            tagline: meta.tagline,
+            color: meta.color,
+            icon: meta.icon,
+            badge: meta.badge,
+            tierOrder: p.tierOrder ?? 0,
+            price: p.precoMensal ?? 0,
+            yearlyPrice: monthlyEqOfAnnual,
+            priceAnnual: monthlyEqOfAnnual,
+            yearlyDiscount: p.descontoPercentualAnual ?? 0,
+            promoMensalAtiva: isPromoVigente(
+              !!p.promoMensalAtiva,
+              p.promoMensalPreco,
+              p.promoMensalInicio,
+              p.promoMensalFim,
+            ),
+            promoMensalPreco: p.promoMensalPreco ?? null,
+            promoMensalTexto: p.promoMensalTexto ?? null,
+            promoMensalInicio: p.promoMensalInicio ?? null,
+            promoMensalFim: p.promoMensalFim ?? null,
+            promoAnualAtiva: isPromoVigente(
+              !!p.promoAnualAtiva,
+              p.promoAnualPreco,
+              p.promoAnualInicio,
+              p.promoAnualFim,
+            ),
+            promoAnualPreco: p.promoAnualPreco ?? null,
+            promoAnualTexto: p.promoAnualTexto ?? null,
+            promoAnualInicio: p.promoAnualInicio ?? null,
+            promoAnualFim: p.promoAnualFim ?? null,
+            features: (p.features ?? []).map((f: any) => ({
+              text: f.label,
+              included: !!f.enabled,
+            })),
+          }
+        })
+        .sort((a: any, b: any) => a.tierOrder - b.tierOrder)
       setPlano(transformed);
     }
   },[data, isSuccess])
@@ -451,14 +516,14 @@ export default function Cadastro() {
       planoCodigo: selectedPlan,
       cicloCobranca: isAnnual ? "ANUAL" : "MENSAL"
     }).then((response) => {
-      if (response.dados?.valido) {
+      if (response.dados?.valid) {
         setCupomValid(true)
         setCupomDados(response.dados)
-        setCupomError("Cupom aplicado com sucesso!")
+        setCupomError(response.dados?.message || "Cupom aplicado com sucesso!")
       } else {
         setCupomValid(false)
         setCupomDados(null)
-        setCupomError(response.dados?.mensagem || "Cupom inválido")
+        setCupomError(response.dados?.message || "Cupom inválido ou não aplicável ao plano selecionado")
       }
     }).catch((error) => {
       setCupomValid(false)
@@ -477,19 +542,19 @@ export default function Cadastro() {
     const planoParam = searchParams.get('plano')
     const recorrenciaParam = searchParams.get('recorrencia')
 
-    // Verifica se o plano passado na URL existe nos planos disponíveis
-    if (planoParam) {
+    // Define a recorrência baseado no parâmetro da URL
+    if (recorrenciaParam) {
+      setIsAnnual(recorrenciaParam.toLowerCase() === 'anual')
+    }
+
+    // Só tenta pré-selecionar o plano depois que a lista foi carregada
+    if (planoParam && plano.length > 0 && !selectedPlan) {
       const planoEncontrado = plano.find(p => p.id === planoParam.toLowerCase())
       if (planoEncontrado) {
         setSelectedPlan(planoEncontrado.id)
       }
     }
-
-    // Define a recorrência baseado no parâmetro da URL
-    if (recorrenciaParam) {
-      setIsAnnual(recorrenciaParam.toLowerCase() === 'anual')
-    }
-  }, [searchParams])
+  }, [searchParams, plano])
 
   // Rastrear inicio do cadastro
   useEffect(() => {
@@ -609,7 +674,13 @@ export default function Cadastro() {
         id: selectedPlanData?.id || "",
         nome: selectedPlanData?.name.toUpperCase() || "",
         periodicidade: isAnnual ? "anual" : "mensal",
-        valor: isAnnual ? selectedPlanData?.priceAnnual : selectedPlanData?.price
+        valor: isAnnual
+          ? (selectedPlanData?.promoAnualAtiva && selectedPlanData?.promoAnualPreco > 0
+              ? selectedPlanData.promoAnualPreco / 12
+              : selectedPlanData?.priceAnnual)
+          : (selectedPlanData?.promoMensalAtiva && selectedPlanData?.promoMensalPreco > 0
+              ? selectedPlanData.promoMensalPreco
+              : selectedPlanData?.price)
       }
     }
 
@@ -1496,7 +1567,23 @@ export default function Cadastro() {
                       {/* Cards de planos selecionáveis */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         {plano.map((plan) => {
-                          const displayPrice = isAnnual ? plan.yearlyPrice : plan.price
+                          const hasMonthlyPromo =
+                            !isAnnual && plan.promoMensalAtiva && plan.promoMensalPreco != null && plan.promoMensalPreco > 0
+                          const hasAnnualPromo =
+                            isAnnual && plan.promoAnualAtiva && plan.promoAnualPreco != null && plan.promoAnualPreco > 0
+                          const basePrice = isAnnual ? plan.yearlyPrice : plan.price
+                          const displayPrice = hasMonthlyPromo
+                            ? plan.promoMensalPreco
+                            : hasAnnualPromo
+                              ? plan.promoAnualPreco / 12
+                              : basePrice
+                          const promoOriginal = hasMonthlyPromo
+                            ? plan.price
+                            : hasAnnualPromo
+                              ? plan.yearlyPrice
+                              : null
+                          const hasPromo = hasMonthlyPromo || hasAnnualPromo
+                          const promoTexto = hasMonthlyPromo ? plan.promoMensalTexto : plan.promoAnualTexto
                           const savings = plan.price > 0 ? ((plan.price - plan.yearlyPrice) * 12).toFixed(0) : 0
                           const isSelected = selectedPlan === plan.id
                           const discountPercent = plan.price > 0 ? Math.round(((plan.price - plan.yearlyPrice) / plan.price) * 100) : 0
@@ -1587,14 +1674,31 @@ export default function Cadastro() {
                                     </div>
                                   )}
 
+                                  {/* Destaque de promoção vigente */}
+                                  {hasPromo && (
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <span
+                                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold text-white shadow"
+                                        style={{ background: `linear-gradient(135deg, ${plan.color}, ${plan.color}cc)` }}
+                                      >
+                                        🔥 {promoTexto ?? "Promoção"}
+                                      </span>
+                                      {promoOriginal != null && (
+                                        <span className={`text-sm line-through ${theme.textMuted}`}>
+                                          R$ {promoOriginal.toFixed(2).replace('.', ',')}
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
+
                                   <div className="flex items-baseline gap-2">
                                     {cupomValid && cupomDados && isSelected ? (
                                       <>
                                         <span className={`text-lg line-through ${theme.textMuted}`}>
-                                          R$ {cupomDados.valorOriginal.toFixed(2).replace('.', ',')}
+                                          R$ {cupomDados.originalValue.toFixed(2).replace('.', ',')}
                                         </span>
                                         <span className={`text-4xl font-bold ${isDark ? 'text-[#5a7a6e]' : 'text-[#4f6f64]'}`}>
-                                          R$ {cupomDados.valorComDesconto.toFixed(2).replace('.', ',')}
+                                          R$ {cupomDados.finalValue.toFixed(2).replace('.', ',')}
                                         </span>
                                       </>
                                     ) : (
@@ -1719,8 +1823,9 @@ export default function Cadastro() {
                                 ? `${isDark ? 'bg-[#333] text-[#666]' : 'bg-gray-200 text-gray-400'} cursor-not-allowed`
                                 : `${isDark ? 'bg-[#4f6f64] hover:bg-[#5a7a6e]' : 'bg-[#4f6f64] hover:bg-[#5a7a6e]'} text-white`
                             }`}
-                            label={isPendingCupom ? "" : "Aplicar"}
+                            label={isPendingCupom ? "Aplicando..." : "Aplicar"}
                             icon={isPendingCupom ? "pi pi-spin pi-spinner" : undefined}
+                            iconPos="left"
                           />
                         </div>
                         {cupomError && (
@@ -1732,28 +1837,30 @@ export default function Cadastro() {
                           <div className={`mt-4 p-4 rounded-xl border ${isDark ? 'bg-[#5a7a6e]/10 border-[#5a7a6e]/30' : 'bg-[#4f6f64]/5 border-[#4f6f64]/20'}`}>
                             <div className="flex items-center justify-between text-sm">
                               <span className={theme.textSecondary}>Valor original:</span>
-                              <span className={`${theme.textPrimary} line-through`}>R$ {cupomDados.valorOriginal.toFixed(2).replace('.', ',')}</span>
+                              <span className={`${theme.textPrimary} line-through`}>R$ {cupomDados.originalValue.toFixed(2).replace('.', ',')}</span>
                             </div>
                             <div className="flex items-center justify-between text-sm mt-1">
-                              <span className={theme.textSecondary}>Desconto ({cupomDados.tipoDesconto === 'PERCENTUAL' ? `${cupomDados.percentualDesconto}%` : `R$ ${cupomDados.valorDesconto.toFixed(2).replace('.', ',')}`}):</span>
+                              <span className={theme.textSecondary}>Desconto ({cupomDados.discountType === 'PERCENTAGE' ? `${cupomDados.percentualDiscount}%` : `R$ ${cupomDados.discountAmount.toFixed(2).replace('.', ',')}`}):</span>
                               <span className={`font-semibold ${isDark ? 'text-[#5a7a6e]' : 'text-[#4f6f64]'}`}>
-                                - R$ {(cupomDados.valorOriginal - cupomDados.valorComDesconto).toFixed(2).replace('.', ',')}
+                                - R$ {(cupomDados.originalValue - cupomDados.finalValue).toFixed(2).replace('.', ',')}
                               </span>
                             </div>
                             <div className={`flex items-center justify-between mt-2 pt-2 border-t ${isDark ? 'border-[#5a7a6e]/30' : 'border-[#4f6f64]/20'}`}>
                               <span className={`font-bold ${theme.textPrimary}`}>Valor final:</span>
                               <span className={`text-lg font-bold ${isDark ? 'text-[#5a7a6e]' : 'text-[#4f6f64]'}`}>
-                                R$ {cupomDados.valorComDesconto.toFixed(2).replace('.', ',')}/mês
+                                R$ {cupomDados.finalValue.toFixed(2).replace('.', ',')}/mês
                               </span>
                             </div>
                             <div className={`mt-3 px-3 py-2 rounded-lg text-sm ${
-                              cupomDados.tipoAplicacao === 'RECORRENTE'
+                              cupomDados.applicationType === 'RECURRING'
                                 ? isDark ? 'bg-[#4f6f64]/15 text-[#7ab8a4]' : 'bg-[#4f6f64]/10 text-[#4f6f64]'
                                 : isDark ? 'bg-[#db6f57]/15 text-[#E07A62]' : 'bg-[#db6f57]/10 text-[#db6f57]'
                             }`}>
-                              {cupomDados.tipoAplicacao === 'RECORRENTE'
-                                ? '🔄 Desconto aplicado em todas as cobranças enquanto o cupom estiver vigente.'
-                                : '1️⃣ Desconto aplicado somente na primeira cobrança.'}
+                              {cupomDados.applicationDescription
+                                ? `${cupomDados.applicationType === 'RECURRING' ? '🔄' : '1️⃣'} ${cupomDados.applicationDescription}`
+                                : cupomDados.applicationType === 'RECURRING'
+                                  ? '🔄 Desconto aplicado em todas as cobranças enquanto o cupom estiver vigente.'
+                                  : '1️⃣ Desconto aplicado somente na primeira cobrança.'}
                             </div>
                           </div>
                         )}
@@ -1999,20 +2106,35 @@ export default function Cadastro() {
                               {cupomValid && cupomDados ? (
                                 <>
                                   <p className={`text-sm line-through ${theme.textMuted} transition-colors duration-300`}>
-                                    R$ {cupomDados.valorOriginal.toFixed(2).replace('.', ',')}
+                                    R$ {cupomDados.originalValue.toFixed(2).replace('.', ',')}
                                   </p>
                                   <p className={`text-2xl font-bold ${isDark ? 'text-[#5a7a6e]' : 'text-[#4f6f64]'} transition-colors duration-300`}>
-                                    R$ {cupomDados.valorComDesconto.toFixed(2).replace('.', ',')}
+                                    R$ {cupomDados.finalValue.toFixed(2).replace('.', ',')}
                                   </p>
                                 </>
-                              ) : (
-                                <p className={`text-2xl font-bold ${theme.textPrimary} transition-colors duration-300`}>
-                                  R$ {(isAnnual
-                                    ? plano.find(p => p.id === selectedPlan)?.yearlyPrice
-                                    : plano.find(p => p.id === selectedPlan)?.price
-                                  )?.toFixed(2).replace('.', ',')}
-                                </p>
-                              )}
+                              ) : (() => {
+                                const sp = plano.find(p => p.id === selectedPlan)
+                                const promoM = !isAnnual && sp?.promoMensalAtiva && sp?.promoMensalPreco > 0
+                                const promoA = isAnnual && sp?.promoAnualAtiva && sp?.promoAnualPreco > 0
+                                const valorOriginal = isAnnual ? sp?.yearlyPrice : sp?.price
+                                const valorFinal = promoM
+                                  ? sp?.promoMensalPreco
+                                  : promoA
+                                    ? sp?.promoAnualPreco / 12
+                                    : valorOriginal
+                                return (
+                                  <>
+                                    {(promoM || promoA) && (
+                                      <p className={`text-sm line-through ${theme.textMuted} transition-colors duration-300`}>
+                                        R$ {valorOriginal?.toFixed(2).replace('.', ',')}
+                                      </p>
+                                    )}
+                                    <p className={`text-2xl font-bold ${theme.textPrimary} transition-colors duration-300`}>
+                                      R$ {valorFinal?.toFixed(2).replace('.', ',')}
+                                    </p>
+                                  </>
+                                )
+                              })()}
                               <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>/mês</p>
                             </div>
                           </div>
