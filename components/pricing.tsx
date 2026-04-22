@@ -1,60 +1,53 @@
 "use client"
 
-import { motion, useInView } from "framer-motion"
+import { AnimatePresence, motion, useInView } from "framer-motion"
 import {
+  ArrowRight,
+  BadgeCheck,
   Check,
-  X,
-  Sparkles,
-  Zap,
+  ChevronDown,
+  ChevronRight,
+  Clock,
   Crown,
   Gift,
-  ArrowRight,
   HelpCircle,
   QrCode,
-  BadgeCheck,
-  Shield,
-  Clock,
+  Sparkles,
   Star,
-  Rocket,
-  Heart,
-  Diamond,
-  CreditCard,
   Tag,
   Users,
-  ChevronRight,
+  X,
+  Zap,
+  type LucideIcon,
 } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
+import { useEffect, useRef, useState } from "react"
 import { useInteractionTracker } from "@/hooks/tracking"
 import { useGetPlanos } from "@/service/Querys/Organizacao"
-import Counter from "./Counter"
-import GradientText from "./GradientText"
-import { AnimatedPrice } from "./AnimatedPrice"
 
-// Mapeamento de nomes de ícones
-const iconMap: Record<string, any> = {
-  Gift, Zap, Sparkles, Crown, Star, Rocket, Heart, Shield, Diamond, CreditCard,
-}
+// ═════════════════════════════════════════════════════════════════
+// Design tokens
+// ═════════════════════════════════════════════════════════════════
 
-// Metadados visuais por código de plano (a API não retorna cor/ícone)
+/** Mono-terracota progression — aligned with DS warm palette */
 const planMeta: Record<
   string,
   { color: string; icon: string; tagline: string; cta: string; popular?: boolean; badge?: string }
 > = {
   gratuito: {
-    color: "#5a7d71",
+    color: "#4f6f64", // sage — "quiet starter"
     icon: "Gift",
     tagline: "Para começar sem custo",
     cta: "Começar grátis",
   },
   basico: {
-    color: "#db6f57",
+    color: "#db6f57", // terracota base
     icon: "Zap",
     tagline: "Para quem está começando",
     cta: "Assinar Básico",
   },
   plus: {
-    color: "#8b3d35",
+    color: "#c55a42", // terracota-hover (middle accent)
     icon: "Sparkles",
     tagline: "Para escalar com IA",
     cta: "Assinar Plus",
@@ -62,12 +55,48 @@ const planMeta: Record<
     badge: "Mais popular",
   },
   premium: {
-    color: "#c19a4a",
+    color: "#6d2a22", // deep rust (top of progression)
     icon: "Crown",
     tagline: "Máximo profissionalismo",
     cta: "Assinar Premium",
   },
 }
+
+const iconMap: Record<string, LucideIcon> = { Gift, Zap, Sparkles, Crown, Star }
+
+/** Pix warm green — replaces previous cool emerald to respect DS warm palette */
+const PIX_COLOR = "#5a8a6a"
+
+const planFAQs = [
+  {
+    question: "Posso mudar de plano depois?",
+    answer:
+      "Sim! Você pode fazer upgrade ou downgrade a qualquer momento. As mudanças são aplicadas imediatamente.",
+  },
+  {
+    question: "O que acontece após o período gratuito?",
+    answer:
+      "Após 14 dias, você escolhe se quer continuar. Não cobramos automaticamente — você decide.",
+  },
+  {
+    question: "Posso cancelar quando quiser?",
+    answer: "Sim, sem multas ou taxas. Cancele a qualquer momento direto no sistema.",
+  },
+  {
+    question: "Há taxa de configuração?",
+    answer:
+      "Não! Não cobramos taxa de setup, implementação ou treinamento. Está tudo incluído.",
+  },
+  {
+    question: "Quais formas de pagamento são aceitas?",
+    answer:
+      "Aceitamos Pix (com ativação instantânea), cartão de crédito e boleto bancário. Pagamentos via Pix são confirmados na hora.",
+  },
+]
+
+// ═════════════════════════════════════════════════════════════════
+// Helpers
+// ═════════════════════════════════════════════════════════════════
 
 function isPromoVigente(ativa: boolean, preco: any, inicio: string | null, fim: string | null) {
   if (!ativa || preco == null || preco <= 0) return false
@@ -131,37 +160,152 @@ function transformPlan(p: any) {
   }
 }
 
-const planFAQs = [
-  {
-    question: "Posso mudar de plano depois?",
-    answer: "Sim! Você pode fazer upgrade ou downgrade a qualquer momento. As mudanças são aplicadas imediatamente.",
-  },
-  {
-    question: "O que acontece após o período gratuito?",
-    answer: "Após 14 dias, você escolhe se quer continuar. Não cobramos automaticamente - você decide.",
-  },
-  {
-    question: "Posso cancelar quando quiser?",
-    answer: "Sim, sem multas ou taxas. Cancele a qualquer momento direto no sistema.",
-  },
-  {
-    question: "Há taxa de configuração?",
-    answer: "Não! Não cobramos taxa de setup, implementação ou treinamento. Está tudo incluído.",
-  },
-  {
-    question: "Quais formas de pagamento são aceitas?",
-    answer: "Aceitamos Pix (com ativação instantânea), cartão de crédito e boleto bancário. Pagamentos via Pix são confirmados na hora.",
-  },
-]
+// ═════════════════════════════════════════════════════════════════
+// Sub-components
+// ═════════════════════════════════════════════════════════════════
 
-// ─── FREE CARD ────────────────────────────────────────────────────────────────
+/** Editorial price display — R$ small, integer big serif (animated), decimals smaller, /mês subtle */
+function PriceDisplay({
+  value,
+  color,
+  size = "md",
+}: {
+  value: string
+  color: string
+  size?: "md" | "lg"
+}) {
+  const [intPart, decPart] = value.split(",")
+  const intClass = size === "lg" ? "text-6xl" : "text-5xl"
+  const decClass = size === "lg" ? "text-2xl" : "text-xl"
+
+  return (
+    <div className="flex items-baseline gap-0.5">
+      <span className="text-sm text-[#5a4a42]/60 font-semibold self-start mt-1.5 font-sans">
+        R$
+      </span>
+      <div className="relative inline-flex overflow-hidden">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.span
+            key={intPart}
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "-100%", opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 28 }}
+            className={`inline-block font-serif font-bold leading-none tracking-tight tabular-nums ${intClass}`}
+            style={{ color }}
+          >
+            {intPart}
+          </motion.span>
+        </AnimatePresence>
+      </div>
+      <span
+        className={`font-serif font-bold tabular-nums ${decClass}`}
+        style={{ color, opacity: 0.7 }}
+      >
+        ,{decPart}
+      </span>
+      <span className="text-xs text-[#5a4a42]/60 font-sans ml-1 mb-1.5 self-end">/mês</span>
+    </div>
+  )
+}
+
+/** Feature list item with core/extra hierarchy + subtle check tile */
+function FeatureItem({
+  feature,
+  color,
+  isCore,
+}: {
+  feature: { text: string; included: boolean }
+  color: string
+  isCore: boolean
+}) {
+  return (
+    <li className="flex items-start gap-2.5">
+      {feature.included ? (
+        <span
+          className="flex-shrink-0 mt-0.5 w-4 h-4 rounded-full flex items-center justify-center"
+          style={{ backgroundColor: `${color}18` }}
+        >
+          <Check className="w-2.5 h-2.5" style={{ color }} strokeWidth={3} />
+        </span>
+      ) : (
+        <span className="flex-shrink-0 mt-0.5 w-4 h-4 rounded-full flex items-center justify-center bg-[#c8bfb8]/15">
+          <X className="w-2.5 h-2.5 text-[#c8bfb8]" strokeWidth={2.5} />
+        </span>
+      )}
+      <span
+        className={`text-sm leading-snug ${
+          feature.included
+            ? isCore
+              ? "text-[#2a2420] font-semibold"
+              : "text-[#5a4a42]"
+            : "text-[#c8bfb8] line-through"
+        }`}
+      >
+        {feature.text}
+      </span>
+    </li>
+  )
+}
+
+/** Popular badge — Star icon + gradient pill */
+function PopularBadge({ color }: { color: string }) {
+  return (
+    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+      <span
+        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[10px] font-bold text-white rounded-full uppercase tracking-[0.12em] shadow-lg"
+        style={{ background: `linear-gradient(135deg, ${color}, #6d2a22)` }}
+      >
+        <Star className="w-2.5 h-2.5 fill-white" strokeWidth={0} />
+        Mais popular
+      </span>
+    </div>
+  )
+}
+
+/** CTA button — matches header "Comece grátis" premium style, optional shimmer */
+function CtaButton({
+  color,
+  label,
+  withShimmer = false,
+}: {
+  color: string
+  label: string
+  withShimmer?: boolean
+}) {
+  return (
+    <motion.button
+      whileHover={{ scale: 1.02, y: -1 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.2 }}
+      className="group relative w-full py-3 rounded-xl font-semibold text-sm text-white overflow-hidden shadow-md hover:shadow-[0_0_25px_rgba(219,111,87,0.35)] transition-shadow duration-300 cursor-pointer"
+      style={{ background: `linear-gradient(135deg, ${color}, ${color}dd)` }}
+    >
+      {withShimmer && (
+        <motion.span
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none"
+          initial={{ x: "-120%" }}
+          animate={{ x: "220%" }}
+          transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 5.6, ease: "easeOut" }}
+          style={{ transform: "skewX(-20deg)" }}
+        />
+      )}
+      <span className="relative z-10 flex items-center justify-center gap-2">
+        {label}
+        <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+      </span>
+    </motion.button>
+  )
+}
+
+// ═════════════════════════════════════════════════════════════════
+// Free card
+// ═════════════════════════════════════════════════════════════════
+
 function FreeCard({ plan }: { plan: any }) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.1 })
   const { trackPlanClick } = useInteractionTracker()
-
-  // Guard AFTER todos os hooks (regra dos hooks do React)
   if (!plan) return null
+  const Icon = iconMap[plan.icon] ?? Gift
 
   return (
     <motion.div
@@ -169,275 +313,54 @@ function FreeCard({ plan }: { plan: any }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: 0.6 }}
-      className="bg-white rounded-2xl sm:rounded-3xl shadow-lg p-6 sm:p-8 flex flex-col h-full text-[#2a2420] relative"
+      className="bg-white rounded-2xl sm:rounded-3xl border border-[#e5ddd6] shadow-lg p-6 sm:p-8 flex flex-col h-full text-[#2a2420] relative hover:shadow-xl hover:border-[#d8ccc4] transition-all duration-300"
     >
       {/* Header */}
-      <div className="mb-2">
-        <div className="flex items-center gap-3 justify-start mb-2">
+      <div className="mb-5">
+        <div className="flex items-center gap-3 mb-2">
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${plan.color}20, ${plan.color}40)` }}
+            style={{ backgroundColor: `${plan.color}15` }}
           >
-            <Gift className="w-5 h-5" style={{ color: plan.color }} />
-            
+            <Icon className="w-5 h-5" style={{ color: plan.color }} strokeWidth={2} />
           </div>
-          <h3 className="text-3xl sm:text-4xl font-bold text-[#2a2420] mb-1">{plan.name}</h3>
+          <h3 className="font-serif text-3xl sm:text-4xl font-bold text-[#2a2420] leading-none">
+            {plan.name}
+          </h3>
         </div>
         <p className="text-sm text-[#5a7d71]">{plan.tagline}</p>
       </div>
 
       {/* Price */}
-      <div className="mb-4">
-        {/* <p className="text-xs uppercase tracking-widest font-semibold text-[#5a4a42]/50 mb-1">
-          GRATUITO
-        </p> */}
+      <div className="mb-5">
         <p className="text-sm text-[#5a4a42]/60 mb-3">{plan.description}</p>
-        <div className="flex items-baseline gap-1">
-          <AnimatedPrice value={plan.price.toFixed(2).replace(".", ",")} gradient className="text-4xl font-bold" />
-          {/* <span className="text-4xl font-bold text-[#2a2420]">R$</span>1 */}
-        </div>
-        {/* <p className="text-xs text-[#5a4a42]/60 mt-1">Sem cartão de crédito</p> */}
+        <PriceDisplay value={plan.price.toFixed(2).replace(".", ",")} color={plan.color} />
       </div>
-
-      {/* Divider */}
-      {/* <div className="border-t border-[#d8ccc4] mb-6 mt-3" /> */}
 
       {/* Features */}
       <ul className="space-y-2.5 mb-8 flex-1">
         {plan.features?.map((f: any, i: number) => (
-          <li key={i} className="flex items-start gap-2.5">
-            {f.included ? (
-              <Check className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: plan.color }} />
-            ) : (
-              <X className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#c8bfb8]" />
-            )}
-            <span className={`text-sm ${f.included ? "text-[#2a2420]" : "text-[#c8bfb8] line-through"}`}>
-              {f.text}
-            </span>
-          </li>
+          <FeatureItem key={i} feature={f} color={plan.color} isCore={i < 3} />
         ))}
       </ul>
 
       {/* CTA */}
-      <Link href={`/cadastro?plano=${plan.id}&recorrencia=mensal`} onClick={() => trackPlanClick(plan.id, plan.name, "monthly")}>
-        <button
-          className="w-full py-3 text-white rounded-xl font-semibold text-sm border-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-          style={{ background: plan.color, borderColor: plan.color }}
-        >
-          {plan.cta}
-        </button>
+      <Link
+        href={`/cadastro?plano=${plan.id}&recorrencia=mensal`}
+        onClick={() => trackPlanClick(plan.id, plan.name, "monthly")}
+      >
+        <CtaButton color={plan.color} label={plan.cta} />
       </Link>
     </motion.div>
   )
 }
 
-// ─── PAID PLANS CARD (single card with 3 sub-plans) ──────────────────────────
-// function PaidPlansCard({ plans, isAnnual, setIsAnnual }: { plans: any[]; isAnnual: boolean; setIsAnnual: (v: boolean) => void }) {
-//   const ref = useRef(null)
-//   const isInView = useInView(ref, { once: true, amount: 0.1 })
-//   const { trackPlanClick } = useInteractionTracker()
-//   const [activePlan, setActivePlan] = useState<string | null>(null)
+// ═════════════════════════════════════════════════════════════════
+// Paid card (with gradient border for popular)
+// ═════════════════════════════════════════════════════════════════
 
-//   useEffect(() => {
-//     if (plans.length > 0 && !activePlan) {
-//       const popular = plans.find((p) => p.popular)
-//       setActivePlan(popular?.id ?? plans[0]?.id)
-//     }
-//   }, [plans])
-
-//   const selectedPlan = plans.find((p) => p.id === activePlan) ?? plans[0]
-
-//   if (!plans.length || !selectedPlan) return null
-
-//   const getDisplayPrice = (plan: any) => {
-//     const hasMonthlyPromo = !isAnnual && plan.promoMensalAtiva && plan.promoMensalPreco > 0
-//     if (hasMonthlyPromo) return plan.promoMensalPreco
-//     return isAnnual ? plan.priceAnnual : plan.price
-//   }
-
-//   const getOriginalPrice = (plan: any) => {
-//     if (isAnnual) return plan.price
-//     if (!isAnnual && plan.promoMensalAtiva && plan.promoMensalPreco > 0) return plan.price
-//     return null
-//   }
-
-//   const displayPrice = getDisplayPrice(selectedPlan)
-//   const originalPrice = getOriginalPrice(selectedPlan)
-
-//   const getIcon = (iconName: string, color: string) => {
-//     const Icon = iconMap[iconName]
-//     return Icon ? <Icon className="w-4 h-4" style={{ color }} /> : null
-//   }
-
-//   return (
-//     <motion.div
-//       initial={{ opacity: 0, y: 40 }}
-//       whileInView={{ opacity: 1, y: 0 }}
-//       viewport={{ once: true, amount: 0.1 }}
-//       transition={{ duration: 0.6, delay: 0.1 }}
-//       className="bg-[#1e1a17] rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col h-full text-white relative overflow-hidden"
-//       style={{ borderColor: selectedPlan.color + "40" }}
-//     >
-//       {/* Subtle bg glow */}
-//       <div
-//         className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none"
-//         style={{ background: `radial-gradient(circle, ${selectedPlan.color}, transparent)` }}
-//       />
-
-//       {/* Top row: description + toggle */}
-//       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 relative z-10">
-//         <div className="max-w-sm">
-//           <p className="text-white/70 text-sm leading-relaxed">{selectedPlan.description}</p>
-//         </div>
-
-//         {/* Yearly/Monthly toggle */}
-//         <div className="inline-flex items-center rounded-full p-1 bg-white/10 border border-white/10 self-start flex-shrink-0">
-//           <button
-//             onClick={() => setIsAnnual(true)}
-//             className="px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200"
-//             style={{
-//               backgroundColor: isAnnual ? "white" : "transparent",
-//               color: isAnnual ? "#2a2420" : "rgba(255,255,255,0.5)",
-//             }}
-//           >
-//             Anual
-//           </button>
-//           <button
-//             onClick={() => setIsAnnual(false)}
-//             className="px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200"
-//             style={{
-//               backgroundColor: !isAnnual ? "white" : "transparent",
-//               color: !isAnnual ? "#2a2420" : "rgba(255,255,255,0.5)",
-//             }}
-//           >
-//             Mensal
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Plan selector tabs */}
-//       <div className="grid grid-cols-3 gap-2 mb-6 relative z-10">
-//         {plans.map((plan) => {
-//           const isActive = activePlan === plan.id
-//           const price = getDisplayPrice(plan)
-//           return (
-//             <button
-//               key={plan.id}
-//               onClick={() => setActivePlan(plan.id)}
-//               className="relative rounded-xl sm:rounded-2xl p-3 sm:p-4 text-left transition-all duration-200 border"
-//               style={{
-//                 backgroundColor: isActive ? `${plan.color}18` : "rgba(255,255,255,0.04)",
-//                 borderColor: isActive ? `${plan.color}60` : "rgba(255,255,255,0.08)",
-//               }}
-//             >
-//               {plan.badge && isActive && (
-//                 <span
-//                   className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[9px] font-bold text-white whitespace-nowrap"
-//                   style={{ backgroundColor: plan.color }}
-//                 >
-//                   {plan.badge}
-//                 </span>
-//               )}
-//               <div className="flex items-center gap-1.5 mb-1.5">
-//                 {getIcon(plan.icon, isActive ? plan.color : "rgba(255,255,255,0.4)")}
-//                 <span
-//                   className="text-xs sm:text-sm font-bold"
-//                   style={{ color: isActive ? plan.color : "rgba(255,255,255,0.5)" }}
-//                 >
-//                   {plan.name.toUpperCase()}
-//                 </span>
-//               </div>
-//               <div className="flex items-baseline gap-0.5">
-//                 {originalPrice && isActive && (
-//                   <span className="text-[10px] text-white/30 line-through mr-0.5">
-//                     R${plan.price.toFixed(0)}
-//                   </span>
-//                 )}
-//                 <span className="text-base sm:text-xl font-bold text-white">
-//                   R${price.toFixed(0)}
-//                 </span>
-//                 <span className="text-[10px] text-white/40">/mês</span>
-//               </div>
-//               <p className="text-[10px] sm:text-xs text-white/40 mt-0.5 leading-tight hidden sm:block">
-//                 {plan.tagline}
-//               </p>
-//             </button>
-//           )
-//         })}
-//       </div>
-
-//       {/* Selected plan detail */}
-//       <div className="flex-1 relative z-10">
-//         {/* Price big */}
-//         <div className="mb-5">
-//           <div className="flex items-baseline gap-2">
-//             {originalPrice && (
-//               <span className="text-lg text-white/30 line-through">
-//                 R${originalPrice.toFixed(2).replace(".", ",")}
-//               </span>
-//             )}
-//             <span className="text-4xl sm:text-5xl font-bold text-white">
-//               R${displayPrice.toFixed(2).replace(".", ",")}
-//             </span>
-//             <span className="text-sm text-white/50">/mês</span>
-//             {selectedPlan.promoMensalAtiva && !isAnnual && selectedPlan.promoMensalTexto && (
-//               <span
-//                 className="ml-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
-//                 style={{ backgroundColor: selectedPlan.color }}
-//               >
-//                 {selectedPlan.promoMensalTexto}
-//               </span>
-//             )}
-//           </div>
-//           {isAnnual && selectedPlan.price > 0 && (
-//             <p className="text-xs text-white/40 mt-1">
-//               R${(selectedPlan.priceAnnual * 12).toFixed(2).replace(".", ",")} cobrado anualmente
-//               <span
-//                 className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold"
-//                 style={{ backgroundColor: `${selectedPlan.color}30`, color: selectedPlan.color }}
-//               >
-//                 -{selectedPlan.yearlyDiscount.toFixed(0)}%
-//               </span>
-//             </p>
-//           )}
-//         </div>
-
-//         {/* Features */}
-//         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 mb-6">
-//           {selectedPlan.features?.map((f: any, i: number) => (
-//             <li key={i} className="flex items-start gap-2">
-//               {f.included ? (
-//                 <Check className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: selectedPlan.color }} />
-//               ) : (
-//                 <X className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-white/20" />
-//               )}
-//               <span className={`text-xs sm:text-sm ${f.included ? "text-white/80" : "text-white/25 line-through"}`}>
-//                 {f.text}
-//               </span>
-//             </li>
-//           ))}
-//         </ul>
-
-//         {/* CTA */}
-//         <Link
-//           href={`/cadastro?plano=${selectedPlan.id}&recorrencia=${isAnnual ? "anual" : "mensal"}`}
-//           onClick={() => trackPlanClick(selectedPlan.id, selectedPlan.name, isAnnual ? "annual" : "monthly")}
-//         >
-//           <button
-//             className="w-full py-3.5 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
-//             style={{ background: `linear-gradient(135deg, ${selectedPlan.color}, ${selectedPlan.color}bb)` }}
-//           >
-//             {selectedPlan.cta}
-//             <ArrowRight className="w-4 h-4" />
-//           </button>
-//         </Link>
-//       </div>
-//     </motion.div>
-//   )
-// }
 function PaidCard({ plan, isAnnual }: { plan: any; isAnnual: boolean }) {
   const { trackPlanClick } = useInteractionTracker()
-
   if (!plan) return null
 
   const hasMonthlyPromo =
@@ -460,52 +383,34 @@ function PaidCard({ plan, isAnnual }: { plan: any; isAnnual: boolean }) {
   const annualTotalOriginal = plan.yearlyPrice ?? 0
   const annualTotalDisplay = hasAnnualPromo ? Number(plan.promoAnualPreco) : annualTotalOriginal
   const promoAnnualSavings = hasAnnualPromo ? annualTotalOriginal - annualTotalDisplay : 0
-  const Icon = iconMap[plan.icon];
+  const Icon = iconMap[plan.icon] ?? Sparkles
 
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.1 }}
-      transition={{ duration: 0.6 }}
-      className={`
-        relative rounded-2xl min-w-xs p-6 sm:p-7 flex flex-col h-full
-        border transition-all duration-300 z-[999]
-        ${plan.popular 
-          ? "bg-white shadow-lg scale-[1.04] z-20  border-[#e5ddd6] shadow-primary hover:scale-[1.05]" 
-          : "bg-white border-[#e5ddd6] shadow-md hover:shadow-lg hover:scale-[1.01]"
-        }
-      `}
-      style={{ zIndex: plan.popular ? 20 : 10, borderColor: plan.color + "80" }}
+  const cardInner = (
+    <div
+      className={`bg-white ${
+        plan.popular ? "rounded-[14px]" : "rounded-2xl border border-[#e5ddd6]"
+      } p-6 sm:p-7 flex flex-col h-full relative`}
     >
-
-      
-
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${plan.color}20, ${plan.color}40)` }}
+            style={{ backgroundColor: `${plan.color}15` }}
           >
-            {Icon && (
-              <Icon className="w-5 h-5" style={{ color: plan.color }} />
-            )}
+            <Icon className="w-5 h-5" style={{ color: plan.color }} strokeWidth={2} />
           </div>
-
-          <h3 className="text-2xl font-bold">{plan.name}</h3>
+          <h3 className="font-serif text-2xl font-bold text-[#2a2420]">{plan.name}</h3>
         </div>
-
         <p className="text-sm text-[#5a7d71]">{plan.tagline}</p>
       </div>
 
       {/* Price */}
-      <div className="mb-4">
+      <div className="mb-5">
         {hasPromo && (
-          <div className="flex items-center gap-2 mb-1.5">
+          <div className="flex items-center gap-2 mb-2">
             <span
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-sm"
               style={{ background: `linear-gradient(135deg, ${plan.color}, ${plan.color}cc)` }}
             >
               <Tag className="w-3 h-3" />
@@ -518,35 +423,30 @@ function PaidCard({ plan, isAnnual }: { plan: any; isAnnual: boolean }) {
             )}
           </div>
         )}
-        <div className="flex items-end gap-1">
-          <div className="flex flex-col">
-            <AnimatedPrice
-              value={price.toFixed(2).replace(".", ",")}
-              gradient
-              className={`text-4xl font-bold ${plan.popular || hasPromo ? "scale-110" : ""}`}
-            />
-          </div>
-          <span className="text-sm text-[#5a4a42]/60">/mês</span>
-        </div>
+
+        <PriceDisplay value={price.toFixed(2).replace(".", ",")} color={plan.color} />
+
         {isAnnual && plan.yearlyPrice > 0 && (
-          <p className="text-xs text-[#5a4a42]/60 mt-1">
+          <p className="text-xs text-[#5a4a42]/60 mt-2 flex flex-wrap items-center gap-x-1 gap-y-1">
             {hasAnnualPromo && (
-              <span className="line-through text-[#5a4a42]/40 mr-1">
+              <span className="line-through text-[#5a4a42]/40">
                 R$ {annualTotalOriginal.toFixed(2).replace(".", ",")}
               </span>
             )}
-            R$ {annualTotalDisplay.toFixed(2).replace(".", ",")} cobrado anualmente
+            <span>
+              R$ {annualTotalDisplay.toFixed(2).replace(".", ",")} cobrado anualmente
+            </span>
             {!hasAnnualPromo && plan.yearlyDiscount > 0 && (
               <span
-                className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold"
+                className="ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold"
                 style={{ backgroundColor: `${plan.color}20`, color: plan.color }}
               >
-                -{plan.yearlyDiscount.toFixed(0)}%
+                −{plan.yearlyDiscount.toFixed(0)}%
               </span>
             )}
             {hasAnnualPromo && promoAnnualSavings > 0 && (
               <span
-                className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold"
+                className="ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold"
                 style={{ backgroundColor: `${plan.color}20`, color: plan.color }}
               >
                 −R$ {promoAnnualSavings.toFixed(0)}
@@ -556,108 +456,93 @@ function PaidCard({ plan, isAnnual }: { plan: any; isAnnual: boolean }) {
         )}
       </div>
 
-      {/* Features SEMPRE VISÍVEIS */}
+      {/* Features */}
       <ul className="space-y-2.5 mb-8 flex-1">
         {plan.features?.map((f: any, i: number) => (
-          <li key={i} className="flex items-start gap-2.5">
-            {f.included ? (
-              <Check className="w-4 h-4 mt-0.5" style={{ color: plan.color }} />
-            ) : (
-              <X className="w-4 h-4 mt-0.5 text-[#c8bfb8]" />
-            )}
-
-            <span
-              className={`text-sm ${
-                f.included
-                  ? "text-[#2a2420]"
-                  : "text-[#c8bfb8] line-through"
-              }`}
-            >
-              {f.text}
-            </span>
-          </li>
+          <FeatureItem key={i} feature={f} color={plan.color} isCore={i < 3} />
         ))}
       </ul>
 
-      {plan.popular && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span
-            className="px-3 py-1 text-xs font-bold text-white rounded-full shadow-md"
-            style={{
-              background: `linear-gradient(135deg, ${plan.color}, ${plan.color}cc)`
-            }}
-          >
-            Mais popular
-          </span>
-        </div>
-      )}
-
       {/* CTA */}
       <Link
-        href={`/cadastro?plano=${plan.id}&recorrencia=${
-          isAnnual ? "anual" : "mensal"
-        }`}
-        onClick={() =>
-          trackPlanClick(plan.id, plan.name, isAnnual ? "annual" : "monthly")
-        }
+        href={`/cadastro?plano=${plan.id}&recorrencia=${isAnnual ? "anual" : "mensal"}`}
+        onClick={() => trackPlanClick(plan.id, plan.name, isAnnual ? "annual" : "monthly")}
       >
-        <button
-          className={`w-full py-3 rounded-xl font-semibold text-sm text-white transition-all
-            ${plan.popular 
-              ? "shadow-xl scale-[1.03] hover:scale-[1.06]" 
-              : "hover:scale-[1.02]"
-            }
-          `}
-          style={{
-            background: `linear-gradient(135deg, ${plan.color}, ${plan.color}cc)`,
-          }}
-        >
-          {plan.cta}
-        </button>
+        <CtaButton color={plan.color} label={plan.cta} withShimmer={plan.popular} />
       </Link>
+    </div>
+  )
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.6 }}
+      className={`relative h-full ${plan.popular ? "lg:scale-[1.04] lg:z-20" : "z-10"}`}
+    >
+      {plan.popular && <PopularBadge color={plan.color} />}
+
+      {plan.popular ? (
+        <div
+          className="relative rounded-2xl p-[1.5px] bg-gradient-to-br from-[#e88c76] via-[#c55a42] to-[#6d2a22] shadow-[0_20px_60px_-15px_rgba(139,61,53,0.35)] h-full"
+        >
+          {cardInner}
+        </div>
+      ) : (
+        cardInner
+      )}
     </motion.div>
   )
 }
 
-// ─── ENTERPRISE BANNER ────────────────────────────────────────────────────────
-function EnterpriseBanner() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-50px" })
+// ═════════════════════════════════════════════════════════════════
+// Enterprise banner — executive dark warm
+// ═════════════════════════════════════════════════════════════════
 
+function EnterpriseBanner() {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: 0.3 }}
-      className="mt-4 bg-white rounded-2xl sm:rounded-3xl border border-[#d8ccc4] shadow-sm px-6 sm:px-8 py-5 flex flex-col sm:flex-row items-center gap-4 justify-between"
+      className="mt-4 rounded-2xl sm:rounded-3xl px-6 sm:px-8 py-6 flex flex-col sm:flex-row items-center gap-4 justify-between overflow-hidden relative text-white"
+      style={{ background: "linear-gradient(135deg, #2a2420 0%, #1a1510 100%)" }}
     >
-      <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-[#4f6f64]/10 flex items-center justify-center flex-shrink-0">
-          <Users className="w-5 h-5 text-[#4f6f64]" />
+      {/* Warm blob */}
+      <div className="absolute -top-24 -right-20 w-72 h-72 rounded-full blur-3xl bg-gradient-to-br from-[#4f6f64]/20 to-[#db6f57]/15 pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full blur-3xl bg-gradient-to-tr from-[#db6f57]/10 to-transparent pointer-events-none" />
+
+      <div className="flex items-center gap-4 relative z-10">
+        <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+          <Users className="w-5 h-5 text-[#8aa69a]" strokeWidth={2} />
         </div>
         <div>
-          <p className="font-bold text-[#2a2420] text-sm sm:text-base">Rede de salões ou barbearias?</p>
-          <p className="text-xs sm:text-sm text-[#5a4a42]/60">
+          <p className="font-serif text-base sm:text-lg font-bold leading-tight">
+            Rede de salões ou barbearias?
+          </p>
+          <p className="text-xs sm:text-sm text-white/60 leading-relaxed mt-0.5">
             Desconto especial para grupos com múltiplas unidades.
           </p>
         </div>
       </div>
-      <Link href="/contato?origem=pricing-enterprise">
-        <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#db6f57] via-[#c55a42] to-[#8b3d35] text-white text-sm font-semibold transition-all duration-300 whitespace-nowrap cursor-pointer hover:scale-103 ease-in-out hover:from-[#c55a42] hover:to-[#8b3d35]">
+
+      <Link href="/contato?origem=pricing-enterprise" className="relative z-10">
+        <button className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#2a2420] text-sm font-semibold transition-all duration-300 whitespace-nowrap hover:scale-[1.03] hover:shadow-lg cursor-pointer">
           Falar com especialista
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" />
         </button>
       </Link>
     </motion.div>
   )
 }
 
-// ─── PIX BANNER ───────────────────────────────────────────────────────────────
-function PixBanner() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-50px" })
+// ═════════════════════════════════════════════════════════════════
+// Pix banner — warm sage green
+// ═════════════════════════════════════════════════════════════════
 
+function PixBanner() {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -671,23 +556,24 @@ function PixBanner() {
         style={{
           backgroundColor: "rgba(255, 255, 255, 0.85)",
           backdropFilter: "blur(12px)",
-          borderColor: "#10b98120",
+          borderColor: `${PIX_COLOR}25`,
           boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
         }}
       >
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
           <div
             className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: "#10b98112", border: "1.5px solid #10b98125" }}
+            style={{ backgroundColor: `${PIX_COLOR}15`, border: `1.5px solid ${PIX_COLOR}30` }}
           >
-            <QrCode className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-600" />
+            <QrCode className="w-6 h-6 sm:w-7 sm:h-7" style={{ color: PIX_COLOR }} />
           </div>
           <div className="flex-1 text-center sm:text-left">
-            <h4 className="text-base sm:text-lg font-bold text-[#2a2420] mb-1">
+            <h4 className="font-serif text-base sm:text-lg font-bold text-[#2a2420] mb-1">
               Pague com Pix e comece na hora
             </h4>
             <p className="text-sm text-[#5a4a42]/70 leading-relaxed">
-              Pagamentos via Pix são confirmados instantaneamente — seu plano é ativado em segundos.
+              Pagamentos via Pix são confirmados instantaneamente — seu plano é ativado em
+              segundos.
             </p>
           </div>
           <div className="flex flex-col gap-2 flex-shrink-0">
@@ -698,7 +584,7 @@ function PixBanner() {
               <span
                 key={idx}
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold"
-                style={{ backgroundColor: "#10b98115", color: "#10b981" }}
+                style={{ backgroundColor: `${PIX_COLOR}18`, color: PIX_COLOR }}
               >
                 <item.icon className="w-3.5 h-3.5" />
                 {item.text}
@@ -706,18 +592,156 @@ function PixBanner() {
             ))}
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 h-0.5 w-0 group-hover:w-full transition-all duration-700 bg-emerald-500" />
+        <div
+          className="absolute bottom-0 left-0 h-0.5 w-0 group-hover:w-full transition-all duration-700"
+          style={{ backgroundColor: PIX_COLOR }}
+        />
       </div>
     </motion.div>
   )
 }
 
-// ─── MAIN PRICING COMPONENT ───────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════
+// FAQ accordion
+// ═════════════════════════════════════════════════════════════════
+
+function FaqAccordion() {
+  const [openIndex, setOpenIndex] = useState<number>(0)
+
+  return (
+    <div
+      className="rounded-2xl border overflow-hidden"
+      style={{
+        backgroundColor: "rgba(255, 255, 255, 0.9)",
+        backdropFilter: "blur(12px)",
+        borderColor: "#db6f5720",
+        boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
+      }}
+    >
+      {planFAQs.map((faq, index) => {
+        const isOpen = openIndex === index
+        return (
+          <div
+            key={index}
+            className={`${index > 0 ? "border-t border-[#db6f5712]" : ""} transition-colors duration-300`}
+          >
+            <button
+              onClick={() => setOpenIndex(isOpen ? -1 : index)}
+              className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-[#db6f5705] transition-colors cursor-pointer"
+            >
+              <span className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 bg-[#db6f57]/10">
+                <HelpCircle className="w-3.5 h-3.5 text-[#db6f57]" strokeWidth={2.4} />
+              </span>
+              <h4 className="flex-1 text-sm font-semibold text-[#2a2420]">{faq.question}</h4>
+              <motion.div
+                animate={{ rotate: isOpen ? 180 : 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="flex-shrink-0"
+              >
+                <ChevronDown className="w-4 h-4 text-[#5a4a42]/50" strokeWidth={2.2} />
+              </motion.div>
+            </button>
+
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className="overflow-hidden"
+                >
+                  <p className="text-xs sm:text-sm text-[#5a4a42]/75 leading-relaxed px-5 pb-4 pl-[60px]">
+                    {faq.answer}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ═════════════════════════════════════════════════════════════════
+// Toggle — animated pill + savings badge
+// ═════════════════════════════════════════════════════════════════
+
+function BillingToggle({
+  isAnnual,
+  setIsAnnual,
+}: {
+  isAnnual: boolean
+  setIsAnnual: (v: boolean) => void
+}) {
+  return (
+    <div className="flex justify-end">
+      <div className="relative">
+        <div className="relative inline-flex bg-white rounded-full p-1 border border-[#e5ddd6] shadow-sm">
+          {[
+            { value: false, label: "Mensal" },
+            { value: true, label: "Anual" },
+          ].map((option) => {
+            const isActive = isAnnual === option.value
+            return (
+              <button
+                key={String(option.value)}
+                onClick={() => setIsAnnual(option.value)}
+                className="relative px-5 py-2 text-sm rounded-full cursor-pointer z-10 min-w-[80px]"
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="pricingToggleIndicator"
+                    className="absolute inset-0 bg-gradient-to-r from-[#db6f57] via-[#c55a42] to-[#8b3d35] rounded-full shadow-sm"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <span
+                  className={`relative z-10 font-semibold transition-colors duration-200 ${
+                    isActive ? "text-white" : "text-[#5a4a42]/60 hover:text-[#2a2420]"
+                  }`}
+                >
+                  {option.label}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Savings badge — slides up from below the toggle */}
+        <AnimatePresence>
+          {isAnnual && (
+            <motion.span
+              initial={{ opacity: 0, x: "-50%", y: 6 }}
+              animate={{ opacity: 1, x: "-50%", y: 0 }}
+              exit={{ opacity: 0, x: "-50%", y: 6 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute top-full left-1/2 mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border whitespace-nowrap pointer-events-none"
+              style={{
+                color: PIX_COLOR,
+                backgroundColor: `${PIX_COLOR}10`,
+                borderColor: `${PIX_COLOR}25`,
+              }}
+            >
+              <Sparkles className="w-3 h-3" />
+              Economize até 10%
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+}
+
+// ═════════════════════════════════════════════════════════════════
+// Main
+// ═════════════════════════════════════════════════════════════════
+
 export function Pricing() {
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
   const [isAnnual, setIsAnnual] = useState(false)
-  const { trackInteraction } = useInteractionTracker()
 
   const { data, isLoading, isSuccess } = useGetPlanos()
   const [planos, setPlanos] = useState<any[]>([])
@@ -734,8 +758,6 @@ export function Pricing() {
 
   const freePlan = planos.find((p) => p.id === "gratuito")
   const paidPlans = planos.filter((p) => p.id !== "gratuito")
-
-  // console.log("planos do sistema: ",freePlan, paidPlans, planos)
 
   return (
     <section
@@ -793,33 +815,15 @@ export function Pricing() {
               </div>
 
               {/* Right: Paid plans */}
-              <div className="flex flex-col lg:col-span-9 gap-4 bg-white rounded-2xl sm:rounded-3xl shadow-lg p-6 sm:p-8 flex flex-col h-full text-[#2a2420] border border-[#e5ddd6] hover:shadow-xl transition-all"> 
-                <div className="flex justify-between mb-3">
-                  <div>
-                    <h3 className="text-3xl sm:text-4xl font-bold text-[#2a2420] mb-1">Planos</h3>
-                  </div>
-                  <div className="inline-flex bg-white rounded-full p-1 border border-[#e5ddd6] shadow">
-                    <button
-                      onClick={() => setIsAnnual(false)}
-                      className={`px-4 py-2 text-sm rounded-full ${
-                        !isAnnual ? "bg-gradient-to-r from-[#db6f57] via-[#c55a42] to-[#8b3d35] font-semibold text-white" : "text-gray-500"
-                      }`}
-                    >
-                      Mensal
-                    </button>
-
-                    <button
-                      onClick={() => setIsAnnual(true)}
-                      className={`px-4 py-2 text-sm rounded-full ${
-                        isAnnual ? "bg-gradient-to-r from-[#db6f57] via-[#c55a42] to-[#8b3d35] font-semibold text-white" : "text-gray-500"
-                      }`}
-                    >
-                      Anual 
-                      {/* <span className="text-xs font-normal"> 10% OFF</span> */}
-                    </button>
-                  </div>
+              <div className="flex flex-col lg:col-span-9 gap-4 bg-white rounded-2xl sm:rounded-3xl shadow-lg p-6 sm:p-8 h-full text-[#2a2420] border border-[#e5ddd6] hover:shadow-xl transition-all">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                  <h3 className="font-serif text-3xl sm:text-4xl font-bold text-[#2a2420] leading-none">
+                    Planos
+                  </h3>
+                  <BillingToggle isAnnual={isAnnual} setIsAnnual={setIsAnnual} />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 items-stretch pt-2">
                   {paidPlans.map((plan) => (
                     <PaidCard key={plan.id} plan={plan} isAnnual={isAnnual} />
                   ))}
@@ -827,7 +831,7 @@ export function Pricing() {
               </div>
             </div>
 
-            {/* Enterprise banner — full width under both cards */}
+            {/* Enterprise banner */}
             <div className="max-w-8xl mx-auto">
               <EnterpriseBanner />
             </div>
@@ -847,31 +851,9 @@ export function Pricing() {
           className="max-w-3xl mx-auto"
         >
           <h3 className="font-serif text-center text-2xl sm:text-3xl font-bold text-[#2a2420] mb-6">
-            Perguntas Frequentes
+            Perguntas frequentes
           </h3>
-          <div
-            className="rounded-2xl border divide-y overflow-hidden"
-            style={{
-              backgroundColor: "rgba(255, 255, 255, 0.85)",
-              backdropFilter: "blur(12px)",
-              borderColor: "#db6f5720",
-              boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
-            }}
-          >
-            {planFAQs.map((faq, index) => (
-              <div
-                key={index}
-                className="flex items-start gap-3 px-5 py-4 transition-colors duration-300 hover:bg-[#db6f5704]"
-                style={{ borderColor: "#db6f5712" }}
-              >
-                <HelpCircle className="w-4 h-4 text-[#db6f57] flex-shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="text-sm font-semibold text-[#2a2420] mb-0.5">{faq.question}</h4>
-                  <p className="text-xs text-[#5a4a42]/70 leading-relaxed">{faq.answer}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <FaqAccordion />
         </motion.div>
       </div>
     </section>

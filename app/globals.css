@@ -1,13 +1,6 @@
-/* 1. Importe o CSS principal do PrimeReact */
-@import '../node_modules/primereact/resources/primereact.min.css';
-
-/* 2. Importe o tema desejado */
-@import '../node_modules/primereact/resources/themes/lara-light-blue/theme.css' layer(primereact);
-
-/* 3. Importe o CSS do Leaflet para o mapa */
-/* @import 'leaflet/dist/leaflet.css'; */
-
-/* 4. Importe o Tailwind e outras folhas de estilo */
+/* Importe o Tailwind e outras folhas de estilo
+   PrimeReact CSS é carregado lazy via components/PrimeProvider.tsx
+   (montado apenas nas rotas /cadastro e /sobre) */
 @import "tailwindcss";
 @import "tw-animate-css";
 

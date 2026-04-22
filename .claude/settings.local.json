@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npx tsc *)",
+      "Bash(rm -rf .next)",
+      "Bash(npm run *)",
+      "Bash(curl *)",
+      "Bash(tasklist *)",
+      "Bash(node scripts/optimize-images.mjs)"
     ]
   }
 }

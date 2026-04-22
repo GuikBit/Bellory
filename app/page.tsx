@@ -12,6 +12,7 @@ import { AIAgentSection } from "@/components/ai-agent-section"
 import { FinalCTA } from "@/components/floating-cta"
 import { ComparisonSection } from "@/components/comparison-section"
 import { SectionTransition } from "@/components/section-transitions"
+import { ProductFAQ } from "@/components/product-faq"
 
 
 export default function Home() {
@@ -40,8 +41,12 @@ export default function Home() {
 
       <Pricing />
 
-      {/* Pricing (#f3eeea) → Contact (#faf8f6) */}
-      <SectionTransition variant="diagonal" colorFrom="#f3eeea" colorTo="#faf8f6" accentColor="#db6f57" />
+      {/* Pricing (#f3eeea) → ProductFAQ (#faf8f6) */}
+      <SectionTransition variant="waves" colorFrom="#f3eeea" colorTo="#faf8f6" accentColor="#db6f57" />
+
+      <ProductFAQ />
+
+      {/* ProductFAQ (#faf8f6) → Contact (#faf8f6) — mesma cor, sem transição */}
 
       <Contact />
 

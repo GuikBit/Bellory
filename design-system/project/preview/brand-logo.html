@@ -1,0 +1,21 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><style>
+  body { padding: 0; display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+  .cell { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 20px; }
+  .light { background: #faf8f6; }
+  .dark { background: #2a2420; }
+  .lockup { display: flex; align-items: center; gap: 10px; }
+  .lockup img { height: 36px; }
+  .wordmark { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 32px; letter-spacing: -0.02em; background: linear-gradient(90deg,#db6f57,#8b3d35); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .dark .wordmark { background: linear-gradient(90deg,#e88c76,#db6f57); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .cap { font-family: var(--font-mono); font-size: 10px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .dark .cap { color: #99a1af; }
+</style></head><body>
+  <div class="cell light">
+    <div class="lockup"><img src="../assets/bellory-logo.svg" alt="Bellory"><span class="wordmark">Bellory</span></div>
+    <div class="cap">Primary lockup · cream bg</div>
+  </div>
+  <div class="cell dark">
+    <div class="lockup"><img src="../assets/bellory-logo.svg" alt="Bellory" style="filter: brightness(0) invert(1)"><span class="wordmark">Bellory</span></div>
+    <div class="cap">Inverted · dark bg</div>
+  </div>
+</body></html>

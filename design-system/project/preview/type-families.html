@@ -1,0 +1,21 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><style>
+  body { padding: 22px 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .block { display: flex; flex-direction: column; gap: 4px; }
+  .label { font-family: var(--font-mono); font-size: 10px; color: var(--fg-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .specimen { color: #2a2420; line-height: 1; }
+  .playfair { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 46px; letter-spacing: -0.02em; }
+  .inter { font-family: Inter, sans-serif; font-weight: 500; font-size: 40px; letter-spacing: -0.015em; }
+  .weights { font-family: Inter, sans-serif; font-size: 13px; color: #4f6f64; display: flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
+  .weights b { font-weight: 600; color: #2a2420; }
+</style></head><body>
+  <div class="block">
+    <div class="label">Serif · Display</div>
+    <div class="specimen playfair">Bellory</div>
+    <div class="weights">Playfair Display · <b>400 500 600 700 800</b></div>
+  </div>
+  <div class="block">
+    <div class="label">Sans · Body + UI</div>
+    <div class="specimen inter">Bellory</div>
+    <div class="weights">Inter · <b>300 400 500 600 700</b></div>
+  </div>
+</body></html>

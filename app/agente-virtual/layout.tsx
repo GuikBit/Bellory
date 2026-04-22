@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og-image.png",
+        url: "/bellory2sfundo.svg",
         width: 1200,
         height: 630,
         alt: "Agente Virtual Bellory com Inteligência Artificial",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     title: "Agente Virtual Bellory - IA 24/7",
     description:
       "Atenda seus clientes automaticamente com inteligência artificial. Teste agora!",
-    images: ["/og-image.png"],
+    images: ["/bellory2sfundo.svg"],
   },
   robots: {
     index: true,

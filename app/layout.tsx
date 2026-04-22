@@ -1,12 +1,10 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Poppins } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import './globals.css'; // Mantenha apenas esta importação de CSS
 // import './theme.css'
 
-import PrimeProvider from "@/components/PrimeProvider"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import ReactQueryProvider from "@/providers/ReactQueryProvider"
 import { Loader2Icon } from "lucide-react"
@@ -15,10 +13,11 @@ import StructuredData from "@/components/structured-data"
 import { ThemeProvider } from "@/contexts/HeroThemeContext"
 import { TrackingProvider } from "@/contexts/TrackingContext"
 import { TrackingSetup } from "@/components/tracking"
+import { CookieBanner } from "@/components/CookieBanner"
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-poppins",
   display: "swap",
 })
@@ -112,19 +111,17 @@ export default function RootLayout({
       <head>
         <StructuredData />
       </head>
-      <body className="font-sans antialiased ">
+      <body className="font-sans antialiased " suppressHydrationWarning>
         <Suspense fallback={<Spinner />}>
           <TrackingProvider>
             <TrackingSetup />
             <ThemeProvider>
               <ReactQueryProvider>
-                <PrimeProvider>
-                  {children}
-                </PrimeProvider>
+                {children}
+                <CookieBanner />
               </ReactQueryProvider>
             </ThemeProvider>
           </TrackingProvider>
-          <Analytics />
         </Suspense>
       </body>
     </html>

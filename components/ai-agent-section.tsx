@@ -4,7 +4,6 @@ import { motion, useInView, useReducedMotion } from "framer-motion"
 import {
   Bot,
   MessageCircle,
-  Clock,
   CheckCircle2,
   Calendar,
   Zap,
@@ -12,13 +11,10 @@ import {
   TrendingUp,
   Sparkles,
   ArrowRight,
-  Heart,
   Brain,
-  Shield,
   BellRing,
   Send,
   type LucideIcon,
-  Database,
 } from "lucide-react"
 import Link from "next/link"
 import {
@@ -45,7 +41,7 @@ const chatMessages: ChatMessage[] = [
   {
     type: "bot",
     message:
-      "Olá! 😊 Temos horários disponíveis amanhã:\n\n• 10:00 — João\n• 14:00 — Maria\n• 16:30 — João\n\nQual prefere?",
+      "Olá, Carla! Temos horários disponíveis amanhã:\n\n• 10:00 — João\n• 14:00 — Maria\n• 16:30 — João\n\nQual prefere?",
     time: "14:32",
   },
   {
@@ -56,7 +52,7 @@ const chatMessages: ChatMessage[] = [
   {
     type: "bot",
     message:
-      "Perfeito! ✅ Agendado:\n\n📅 17/12 às 14:00\n✂️ Corte de Cabelo\n👤 Maria\n💰 R$ 45,00\n\nLembrete 24h antes. Até lá! 👋",
+      "Fechado, Carla. Seu agendamento:\n\n17/12 às 14:00\nCorte de Cabelo com Maria\nR$ 45,00\n\nVou te lembrar 24h antes. Até lá!",
     time: "14:33",
   },
 ]
@@ -91,7 +87,7 @@ const aiActions: AIAction[] = [
   {
     icon: Calendar,
     label: "Consultou agenda",
-    color: "#4f6f64",
+    color: "#128C7E",
     messageIndex: 1,
     side: "left",
     offsetY: 0,
@@ -99,14 +95,14 @@ const aiActions: AIAction[] = [
    {
     icon: CheckCircle2,
     label: "Reservou horário",
-    color: "#4f6f64",
+    color: "#128C7E",
     messageIndex: 3,
     side: "left",
     offsetY: -50,
   },
   {
     icon: Brain,
-    label: "Entendeu a intenção",
+    label: "Confirmou no sistema",
     color: "#8b3d35",
     messageIndex: 2,
     side: "right",
@@ -115,7 +111,7 @@ const aiActions: AIAction[] = [
   {
     icon: BellRing,
     label: "Lembrete agendado",
-    color: "#db6f57",
+    color: "#25D366",
     messageIndex: 3,
     side: "left",
     offsetY: 10,
@@ -140,66 +136,67 @@ interface CapabilityGroup {
 
 const capabilityGroups: CapabilityGroup[] = [
   {
-    id: "atendimento",
-    title: "Atendimento Inteligente",
-    tagline: "Atenda clientes 24h sem perder nenhuma oportunidade",
-    color: "#4f6f64",
+    id: "no-whatsapp",
+    title: "No WhatsApp do cliente",
+    tagline: "A conversa acontece exatamente onde ele já fala com você",
+    color: "#128C7E",
     capabilities: [
       {
         icon: MessageCircle,
-        title: "Conversação Natural",
+        title: "Conversa natural",
         description:
-          "IA treinada para conversar como humano, entendendo gírias, áudios e contexto.",
+          "Responde como humano, entende gírias, contexto e áudios no seu próprio número.",
         stat: "NLP",
       },
       {
         icon: Zap,
-        title: "Resposta Instantânea",
+        title: "Resposta em menos de 5s",
         description:
-          "Tempo de resposta inferior a 5 segundos, 24 horas por dia.",
+          "Nenhum cliente espera. 24 horas por dia, sábado, domingo e feriado.",
         stat: "<5s",
       },
       {
-        icon: Shield,
-        title: "Escalonamento Inteligente",
+        icon: Users,
+        title: "Identifica quem está falando",
         description:
-          "Identifica quando o cliente precisa de um humano e transfere automaticamente.",
-        stat: "Smart",
+          "Reconhece o cliente pelo número e puxa o histórico de agendamentos na hora.",
+        stat: "Auto",
       },
       {
-        icon: Database,
-        title: "Base de Conhecimento",
-        description: "Coloque informações do seu negócio para respostas precisas e personalizadas.",
-        stat: "Custom",
-      }
+        icon: BellRing,
+        title: "Confirmações e lembretes",
+        description:
+          "Confirma 12 a 48h antes e lembra de 1 a 6h antes — você escolhe a janela.",
+        stat: "-40%",
+      },
     ],
   },
   {
-    id: "automacao",
-    title: "Automação Completa",
-    tagline: "Deixe a IA cuidar das tarefas repetitivas por você",
+    id: "no-sistema",
+    title: "Dentro do seu sistema",
+    tagline: "Cada resposta do cliente atualiza a agenda automaticamente",
     color: "#db6f57",
     capabilities: [
       {
         icon: Calendar,
-        title: "Agendamento Autônomo",
+        title: "Agenda, reagenda, cancela",
         description:
-          "Agenda, reagenda e cancela compromissos sem intervenção humana.",
+          "O agente fecha o agendamento direto no sistema, sem você precisar olhar.",
         stat: "Auto",
       },
       {
         icon: CheckCircle2,
-        title: "Confirmações Automáticas",
+        title: "Status automático",
         description:
-          "Lembretes e confirmações 24h antes. Reduz faltas em até 40%.",
-        stat: "-40%",
+          "Cliente confirmou? Vira confirmado. Cancelou? Libera o horário. Sem trabalho manual.",
+        stat: "Sync",
       },
       {
         icon: TrendingUp,
-        title: "Follow-up Inteligente",
+        title: "Você sabe de tudo",
         description:
-          "Acompanha clientes inativos e sugere retornos personalizados.",
-        stat: "+60%",
+          "Notificação ao gestor a cada agendamento, pagamento e novo cliente cadastrado.",
+        stat: "Full",
       },
     ],
   },
@@ -207,11 +204,11 @@ const capabilityGroups: CapabilityGroup[] = [
 
 // ─── Stats ───
 const stats = [
-  { value: "<5s", label: "Tempo de resposta", icon: Zap, color: "#db6f57" },
-  { value: "24/7", label: "Disponibilidade", icon: Clock, color: "#4f6f64" },
+  { value: "<5s", label: "Tempo de resposta", icon: Zap, color: "#25D366" },
+  { value: "24/7", label: "No seu WhatsApp", icon: MessageCircle, color: "#128C7E" },
   {
-    value: "95%",
-    label: "Taxa de resolução",
+    value: "-40%",
+    label: "Menos no-shows",
     icon: CheckCircle2,
     color: "#8b3d35",
   },
@@ -539,7 +536,7 @@ function PhoneMockup({ isInView }: { isInView: boolean }) {
           className="absolute inset-4 rounded-[3rem] blur-2xl"
           style={{
             background:
-              "radial-gradient(ellipse, rgba(79,111,100,0.12), transparent 70%)",
+              "radial-gradient(ellipse, rgba(37,211,102,0.18), transparent 70%)",
           }}
         />
 
@@ -681,13 +678,17 @@ export function AIAgentSection() {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234f6f64' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23db6f57' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         />
 
         {/* Animated blobs */}
         <motion.div
-          className="absolute top-110 -left-20 w-[500px] h-[500px] bg-gradient-to-br from-[#4f6f64]/[0.06] to-[#3d574f]/[0.04] rounded-full blur-3xl"
+          className="absolute top-110 -left-20 w-[500px] h-[500px] rounded-full blur-3xl"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(37,211,102,0.08), rgba(18,140,126,0.06))",
+          }}
           animate={
             prefersReduced
               ? {}
@@ -700,7 +701,7 @@ export function AIAgentSection() {
           }}
         />
         <motion.div
-          className="absolute -bottom-20 -right-20 w-[400px] h-[400px] bg-gradient-to-tr from-[#db6f57]/[0.06] to-[#8b3d35]/[0.04] rounded-full blur-3xl"
+          className="absolute -bottom-20 -right-20 w-[400px] h-[400px] bg-gradient-to-tr from-[#db6f57]/[0.08] to-[#8b3d35]/[0.06] rounded-full blur-3xl"
           animate={
             prefersReduced
               ? {}
@@ -720,23 +721,41 @@ export function AIAgentSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.7 }}
-            className="text-center mb-16 md:mb-20"
+            className="text-center mb-16 md:mb-20 max-w-5xl flex items-center justify-center flex-col mx-auto"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#4f6f64]/[0.08] border border-[#4f6f64]/20 mb-6">
-              <Bot className="w-4 h-4 text-[#4f6f64]" />
-              <span className="text-xs font-bold text-[#4f6f64] uppercase tracking-wider">
-                Inteligência Artificial
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 border"
+              style={{
+                backgroundColor: "rgba(37,211,102,0.10)",
+                borderColor: "rgba(37,211,102,0.30)",
+              }}
+            >
+              <span
+                className="w-5 h-5 rounded-full flex items-center justify-center"
+                style={{
+                  background: "linear-gradient(135deg, #25D366, #128C7E)",
+                }}
+              >
+                <MessageCircle className="w-3 h-3 text-white" />
+              </span>
+              <span className="text-xs font-bold text-[#075E54] uppercase tracking-wider">
+                Agente de IA no WhatsApp
               </span>
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#2a2420] mb-4 leading-[1.1]">
-              Seu assistente virtual{" "}
-              <span className="bg-gradient-to-r from-[#4f6f64] to-[#3d574f] bg-clip-text text-transparent">
-                trabalhando 24/7
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl  font-bold tracking-tight text-[#2a2420] mb-4 leading-[1.1]">
+              Enquanto você atende na cadeira, o{" "}
+              <span className="bg-gradient-to-r from-[#25D366] to-[#128C7E] bg-clip-text text-transparent">
+                WhatsApp
+              </span>{" "}
+              se resolve{" "}
+              <span className="bg-gradient-to-r from-[#db6f57] to-[#8b3d35] bg-clip-text text-transparent">
+                sozinho
               </span>
             </h2>
             <p className="text-base sm:text-lg text-[#5a4a42]/70 leading-relaxed max-w-2xl mx-auto">
-              Atenda seus clientes automaticamente pelo WhatsApp. Agende,
-              confirme e gerencie sem mover um dedo.
+              Um agente de IA conectado ao seu próprio WhatsApp: identifica o
+              cliente, entende a intenção, agenda, confirma e lembra. Sem você
+              precisar parar.
             </p>
           </motion.div>
 
@@ -809,14 +828,13 @@ export function AIAgentSection() {
                     : { opacity: 0, y: 20 }
                 }
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="mb-5 flex items-center justify-center gap-2"
+                className="mb-5 flex items-center justify-center gap-2 text-center"
               >
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#2a2420]">
-                  O que a{" "}
-                  <span className="bg-gradient-to-r from-[#4f6f64] to-[#3d574f] bg-clip-text text-transparent">
-                    IA
-                  </span>{" "}
-                  faz por você?
+                  Dois mundos,{" "}
+                  <span className="bg-gradient-to-r from-[#db6f57] to-[#8b3d35] bg-clip-text text-transparent">
+                    um único agente
+                  </span>
                 </h3>
               </motion.div>
 
@@ -835,65 +853,106 @@ export function AIAgentSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className="mt-30 px-4 relative z-10"
+          className="mt-20 md:mt-28 px-4 relative z-10"
         >
           <Link
             href="/agente-virtual"
-            className="group/cta block w-full max-w-4xl mx-auto bg-gradient-to-r from-[#4f6f64] to-[#3d574f] text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1"
+            className="group/cta block w-full max-w-6xl mx-auto rounded-3xl p-6 sm:p-8 md:p-10 text-white shadow-2xl hover:shadow-[0_30px_60px_rgba(18,140,126,0.3)] transition-all duration-500 hover:-translate-y-1 relative overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(135deg, #128C7E 0%, #075E54 55%, #2a2420 100%)",
+            }}
           >
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <Bot className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 flex-shrink-0" />
-                <div className="text-left">
-                  <h3 className="text-base sm:text-xl lg:text-2xl font-bold mb-0.5 sm:mb-1">
-                      Teste o agente inteligente agora mesmo
-                    </h3>
-                    <p className="text-white/80 text-xs sm:text-sm lg:text-base">
-                      Veja como a IA pode transformar seu atendimento. Sem compromisso!
-                    </p>
+            <div
+              className="absolute inset-0 opacity-[0.08] pointer-events-none"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E")`,
+              }}
+            />
+            <div
+              className="absolute -top-24 -right-24 w-[400px] h-[400px] rounded-full blur-3xl opacity-60 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse, rgba(37,211,102,0.35), transparent 70%)",
+              }}
+            />
+
+            <div className="relative grid md:grid-cols-[auto_1fr_auto] gap-6 md:gap-8 items-center">
+              <div className="relative flex-shrink-0 mx-auto md:mx-0">
+                <div
+                  className="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center"
+                  style={{
+                    background: "linear-gradient(135deg, #db6f57, #8b3d35)",
+                  }}
+                >
+                  <Bot className="w-9 h-9 md:w-11 md:h-11" />
+                </div>
+                <span
+                  className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center border-2"
+                  style={{
+                    background: "linear-gradient(135deg, #25D366, #128C7E)",
+                    borderColor: "#075E54",
+                  }}
+                >
+                  <MessageCircle className="w-3.5 h-3.5 text-white" />
+                </span>
+              </div>
+
+              <div className="text-center md:text-left">
+                <span
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-3"
+                  style={{
+                    backgroundColor: "rgba(37,211,102,0.18)",
+                    color: "#DCF8C6",
+                  }}
+                >
+                  <Sparkles className="w-3 h-3" />
+                  Teste o agente ao vivo
+                </span>
+                <h3 className="font-serif text-xl sm:text-2xl md:text-3xl font-bold mb-2 leading-tight">
+                  Quer ver o agente funcionando agora?
+                </h3>
+                <p className="text-white/80 text-sm md:text-base leading-relaxed mb-3 max-w-xl md:mx-0 mx-auto">
+                  Conheça tudo o que o agente faz: customização da personalidade,
+                  confirmações de 12 a 48h antes, lembretes de 1 a 6h, mudança
+                  automática de status — e converse com ele na hora.
+                </p>
+                <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                  {[
+                    "Chat ao vivo",
+                    "Fluxo completo",
+                    "100% customizável",
+                    "Sem compromisso",
+                  ].map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[11px] font-medium px-2.5 py-1 rounded-full border text-white/90"
+                      style={{
+                        backgroundColor: "rgba(255,255,255,0.08)",
+                        borderColor: "rgba(255,255,255,0.15)",
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
-              <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 transition-transform duration-300 group-hover/cta:translate-x-1" />
+
+              <div className="flex-shrink-0 flex justify-center md:justify-end">
+                <span
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm md:text-base shadow-lg transition-transform duration-300 group-hover/cta:translate-x-1"
+                  style={{
+                    background: "linear-gradient(135deg, #25D366, #128C7E)",
+                  }}
+                >
+                  Conhecer o agente
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+                </span>
+              </div>
             </div>
           </Link>
         </motion.div>
       </section>
-
-      
-      
-
-      {/* ─── CTA final ─── */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="text-center p-10 md:p-12 bg-gradient-to-br from-[#db6f57] to-[#8b3d35] relative overflow-hidden"
-      >
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
-        <div className="relative z-10">
-          <Heart className="w-12 h-12 md:w-16 md:h-16 text-white mx-auto mb-6" />
-          <h3 className="font-serif text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-4">
-            Pronto para transformar seu negócio?
-          </h3>
-          <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-            Comece grátis hoje. Sem cartão de crédito. Sem compromisso.
-          </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-3 px-8 py-4 md:px-10 md:py-5 bg-white text-[#8b3d35] rounded-xl font-bold text-base md:text-lg shadow-2xl hover:shadow-3xl transition-all duration-300"
-          >
-            Teste grátis por 14 dias
-            <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
-          </motion.button>
-        </div>
-      </motion.div>
     </>
   )
 }

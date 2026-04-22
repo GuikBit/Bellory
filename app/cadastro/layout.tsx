@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import PrimeProvider from "@/components/PrimeProvider"
 
 export const metadata: Metadata = {
   title: "Cadastro - Comece Grátis",
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/og-image.png',
+        url: '/bellory2sfundo.svg',
         width: 1200,
         height: 630,
         alt: 'Cadastre-se no Bellory',
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Cadastre-se no Bellory - Grátis',
     description: 'Comece agora a transformar a gestão do seu negócio',
-    images: ['/og-image.png'],
+    images: ['/bellory2sfundo.svg'],
   },
   robots: {
     index: true,
@@ -50,5 +51,5 @@ export default function CadastroLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return <PrimeProvider>{children}</PrimeProvider>
 }

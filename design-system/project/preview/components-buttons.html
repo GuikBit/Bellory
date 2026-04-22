@@ -1,0 +1,18 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><style>
+  body { padding: 26px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { font-family: Inter, sans-serif; font-weight: 600; font-size: 13px; border-radius: 12px; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: 0; transition: all .2s; }
+  .primary { background: linear-gradient(90deg,#db6f57,#c55a42,#8b3d35); color: white; box-shadow: 0 8px 22px rgba(219,111,87,0.25); }
+  .primary:hover { box-shadow: 0 0 30px rgba(219,111,87,0.4); transform: translateY(-1px); }
+  .outline { background: white; color: #8b3d35; border: 2px solid #8b3d35; padding: 8px 18px; }
+  .outline:hover { background: #8b3d35; color: white; }
+  .dark { background: #2a2420; color: white; }
+  .ghost { background: transparent; color: #4f6f64; padding: 8px 14px; }
+  .ghost:hover { color: #db6f57; }
+  svg { width: 15px; height: 15px; }
+  .tag { font-family: var(--font-mono); font-size: 10px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 82px; flex-shrink: 0; }
+</style></head><body>
+  <div class="row"><span class="tag">Primary</span><button class="btn primary">Comece grátis por 14 dias <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></button></div>
+  <div class="row"><span class="tag">Outline</span><button class="btn outline">Agende uma demonstração</button></div>
+  <div class="row"><span class="tag">Dark</span><button class="btn dark">Download</button><span class="tag">Ghost</span><button class="btn ghost">Entrar</button></div>
+</body></html>

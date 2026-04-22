@@ -1,0 +1,19 @@
+/* Shared reset for all preview cards — renders inside a 700x150-ish frame */
+@import url("../colors_and_type.css");
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg-page);
+  color: var(--fg-1);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  padding: 20px 24px;
+  min-height: 100vh;
+  overflow: hidden;
+}
+.row { display: flex; align-items: center; gap: 16px; }
+.col { display: flex; flex-direction: column; gap: 8px; }
+.grow { flex: 1; min-width: 0; }
+.mono { font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); background: transparent; padding: 0; }

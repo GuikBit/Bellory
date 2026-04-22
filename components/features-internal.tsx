@@ -15,173 +15,130 @@ import {
   ShoppingBag,
   Bot,
   ArrowRight,
+  BellRing,
+  MessageCircle,
+  Brain,
+  CreditCard,
+  Gift,
+  Target,
+  Palette,
   Heart,
-  type LucideIcon,
+  Zap,
+  Activity,
+  Search,
+  Sparkles,
   LayoutGrid,
+  type LucideIcon,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRef, useState, useEffect, useMemo } from "react"
 
-// ─── Data: 4 quadrants matching the sketch ───
-interface FeatureItem {
+// ─── Chapter data — mirrors /funcionalidades exactly ───
+interface ChapterFeature {
   icon: LucideIcon
   title: string
-  description: string
-  stat: string
 }
 
-interface Quadrant {
+interface ChapterPreview {
   id: string
-  title: string
-  tagline: string
+  number: string
+  label: string
+  headlineA: string
+  headlineB: string
   color: string
-  position: "top-left" | "top-right" | "bottom-left" | "bottom-right"
-  features: FeatureItem[]
+  features: ChapterFeature[]
+  proof: { icon: LucideIcon; label: string }
 }
 
-const quadrants: Quadrant[] = [
+const chapters: ChapterPreview[] = [
   {
-    id: "seo",
-    title: "SEO & Negócio",
-    tagline: "Presença digital profissional para atrair mais clientes",
-    color: "#8b3d35",
-    position: "top-left",
+    id: "agendamento",
+    number: "01",
+    label: "Agendamento",
+    headlineA: "A agenda que",
+    headlineB: "nunca fecha.",
+    color: "#db6f57",
     features: [
-      {
-        icon: Globe,
-        title: "Site Personalizado",
-        description: "Landing page linda e responsiva com sua identidade visual.",
-        stat: "Top 3",
-      },
-      {
-        icon: ShoppingBag,
-        title: "Mini E-commerce",
-        description: "Venda produtos online com pagamento integrado.",
-        stat: "+35%",
-      },
-      {
-        icon: Scissors,
-        title: "Catálogo Digital",
-        description: "Serviços com fotos, descrições e preços atualizados.",
-        stat: "60%",
-      },
+      { icon: Calendar, title: "Agenda online 24/7" },
+      { icon: BellRing, title: "Lembretes automáticos" },
+      { icon: Users, title: "Lista de espera" },
     ],
+    proof: { icon: Clock, label: "Economia de 6h por semana" },
   },
   {
-    id: "automacao",
-    title: "Automação Inteligente",
-    tagline: "Nunca mais perca um cliente, reduza faltas em até 40%",
-    color: "#db6f57",
-    position: "top-right",
+    id: "ia",
+    number: "02",
+    label: "Inteligência Artificial",
+    headlineA: "Um funcionário",
+    headlineB: "que nunca dorme.",
+    color: "#4f6f64",
     features: [
-      {
-        icon: Calendar,
-        title: "Agendamento 24/7",
-        description: "Clientes agendam quando quiserem pelo site ou WhatsApp.",
-        stat: "+30%",
-      },
-      {
-        icon: Bot,
-        title: "Agente Virtual",
-        description: "IA que responde, agenda e confirma horários no WhatsApp.",
-        stat: "<5s",
-      },
-      {
-        icon: Clock,
-        title: "Lembrete Automático",
-        description: "Confirmações e lembretes 24h antes. Cliente confirma em 1 clique.",
-        stat: "-40%",
-      },
+      { icon: MessageCircle, title: "Conversa humana de verdade" },
+      { icon: Brain, title: "Agenda sozinho, do começo ao fim" },
+      { icon: Shield, title: "Passa a bola na hora certa" },
     ],
+    proof: { icon: Bot, label: "72% dos agendamentos sem você tocar" },
   },
   {
     id: "financeiro",
-    title: "Financeiro",
-    tagline: "Saúde financeira em tempo real para decisões inteligentes",
-    color: "#4f6f64",
-    position: "bottom-left",
+    number: "03",
+    label: "Financeiro",
+    headlineA: "Você manda",
+    headlineB: "no caixa.",
+    color: "#8b3d35",
     features: [
-      {
-        icon: DollarSign,
-        title: "Controle de Caixa",
-        description: "Entradas, saídas, contas a pagar e receber automatizados.",
-        stat: "100%",
-      },
-      {
-        icon: TrendingUp,
-        title: "Análise Financeira",
-        description: "Entenda o que dá mais lucro e otimize seus resultados.",
-        stat: "Data-driven",
-      },
-      {
-        icon: Shield,
-        title: "Comissões Automáticas",
-        description: "Comissões calculadas automaticamente. Zero disputas.",
-        stat: "Auto",
-      },
+      { icon: DollarSign, title: "Caixa em tempo real" },
+      { icon: CreditCard, title: "Comissão sem briga" },
+      { icon: TrendingUp, title: "Relatórios que falam" },
     ],
+    proof: { icon: BarChart3, label: "Fechamento mensal em 3 cliques" },
   },
   {
-    id: "admin",
-    title: "Administrativo",
-    tagline: "Gestão no piloto automático, economize até 10 horas por semana",
+    id: "clientes",
+    number: "04",
+    label: "Clientes",
+    headlineA: "Cada cliente,",
+    headlineB: "uma história.",
     color: "#db6f57",
-    position: "bottom-right",
     features: [
-      {
-        icon: BarChart3,
-        title: "Dashboard Inteligente",
-        description: "Métricas em tempo real sobre todo o seu negócio.",
-        stat: "Real-time",
-      },
-      {
-        icon: Users,
-        title: "Gestão Completa de Clientes",
-        description: "Histórico, preferências e fidelidade automática.",
-        stat: "+50%",
-      },
-      {
-        icon: Briefcase,
-        title: "Controle de Equipe",
-        description: "Horários, comissões, metas e produtividade em um só lugar.",
-        stat: "0 erros",
-      },
+      { icon: Users, title: "Ficha completa do cliente" },
+      { icon: Gift, title: "Fidelidade automática" },
+      { icon: Target, title: "Reativação com 1 clique" },
     ],
+    proof: { icon: Heart, label: "+38% de retorno no 1º trimestre" },
+  },
+  {
+    id: "presenca",
+    number: "05",
+    label: "Presença Digital",
+    headlineA: "Seu salão no",
+    headlineB: "Google em 10min.",
+    color: "#4f6f64",
+    features: [
+      { icon: Globe, title: "Site com cara de quem investe" },
+      { icon: Palette, title: "Catálogo sempre atualizado" },
+      { icon: ShoppingBag, title: "Mini e-commerce integrado" },
+    ],
+    proof: { icon: Search, label: "SSL · domínio próprio · mobile-first" },
+  },
+  {
+    id: "gestao",
+    number: "06",
+    label: "Gestão",
+    headlineA: "Você toca,",
+    headlineB: "o sistema afina.",
+    color: "#8b3d35",
+    features: [
+      { icon: BarChart3, title: "Painel que responde antes" },
+      { icon: Briefcase, title: "Time alinhado, sem reunião" },
+      { icon: Zap, title: "Automações que salvam a semana" },
+    ],
+    proof: { icon: Activity, label: "Operação no piloto automático" },
   },
 ]
 
-// ─── Section divider wave ───
-function SectionDivider({ position, flip }: { position: "top" | "bottom"; flip?: boolean }) {
-  return (
-    <div
-      className={`absolute left-0 right-0 w-full overflow-hidden leading-[0] z-10 ${
-        position === "top" ? "top-0" : "bottom-0"
-      }`}
-      style={{
-        transform: position === "top" ? "translateY(-99%)" : "translateY(99%)",
-      }}
-    >
-      <svg
-        className="relative block w-full"
-        style={{
-          height: "clamp(40px, 5vw, 80px)",
-          transform: flip ? "scaleY(-1)" : undefined,
-        }}
-        viewBox="0 0 1200 120"
-        preserveAspectRatio="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M0,120 C200,40 400,100 600,60 C800,20 1000,80 1200,40 L1200,120 Z"
-          fill="#f3eeea"
-        />
-      </svg>
-    </div>
-  )
-}
-
-// ─── Connection line from card to center ───
+// ─── Connection line from card to center (preserved from original) ───
 function ConnectionLine({
   from,
   to,
@@ -213,35 +170,35 @@ function ConnectionLine({
         d={d}
         fill="none"
         stroke={color}
-        strokeWidth={2}
+        strokeWidth={1.5}
         strokeLinecap="round"
-        strokeDasharray="6 4"
+        strokeDasharray="5 4"
         initial={{ pathLength: 0, opacity: 0 }}
         animate={
           isInView
             ? {
                 pathLength: 1,
-                opacity: prefersReduced ? 0.25 : [0.15, 0.35, 0.15],
+                opacity: prefersReduced ? 0.25 : [0.18, 0.4, 0.18],
               }
             : { pathLength: 0, opacity: 0 }
         }
         transition={{
-          pathLength: { duration: 1.5, delay: 0.3 + index * 0.15, ease: "easeInOut" },
+          pathLength: { duration: 1.5, delay: 0.3 + index * 0.12, ease: "easeInOut" },
           opacity: prefersReduced
-            ? { duration: 0.6, delay: 0.5 + index * 0.15 }
+            ? { duration: 0.6, delay: 0.5 + index * 0.12 }
             : {
                 duration: 4 + index * 0.3,
                 repeat: Infinity,
                 ease: "easeInOut",
-                delay: 1.2 + index * 0.15,
+                delay: 1.2 + index * 0.12,
               },
         }}
       />
       {!prefersReduced && isInView && (
-        <circle r={3} fill={color} opacity={0.5}>
+        <circle r={3.5} fill={color} opacity={0.6}>
           <animateMotion
-            dur={`${3 + index * 0.4}s`}
-            begin={`${1 + index * 0.3}s`}
+            dur={`${3 + index * 0.3}s`}
+            begin={`${1 + index * 0.25}s`}
             repeatCount="indefinite"
             fill="freeze"
           >
@@ -253,71 +210,58 @@ function ConnectionLine({
   )
 }
 
-// ─── Single feature item inside a card ───
-function FeatureRow({
-  feature,
+// ─── Compact feature row inside a chapter card ───
+function CompactFeatureRow({
+  icon: Icon,
+  title,
   color,
   index,
   isInView,
 }: {
-  feature: FeatureItem
+  icon: LucideIcon
+  title: string
   color: string
   index: number
   isInView: boolean
 }) {
-  const Icon = feature.icon
-
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-      transition={{ duration: 0.5, delay: 0.6 + index * 0.12 }}
-      className="group/row flex items-start gap-3 py-3 px-3 rounded-xl transition-all duration-300 hover:bg-[#2a2420]/[0.03] cursor-default"
+    <motion.li
+      initial={{ opacity: 0, x: -10 }}
+      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
+      transition={{ duration: 0.45, delay: 0.5 + index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      className="flex items-center gap-2.5 group/row"
     >
-      <div
-        className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover/row:scale-110"
+      <span
+        className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 group-hover/row:-rotate-6"
         style={{
           backgroundColor: `${color}12`,
           border: `1.5px solid ${color}25`,
         }}
       >
-        <Icon className="w-5 h-5" style={{ color }} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2">
-          <h4 className="text-sm font-semibold text-[#2a2420] leading-tight">
-            {feature.title}
-          </h4>
-          <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
-            style={{
-              backgroundColor: `${color}15`,
-              color,
-            }}
-          >
-            {feature.stat}
-          </span>
-        </div>
-        <p className="text-xs text-[#5a4a42]/70 mt-0.5 leading-relaxed">
-          {feature.description}
-        </p>
-      </div>
-    </motion.div>
+        <Icon className="w-3.5 h-3.5" style={{ color }} />
+      </span>
+      <span className="text-[13px] md:text-[13.5px] font-semibold text-[#2a2420] leading-tight">
+        {title}
+      </span>
+    </motion.li>
   )
 }
 
-// ─── Quadrant card ───
-function QuadrantCard({
-  quadrant,
+// ─── Chapter preview card ───
+function ChapterCard({
+  chapter,
   index,
   isInView,
+  position,
 }: {
-  quadrant: Quadrant
+  chapter: ChapterPreview
   index: number
   isInView: boolean
+  position: "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right"
 }) {
-  const directionX = quadrant.position.includes("left") ? -60 : 60
-  const directionY = quadrant.position.includes("top") ? -40 : 40
+  const ProofIcon = chapter.proof.icon
+  const directionX = position.includes("left") ? -40 : position.includes("right") ? 40 : 0
+  const directionY = position.includes("top") ? -30 : 30
 
   return (
     <motion.div
@@ -329,81 +273,132 @@ function QuadrantCard({
       }
       transition={{
         duration: 0.7,
-        delay: 0.15 + index * 0.12,
+        delay: 0.15 + index * 0.1,
         ease: [0.22, 1, 0.36, 1],
       }}
-      className="group relative"
+      className="group relative h-full"
     >
-      <div
-        className="relative rounded-3xl border overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
-        style={{
-          backgroundColor: "rgba(255, 255, 255, 0.85)",
-          backdropFilter: "blur(12px)",
-          borderColor: `${quadrant.color}20`,
-          boxShadow: "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
-        }}
-      >
-        {/* Glow effect on hover */}
-        <div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
+      <Link href={`/funcionalidades#${chapter.id}`} className="block h-full">
+        <article
+          className="relative rounded-3xl border overflow-hidden transition-all duration-500 group-hover:-translate-y-1 h-full flex flex-col"
           style={{
-            background: `radial-gradient(ellipse at center, ${quadrant.color}06 0%, transparent 70%)`,
+            backgroundColor: "rgba(255, 255, 255, 0.88)",
+            backdropFilter: "blur(12px)",
+            borderColor: `${chapter.color}25`,
+            boxShadow:
+              "0 1px 3px rgba(42, 36, 32, 0.06), 0 4px 16px rgba(42, 36, 32, 0.04)",
           }}
-        />
-
-        {/* Card header */}
-        <div className="relative px-5 pt-5 pb-3">
-          <div className="flex items-center gap-3 mb-1">
-            <div
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: quadrant.color }}
-            />
-            <h3
-              className="text-base font-bold uppercase tracking-wider"
-              style={{ color: quadrant.color }}
-            >
-              {quadrant.title}
-            </h3>
-          </div>
-          <p className="text-sm text-[#5a4a42] pl-5">
-            {quadrant.tagline}
-          </p>
-        </div>
-
-        {/* Divider */}
-        <div className="mx-5">
+        >
+          {/* Hover glow */}
           <div
-            className="h-px w-full"
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
             style={{
-              background: `linear-gradient(to right, ${quadrant.color}30, transparent)`,
+              background: `radial-gradient(ellipse at top right, ${chapter.color}10 0%, transparent 70%)`,
             }}
           />
-        </div>
 
-        {/* Features list */}
-        <div className="relative px-2 pb-4 pt-1">
-          {quadrant.features.map((feature, idx) => (
-            <FeatureRow
-              key={feature.title}
-              feature={feature}
-              color={quadrant.color}
-              index={idx}
-              isInView={isInView}
-            />
-          ))}
-        </div>
+          {/* Giant numeral backdrop */}
+          <span
+            aria-hidden
+            className="absolute top-3 right-4 font-serif font-black leading-none tabular-nums select-none pointer-events-none"
+            style={{
+              fontSize: "clamp(64px, 8vw, 92px)",
+              color: `${chapter.color}12`,
+              letterSpacing: "-0.05em",
+            }}
+          >
+            {chapter.number}
+          </span>
 
-        {/* Bottom accent line */}
-        <div
-          className="h-0.5 w-0 group-hover:w-full transition-all duration-700"
-          style={{ backgroundColor: quadrant.color }}
-        />
-      </div>
+          <div className="relative p-5 md:p-6 flex flex-col flex-1 z-10">
+            {/* Meta label */}
+            <div className="flex items-center gap-2.5 mb-4">
+              <span
+                aria-hidden
+                className="h-px w-6"
+                style={{ backgroundColor: chapter.color, opacity: 0.5 }}
+              />
+              <span
+                className="text-[10px] uppercase tracking-[0.28em] font-bold"
+                style={{ color: chapter.color }}
+              >
+                Capítulo {chapter.number}
+              </span>
+            </div>
+
+            {/* Serif headline */}
+            <h3 className="font-serif text-xl md:text-2xl font-bold text-[#2a2420] leading-[1.08] mb-2">
+              {chapter.headlineA}
+              <br />
+              <span
+                className="bg-clip-text text-transparent"
+                style={{
+                  backgroundImage: `linear-gradient(90deg, ${chapter.color} 0%, #8b3d35 100%)`,
+                }}
+              >
+                {chapter.headlineB}
+              </span>
+            </h3>
+
+            {/* Label tagline under heading */}
+            <p className="text-[11px] uppercase tracking-wider font-semibold text-[#5a4a42]/50 mb-5">
+              {chapter.label}
+            </p>
+
+            {/* Feature list */}
+            <ul className="space-y-2.5 mb-5 flex-1">
+              {chapter.features.map((f, i) => (
+                <CompactFeatureRow
+                  key={f.title}
+                  icon={f.icon}
+                  title={f.title}
+                  color={chapter.color}
+                  index={i}
+                  isInView={isInView}
+                />
+              ))}
+            </ul>
+
+            {/* Proof + CTA */}
+            <div
+              className="pt-4 border-t"
+              style={{ borderColor: `${chapter.color}18` }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <ProofIcon
+                  className="w-3.5 h-3.5 flex-shrink-0"
+                  style={{ color: chapter.color }}
+                />
+                <span
+                  className="text-[11px] font-bold uppercase tracking-wider leading-tight"
+                  style={{ color: chapter.color }}
+                >
+                  {chapter.proof.label}
+                </span>
+              </div>
+              <span
+                className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider transition-all group-hover:gap-2"
+                style={{ color: chapter.color }}
+              >
+                Ler capítulo
+                <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5" />
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom accent sweep */}
+          <div
+            aria-hidden
+            className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-700"
+            style={{ backgroundColor: chapter.color }}
+          />
+        </article>
+      </Link>
     </motion.div>
   )
 }
 
-// ─── Center logo with pulse ───
+// ─── Center logo with pulse rings (preserved) ───
 function CenterLogo({ isInView }: { isInView: boolean }) {
   return (
     <motion.div
@@ -416,39 +411,26 @@ function CenterLogo({ isInView }: { isInView: boolean }) {
       transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
       className="relative flex items-center justify-center"
     >
-      {/* Outer pulse ring */}
       <motion.div
         className="absolute w-36 h-36 md:w-44 md:h-44 rounded-full"
         style={{
-          border: "2px solid rgba(219, 111, 87, 0.12)",
+          border: "2px solid rgba(219, 111, 87, 0.15)",
         }}
         animate={
           isInView
-            ? {
-                scale: [1, 1.25, 1],
-                opacity: [0.4, 0, 0.4],
-              }
+            ? { scale: [1, 1.25, 1], opacity: [0.45, 0, 0.45] }
             : {}
         }
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       />
-
-      {/* Second pulse ring */}
       <motion.div
         className="absolute w-36 h-36 md:w-44 md:h-44 rounded-full"
         style={{
-          border: "2px solid rgba(79, 111, 100, 0.12)",
+          border: "2px solid rgba(79, 111, 100, 0.15)",
         }}
         animate={
           isInView
-            ? {
-                scale: [1, 1.4, 1],
-                opacity: [0.3, 0, 0.3],
-              }
+            ? { scale: [1, 1.4, 1], opacity: [0.35, 0, 0.35] }
             : {}
         }
         transition={{
@@ -458,14 +440,32 @@ function CenterLogo({ isInView }: { isInView: boolean }) {
           delay: 0.8,
         }}
       />
+      <motion.div
+        className="absolute w-44 h-44 md:w-52 md:h-52 rounded-full"
+        style={{
+          border: "1.5px solid rgba(139, 61, 53, 0.1)",
+        }}
+        animate={
+          isInView
+            ? { scale: [1, 1.55, 1], opacity: [0.3, 0, 0.3] }
+            : {}
+        }
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1.5,
+        }}
+      />
 
-      {/* Main circle */}
       <div
         className="relative w-28 h-28 md:w-36 md:h-36 rounded-full flex items-center justify-center"
         style={{
-          background: "linear-gradient(135deg, #ffffff 0%, #f3eeea 50%, #ffffff 100%)",
-          border: "2px solid rgba(219, 111, 87, 0.2)",
-          boxShadow: "0 8px 40px rgba(139, 61, 53, 0.1), 0 2px 12px rgba(42, 36, 32, 0.06)",
+          background:
+            "linear-gradient(135deg, #ffffff 0%, #f3eeea 50%, #ffffff 100%)",
+          border: "2px solid rgba(219, 111, 87, 0.25)",
+          boxShadow:
+            "0 10px 40px rgba(139, 61, 53, 0.12), 0 2px 12px rgba(42, 36, 32, 0.06)",
         }}
       >
         <Image
@@ -480,7 +480,7 @@ function CenterLogo({ isInView }: { isInView: boolean }) {
   )
 }
 
-// ─── SVG connector lines layer ───
+// ─── Connector lines — 6 points radiating to center ───
 function ConnectorLines({
   isInView,
   containerSize,
@@ -494,17 +494,21 @@ function ConnectorLines({
   const cx = w / 2
   const cy = h / 2
 
-  // Card center positions (approximate centers of each quadrant)
+  // 3 columns × 2 rows — card centers computed as proportions of container
   const cardCenters = useMemo(() => {
-    const colW = w * 0.42
-    const rowH = h * 0.42
+    const colW = w / 3
+    const rowOffset = h * 0.22
+    const rowYTop = cy - rowOffset
+    const rowYBottom = cy + rowOffset
     return [
-      { x: colW * 0.5, y: rowH * 0.5 },
-      { x: w - colW * 0.5, y: rowH * 0.5 },
-      { x: colW * 0.5, y: h - rowH * 0.5 },
-      { x: w - colW * 0.5, y: h - rowH * 0.5 },
+      { x: colW * 0.5, y: rowYTop },
+      { x: colW * 1.5, y: rowYTop },
+      { x: colW * 2.5, y: rowYTop },
+      { x: colW * 0.5, y: rowYBottom },
+      { x: colW * 1.5, y: rowYBottom },
+      { x: colW * 2.5, y: rowYBottom },
     ]
-  }, [w, h])
+  }, [w, h, cy])
 
   const center = { x: cx, y: cy }
 
@@ -519,7 +523,7 @@ function ConnectorLines({
           key={i}
           from={from}
           to={center}
-          color={quadrants[i].color}
+          color={chapters[i].color}
           index={i}
           isInView={isInView}
           prefersReduced={prefersReduced}
@@ -529,13 +533,274 @@ function ConnectorLines({
   )
 }
 
+// ─── All-features CTA card — warm-dark editorial, mini TOC of 6 chapters ───
+function AllFeaturesCard({
+  isInView,
+  prefersReduced,
+}: {
+  isInView: boolean
+  prefersReduced: boolean | null
+}) {
+  const tocTiles = chapters.map((c, i) => {
+    const icons: LucideIcon[] = [Calendar, Bot, DollarSign, Heart, Globe, BarChart3]
+    return {
+      id: c.id,
+      number: c.number,
+      label: c.label,
+      color: c.color,
+      icon: icons[i],
+    }
+  })
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+      transition={{ duration: 0.8, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+      className="mt-20 md:mt-28 max-w-6xl mx-auto"
+    >
+      <div
+        className="relative rounded-[28px] md:rounded-[36px] overflow-hidden border"
+        style={{
+          background:
+            "linear-gradient(135deg, #2a2420 0%, #1f1a16 55%, #1a1510 100%)",
+          borderColor: "#3d2e28",
+          boxShadow:
+            "0 40px 80px -24px rgba(42,36,32,0.45), 0 16px 32px -16px rgba(42,36,32,0.25)",
+        }}
+      >
+        {/* Dot pattern overlay */}
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-40 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23db6f57' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
+
+        {/* Ambient glows */}
+        <motion.div
+          aria-hidden
+          className="absolute -top-32 -right-24 w-[480px] h-[480px] rounded-full blur-3xl pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse, rgba(219,111,87,0.22), transparent 65%)",
+          }}
+          animate={
+            prefersReduced
+              ? undefined
+              : { scale: [1, 1.15, 1], opacity: [0.5, 0.85, 0.5] }
+          }
+          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          aria-hidden
+          className="absolute -bottom-40 -left-16 w-[420px] h-[420px] rounded-full blur-3xl pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse, rgba(139,61,53,0.28), transparent 65%)",
+          }}
+          animate={
+            prefersReduced
+              ? undefined
+              : { scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }
+          }
+          transition={{ duration: 13, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
+
+        {/* Giant background numeral — editorial watermark */}
+        <span
+          aria-hidden
+          className="absolute -top-6 md:-top-10 right-4 md:right-8 font-serif font-black leading-none tabular-nums select-none pointer-events-none"
+          style={{
+            fontSize: "clamp(120px, 22vw, 240px)",
+            color: "rgba(219,111,87,0.08)",
+            letterSpacing: "-0.06em",
+          }}
+        >
+          06
+        </span>
+
+        <div className="relative grid lg:grid-cols-12 gap-8 md:gap-10 p-7 md:p-10 lg:p-14">
+          {/* Left: copy + CTA */}
+          <div className="lg:col-span-7 flex flex-col justify-center">
+            <div className="flex items-center gap-3 mb-5">
+              <span aria-hidden className="h-px w-8 md:w-10 bg-[#db6f57] opacity-70" />
+              <span className="text-[10px] md:text-[11px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                Manual completo
+                <span className="mx-2 opacity-50">·</span>
+                30+ funcionalidades
+              </span>
+            </div>
+
+            <h3 className="font-serif text-[30px] sm:text-4xl lg:text-5xl xl:text-[54px] font-bold text-white leading-[1.04] tracking-tight mb-5">
+              Cada peça do sistema,
+              <br />
+              <span
+                className="bg-clip-text text-transparent"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(90deg, #db6f57 0%, #e88c76 45%, #db6f57 100%)",
+                  backgroundSize: "200% auto",
+                }}
+              >
+                em detalhe.
+              </span>
+            </h3>
+
+            <p className="text-[15px] md:text-base lg:text-lg text-[#e6d9d4]/75 leading-relaxed font-light max-w-xl mb-8">
+              Um tour pelos seis capítulos do Bellory com mockups reais,
+              exemplos em português e proof-points de quem já usa. Leia do
+              começo ao fim ou pule direto para o que te interessa.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
+              <Link href="/funcionalidades">
+                <motion.span
+                  whileHover={prefersReduced ? undefined : { scale: 1.035 }}
+                  whileTap={prefersReduced ? undefined : { scale: 0.97 }}
+                  className="group/cta relative inline-flex items-center gap-2.5 px-6 md:px-7 py-3.5 md:py-4 rounded-xl font-bold text-[14px] md:text-[15px] text-white overflow-hidden shadow-2xl cursor-pointer"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, #db6f57 0%, #c55a42 50%, #8b3d35 100%)",
+                    boxShadow: "0 0 40px rgba(219,111,87,0.35)",
+                  }}
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Ler o manual completo
+                  <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/cta:translate-x-1" />
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 -translate-x-full group-hover/cta:translate-x-full transition-transform duration-1000"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.22) 50%, transparent 100%)",
+                    }}
+                  />
+                </motion.span>
+              </Link>
+              <Link
+                href="/cadastro"
+                className="group inline-flex items-center gap-2 text-[#e6d9d4]/80 hover:text-white transition-colors font-semibold text-[14px]"
+              >
+                Ou teste 14 dias grátis
+                <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] md:text-[12px] text-[#e6d9d4]/55 font-medium">
+              <span className="flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full bg-[#db6f57]" />
+                Mockups reais
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full bg-[#db6f57]" />
+                Sem cadastro pra ler
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full bg-[#db6f57]" />
+                8 min de leitura
+              </span>
+            </div>
+          </div>
+
+          {/* Right: mini TOC of 6 chapters */}
+          <div className="lg:col-span-5">
+            <div className="flex items-center gap-2.5 mb-4 lg:justify-end">
+              <LayoutGrid className="w-3.5 h-3.5 text-[#e6d9d4]/50" />
+              <span className="text-[10px] uppercase tracking-[0.28em] font-bold text-[#e6d9d4]/50">
+                Índice · pule direto
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 md:gap-2.5">
+              {tocTiles.map((t, i) => {
+                const Icon = t.icon
+                return (
+                  <motion.div
+                    key={t.id}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={
+                      isInView
+                        ? { opacity: 1, y: 0 }
+                        : { opacity: 0, y: 16 }
+                    }
+                    transition={{
+                      duration: 0.5,
+                      delay: 1.1 + i * 0.07,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                  >
+                    <Link
+                      href={`/funcionalidades#${t.id}`}
+                      className="group/tile relative block rounded-xl md:rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 h-full"
+                      style={{
+                        backgroundColor: "rgba(255,255,255,0.04)",
+                        border: `1px solid ${t.color}30`,
+                      }}
+                    >
+                      {/* Hover glow */}
+                      <span
+                        aria-hidden
+                        className="absolute inset-0 opacity-0 group-hover/tile:opacity-100 transition-opacity duration-500"
+                        style={{
+                          background: `radial-gradient(ellipse at top right, ${t.color}22, transparent 70%)`,
+                        }}
+                      />
+
+                      <div className="relative p-3 md:p-3.5">
+                        <div className="flex items-start justify-between mb-2">
+                          <span
+                            aria-hidden
+                            className="font-serif text-xl md:text-2xl font-black leading-none tabular-nums"
+                            style={{ color: t.color, letterSpacing: "-0.04em" }}
+                          >
+                            {t.number}
+                          </span>
+                          <span
+                            className="w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-300 group-hover/tile:-rotate-6"
+                            style={{
+                              backgroundColor: `${t.color}18`,
+                              border: `1px solid ${t.color}30`,
+                            }}
+                          >
+                            <Icon className="w-3.5 h-3.5" style={{ color: t.color }} />
+                          </span>
+                        </div>
+                        <div className="text-[11px] md:text-[12px] font-bold text-white leading-tight mb-0.5">
+                          {t.label}
+                        </div>
+                        <div className="flex items-center gap-1 text-[9px] md:text-[10px] font-semibold text-[#e6d9d4]/50 group-hover/tile:text-[#e6d9d4]/80 transition-colors">
+                          <span>ler</span>
+                          <ArrowRight className="w-2.5 h-2.5 transition-transform duration-300 group-hover/tile:translate-x-0.5" />
+                        </div>
+                      </div>
+
+                      {/* Bottom accent sweep */}
+                      <span
+                        aria-hidden
+                        className="absolute bottom-0 left-0 h-[2px] w-0 group-hover/tile:w-full transition-all duration-700"
+                        style={{ backgroundColor: t.color }}
+                      />
+                    </Link>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
 // ─── Main component ───
 export function FeaturesInternal() {
   const sectionRef = useRef<HTMLElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" })
   const prefersReduced = useReducedMotion()
-  const [containerSize, setContainerSize] = useState({ w: 1000, h: 700 })
+  const [containerSize, setContainerSize] = useState({ w: 1200, h: 900 })
 
   useEffect(() => {
     function measure() {
@@ -552,131 +817,140 @@ export function FeaturesInternal() {
     return () => ro.disconnect()
   }, [])
 
+  const positions = [
+    "top-left",
+    "top-center",
+    "top-right",
+    "bottom-left",
+    "bottom-center",
+    "bottom-right",
+  ] as const
+
   return (
-    <>
-      <section
-        id="funcionalidades"
-        ref={sectionRef}
-        className="py-24 md:py-32 relative overflow-hidden bg-[#f3eeea]"
-      >
-        {/* Dividers removed — transitions now handled by SectionTransition in page.tsx */}
+    <section
+      id="funcionalidades"
+      ref={sectionRef}
+      className="py-24 md:py-32 relative overflow-hidden bg-[#f3eeea]"
+    >
+      {/* Dot pattern */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b3d35' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}
+      />
 
-        {/* Background pattern */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b3d35' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
+      {/* Ambient blobs */}
+      <motion.div
+        aria-hidden
+        className="absolute -top-20 -right-20 w-[520px] h-[520px] rounded-full blur-3xl pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse, rgba(219,111,87,0.14), transparent 65%)",
+        }}
+        animate={
+          prefersReduced
+            ? {}
+            : { scale: [1, 1.15, 1], opacity: [0.5, 0.85, 0.5] }
+        }
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        aria-hidden
+        className="absolute -bottom-20 -left-20 w-[440px] h-[440px] rounded-full blur-3xl pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse, rgba(79,111,100,0.12), transparent 65%)",
+        }}
+        animate={
+          prefersReduced
+            ? {}
+            : { scale: [1, 1.2, 1], opacity: [0.4, 0.75, 0.4] }
+        }
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+      />
 
-        {/* Subtle decorative blobs */}
+      <div className="container mx-auto px-4 relative z-10 max-w-7xl">
+        {/* Editorial section header — aligned with /funcionalidades voice */}
         <motion.div
-          className="absolute -top-150 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-[#db6f57]/[0.06] to-[#8b3d35]/[0.04] rounded-full blur-3xl"
-          animate={
-            prefersReduced
-              ? {}
-              : { scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }
-          }
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute -bottom-100 -left-20 w-[400px] h-[400px] bg-gradient-to-tr from-[#4f6f64]/[0.06] to-[#db6f57]/[0.04] rounded-full blur-3xl"
-          animate={
-            prefersReduced
-              ? {}
-              : { scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }
-          }
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        />
-
-        <div className="container mx-auto px-4 relative z-10">
-          {/* Section header */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.7 }}
-            className="text-center mb-16 md:mb-20"
-          >
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#2a2420] mb-4 leading-[1.1]">
-              Tudo que você precisa,{" "}
-              <span className="bg-gradient-to-r from-[#db6f57] to-[#8b3d35] bg-clip-text text-transparent">
-                em um só lugar
-              </span>
-            </h2>
-            <p className="text-base sm:text-lg text-[#5a4a42]/70 leading-relaxed">
-              Quatro pilares que transformam a gestão do seu negócio
-            </p>
-          </motion.div>
-
-          {/* ─── Cross layout grid ─── */}
-          <div ref={gridRef} className="relative max-w-8xl mx-auto">
-            {/* SVG connection lines (desktop only) */}
-            <div className="hidden lg:block">
-              <ConnectorLines
-                isInView={isInView}
-                containerSize={containerSize}
-                prefersReduced={prefersReduced}
-              />
-            </div>
-
-            {/* Grid: 2x2 with logo in center */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-34">
-              {/* Top-left: SEO Negócio */}
-              <QuadrantCard quadrant={quadrants[0]} index={0} isInView={isInView} />
-
-              {/* Top-right: Automação Inteligente */}
-              <QuadrantCard quadrant={quadrants[1]} index={1} isInView={isInView} />
-
-              {/* Center logo - positioned absolutely on desktop */}
-              <div className="hidden lg:flex absolute inset-0 items-center justify-center z-20 pointer-events-none">
-                <CenterLogo isInView={isInView} />
-              </div>
-
-              {/* Center logo for mobile - shown between rows */}
-              <div className="flex lg:hidden items-center justify-center py-6">
-                <CenterLogo isInView={isInView} />
-              </div>
-
-              {/* Bottom-left: Financeiro */}
-              <QuadrantCard quadrant={quadrants[2]} index={2} isInView={isInView} />
-
-              {/* Bottom-right: Administrativo */}
-              <QuadrantCard quadrant={quadrants[3]} index={3} isInView={isInView} />
-            </div>
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.7 }}
+          className="text-center mb-14 md:mb-20 max-w-3xl mx-auto"
+        >
+          <div className="inline-flex items-center gap-3 mb-6">
+            <span
+              aria-hidden
+              className="h-px w-10 bg-[#db6f57] opacity-60"
+            />
+            <span className="text-[11px] uppercase tracking-[0.3em] font-semibold text-[#db6f57]">
+              Funcionalidades
+              <span className="mx-2 opacity-40">·</span>
+              06 capítulos
+            </span>
+            <span
+              aria-hidden
+              className="h-px w-10 bg-[#db6f57] opacity-60"
+            />
           </div>
 
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-[#2a2420] leading-[1.04] mb-5">
+            Seis capítulos.{" "}
+            <span
+              className="bg-clip-text text-transparent"
+              style={{
+                backgroundImage:
+                  "linear-gradient(90deg, #db6f57 0%, #8b3d35 50%, #db6f57 100%)",
+                backgroundSize: "200% auto",
+              }}
+            >
+              Um único sistema.
+            </span>
+          </h2>
+          <p className="text-base sm:text-lg text-[#5a4a42]/70 leading-relaxed font-light">
+            Da agenda ao financeiro, da IA no WhatsApp à presença digital —
+            tudo interligado em volta do mesmo lugar. O seu.
+          </p>
+        </motion.div>
 
+        {/* Grid 3×2 with center logo */}
+        <div ref={gridRef} className="relative">
+          {/* SVG connectors — desktop only */}
+          <div className="hidden lg:block">
+            <ConnectorLines
+              isInView={isInView}
+              containerSize={containerSize}
+              prefersReduced={prefersReduced}
+            />
+          </div>
+
+          {/* Center logo — desktop absolute */}
+          <div className="hidden lg:flex absolute inset-0 items-center justify-center z-20 pointer-events-none">
+            <CenterLogo isInView={isInView} />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 lg:gap-x-12 lg:gap-y-64 relative">
+            {chapters.map((chapter, idx) => (
+              <ChapterCard
+                key={chapter.id}
+                chapter={chapter}
+                index={idx}
+                isInView={isInView}
+                position={positions[idx]}
+              />
+            ))}
+          </div>
+
+          {/* Mobile/tablet center logo between rows */}
+          <div className="flex lg:hidden items-center justify-center py-10">
+            <CenterLogo isInView={isInView} />
+          </div>
         </div>
 
-          {/* CTA button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="mt-14 md:mt-18 px-4 relative z-10"
-          >
-            <Link
-              href="/funcionalidades"
-              className="group/cta block w-full max-w-4xl mx-auto bg-gradient-to-r from-[#4f6f64] to-[#3d574f] text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <LayoutGrid className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 flex-shrink-0" />
-                  <div className="text-left">
-                    <h3 className="text-base sm:text-xl lg:text-2xl font-bold mb-0.5 sm:mb-1">
-                      Conheça todas as funcionalidades
-                    </h3>
-                    <p className="text-white/80 text-xs sm:text-sm lg:text-base">
-                      E veja como podemos transformar seu negócio hoje mesmo
-                    </p>
-                  </div>
-                </div>
-                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 transition-transform duration-300 group-hover/cta:translate-x-1" />
-              </div>
-            </Link>
-          </motion.div>
-
-      </section>  
-    </>
+        {/* Bottom CTA card — editorial "last page of the manual" */}
+        <AllFeaturesCard isInView={isInView} prefersReduced={prefersReduced} />
+      </div>
+    </section>
   )
 }

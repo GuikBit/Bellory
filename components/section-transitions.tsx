@@ -33,6 +33,7 @@ export function SectionTransition({
       ref={ref}
       className="relative w-full overflow-hidden pointer-events-none select-none"
       style={{
+        position: "relative",
         height: "clamp(80px, 10vw, 150px)",
         marginTop: "-2px",
         marginBottom: "-2px",
@@ -176,10 +177,10 @@ function WavesTransition({
 
 const DIAGONAL_PARTICLES = Array.from({ length: 12 }, (_, i) => ({
   cx: (i * 130 + 50) % 1440,
-  cy: 20 + Math.sin(i * 1.8) * 40,
-  r: 1.5 + (i % 3) * 0.8,
-  delay: i * 0.25,
-  duration: 3 + (i % 4) * 0.8,
+  cy: Math.round((20 + Math.sin(i * 1.8) * 40) * 100) / 100,
+  r: Math.round((1.5 + (i % 3) * 0.8) * 100) / 100,
+  delay: Math.round(i * 0.25 * 100) / 100,
+  duration: Math.round((3 + (i % 4) * 0.8) * 100) / 100,
 }))
 
 function DiagonalTransition({
