@@ -93,7 +93,7 @@ function transformPlan(p: any) {
     rawId: p.id,
     name: p.name,
     description: p.description,
-    tagline: meta.tagline,
+    tagline: p.description ?? meta.tagline ?? "",
     color: meta.color,
     icon: meta.icon,
     popular: meta.popular ?? false,
@@ -457,6 +457,9 @@ function PaidCard({ plan, isAnnual }: { plan: any; isAnnual: boolean }) {
       : null
   const hasPromo = hasMonthlyPromo || hasAnnualPromo
   const promoTexto = hasMonthlyPromo ? plan.promoMensalTexto : plan.promoAnualTexto
+  const annualTotalOriginal = plan.yearlyPrice ?? 0
+  const annualTotalDisplay = hasAnnualPromo ? Number(plan.promoAnualPreco) : annualTotalOriginal
+  const promoAnnualSavings = hasAnnualPromo ? annualTotalOriginal - annualTotalDisplay : 0
   const Icon = iconMap[plan.icon];
 
 
@@ -527,13 +530,26 @@ function PaidCard({ plan, isAnnual }: { plan: any; isAnnual: boolean }) {
         </div>
         {isAnnual && plan.yearlyPrice > 0 && (
           <p className="text-xs text-[#5a4a42]/60 mt-1">
-            R$ {plan.yearlyPrice.toFixed(2).replace(".", ",")} cobrado anualmente
-            {plan.yearlyDiscount > 0 && (
+            {hasAnnualPromo && (
+              <span className="line-through text-[#5a4a42]/40 mr-1">
+                R$ {annualTotalOriginal.toFixed(2).replace(".", ",")}
+              </span>
+            )}
+            R$ {annualTotalDisplay.toFixed(2).replace(".", ",")} cobrado anualmente
+            {!hasAnnualPromo && plan.yearlyDiscount > 0 && (
               <span
                 className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold"
                 style={{ backgroundColor: `${plan.color}20`, color: plan.color }}
               >
                 -{plan.yearlyDiscount.toFixed(0)}%
+              </span>
+            )}
+            {hasAnnualPromo && promoAnnualSavings > 0 && (
+              <span
+                className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold"
+                style={{ backgroundColor: `${plan.color}20`, color: plan.color }}
+              >
+                −R$ {promoAnnualSavings.toFixed(0)}
               </span>
             )}
           </p>

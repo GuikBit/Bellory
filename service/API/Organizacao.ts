@@ -115,20 +115,32 @@ export async function getBuscarCEP(cep: any): Promise<any> {
 export async function validarCupom(payload: { codigoCupom: string, planoCodigo: string, cicloCobranca: string }): Promise<Response> {
   try {
     const cycle = payload.cicloCobranca?.toUpperCase() === 'ANUAL' ? 'ANNUAL' : 'MONTHLY';
-    const response = await axios.post<Response>('/api/cupom/validate', {
+    const response = await api.post('public/planos/cupom/validar', {
       couponCode: payload.codigoCupom.toUpperCase(),
+      scope: 'SUBSCRIPTION',
       planCode: payload.planoCodigo,
       cycle,
     });
+    const raw: any = response.data;
+
     return {
-      success: response.data.success,
-      message: response.data.message,
-      errorCode: response.data.errorCode,
-      dados: response.data.dados,
+      success: !!raw?.valid,
+      message: raw?.message ?? '',
+      errorCode: 0,
+      dados: raw,
     };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.message || 'Erro ao validar cupom.');
+      const data: any = error.response.data;
+      if (data && typeof data.valid === 'boolean') {
+        return {
+          success: false,
+          message: data.message ?? 'Cupom inválido',
+          errorCode: 0,
+          dados: data,
+        };
+      }
+      throw new Error(data?.message || 'Erro ao validar cupom.');
     }
     throw new Error('Erro de rede ou inesperado.');
   }
@@ -136,13 +148,23 @@ export async function validarCupom(payload: { codigoCupom: string, planoCodigo: 
 
 export async function getPlanos(): Promise<Response> {
   try {
-    const response = await axios.get<Response>(`/api/planos`);
+    const response = await api.get(`public/planos`);
+    const raw: any = response.data;
+
+    if (Array.isArray(raw)) {
+      return {
+        success: true,
+        message: 'OK',
+        errorCode: 0,
+        dados: raw,
+      };
+    }
 
     return {
-      success: response.data.success,
-      message: response.data.message,
-      errorCode: response.data.errorCode,
-      dados: response.data.dados,
+      success: raw?.success,
+      message: raw?.message,
+      errorCode: raw?.errorCode,
+      dados: raw?.dados,
     };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

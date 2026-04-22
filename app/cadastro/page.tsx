@@ -240,7 +240,7 @@ export default function Cadastro() {
   const { trackCadastroStarted, trackCadastroStep, trackCadastroCompleted, trackCadastroAbandoned, trackPlanSelected } = useConversionTracker()
   const cadastroTracked = useRef(false)
 
-  const [activeStep, setActiveStep] = useState(4)
+  const [activeStep, setActiveStep] = useState(0)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfPassword, setShowConfPassword] = useState(false)
@@ -336,7 +336,7 @@ export default function Cadastro() {
             rawId: p.id,
             name: p.name,
             description: p.description,
-            tagline: meta.tagline,
+            tagline: p.description ?? meta.tagline ?? "",
             color: meta.color,
             icon: meta.icon,
             badge: meta.badge,
@@ -1587,7 +1587,9 @@ export default function Cadastro() {
                           const savings = plan.price > 0 ? ((plan.price - plan.yearlyPrice) * 12).toFixed(0) : 0
                           const isSelected = selectedPlan === plan.id
                           const discountPercent = plan.price > 0 ? Math.round(((plan.price - plan.yearlyPrice) / plan.price) * 100) : 0
-                          const totalAnnual = plan.yearlyPrice * 12
+                          const totalAnnualOriginal = plan.yearlyPrice * 12
+                          const totalAnnual = hasAnnualPromo ? Number(plan.promoAnualPreco) : totalAnnualOriginal
+                          const promoAnnualSavings = hasAnnualPromo ? (totalAnnualOriginal - totalAnnual).toFixed(0) : 0
 
                           return (
                             <motion.button
@@ -1628,7 +1630,7 @@ export default function Cadastro() {
                                 {/* Ícone e nome */}
                                 <div className="flex items-center gap-3 mb-4">
                                   <div 
-                                    className="w-12 h-12 rounded-xl flex items-center justify-center"
+                                    className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                                     style={{ 
                                       background: `linear-gradient(135deg, ${plan.color}20, ${plan.color}40)`
                                     }}
@@ -1659,8 +1661,8 @@ export default function Cadastro() {
                                 </div> */}
                                 <div className="mb-8 space-y-3">
                                   {/* Preço mensal em destaque */}
-                                  {/* Preço original riscado e desconto */}
-                                  {isAnnual && plan.price > 0 &&  (
+                                  {/* Preço original riscado e desconto (aba anual sem promo anual) */}
+                                  {isAnnual && plan.price > 0 && !hasAnnualPromo && (
                                     <div className="flex items-center gap-2">
                                       <span className={`text-lg line-through ${theme.textMuted}`}>
                                         R$ {plan.price.toFixed(2).replace('.', ',')}/mês
@@ -1716,6 +1718,11 @@ export default function Cadastro() {
                                     <div className="mt-3 space-y-2">
                                       {/* Preço total anual */}
                                       <div className={`text-sm ${isDark? `text-[#B8AEA4]`:`text-[#4f6f64]`}`} style={{ color: isDark?theme.textSecondary:'text-[#4f6f64]' }}>
+                                        {hasAnnualPromo && (
+                                          <span className={`line-through ${theme.textMuted} mr-2`}>
+                                            R$ {totalAnnualOriginal.toFixed(2).replace('.', ',')}
+                                          </span>
+                                        )}
                                         <span className={`font-semibold`}>
                                           R$ {totalAnnual.toFixed(2).replace('.', ',')}
                                         </span>
@@ -1723,7 +1730,14 @@ export default function Cadastro() {
                                       </div>
 
                                       {/* Economia total */}
-                                      {Number(savings) > 0 && (
+                                      {hasAnnualPromo && Number(promoAnnualSavings) > 0 ? (
+                                        <div
+                                          className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold"
+                                          style={{ backgroundColor: `${plan.color}15`, color: plan.color }}
+                                        >
+                                          💰 Economize R$ {promoAnnualSavings} com a promo
+                                        </div>
+                                      ) : Number(savings) > 0 && (
                                         <div
                                           className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold"
                                           style={{ backgroundColor: `${plan.color}15`, color: plan.color }}
@@ -2076,7 +2090,7 @@ export default function Cadastro() {
                               {plano.find(p => p.id === selectedPlan) && (
                                 <>
                                   <div 
-                                    className="w-12 h-12 rounded-xl flex items-center justify-center"
+                                    className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                                     style={{ 
                                       background: `linear-gradient(135deg, ${plano.find(p => p.id === selectedPlan)?.color}20, ${plano.find(p => p.id === selectedPlan)?.color}40)`
                                     }}
