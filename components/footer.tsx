@@ -129,6 +129,8 @@ export function Footer() {
                 <img
                   src="/bellory2sfundo.svg"
                   alt="Bellory Logo"
+                  width={112}
+                  height={28}
                   className="h-7 w-auto"
                   style={{
                     filter: "drop-shadow(2px 2px 2px #11111130)",

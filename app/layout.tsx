@@ -109,6 +109,12 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${poppins.variable} overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-primary scrollbar-track-background`}>
       <head>
+        {/* Preconnect pros endpoints que rodam logo após hidratação — economiza
+            ~300ms de LCP mobile (Lighthouse indicou isso explicitamente). */}
+        <link rel="preconnect" href="https://api-dev.bellory.com.br" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://ipwho.is" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://api-dev.bellory.com.br" />
+        <link rel="dns-prefetch" href="https://ipwho.is" />
         <StructuredData />
       </head>
       <body className="font-sans antialiased " suppressHydrationWarning>
