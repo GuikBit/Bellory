@@ -45,7 +45,7 @@ const FEATURE_CARDS: FeatureCard[] = [
   { id: "financeiro", label: "Gestão Financeira", icon: CreditCard, color: "#db6f57", flow: "out" },
   { id: "clientes", label: "CRM de Clientes", icon: Users, color: "#8b3d35", flow: "in" },
   { id: "relatorios", label: "Relatórios", icon: BarChart, color: "#4f6f64", flow: "out" },
-  { id: "chat", label: "Chat Integrado", icon: MessageCircle, color: "#db6f57", flow: "in" },
+  { id: "chat", label: "Suporte dedicado", icon: MessageCircle, color: "#db6f57", flow: "in" },
   { id: "seguranca", label: "Segurança Total", icon: Shield, color: "#8b3d35", flow: "out" },
 ]
 
