@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bellory — Transforme seu negócio em um império digital</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="components.css">
+</head>
+<body>
+
+<!-- Icon sprite (inlined) -->
+<script>
+  fetch('icons.html').then(r => r.text()).then(t => {
+    document.body.insertAdjacentHTML('afterbegin', t);
+  });
+</script>
+
+<!-- Promo bar -->
+<div class="promo-bar">
+  <svg width="14" height="14"><use href="#i-sparkles"/></svg>
+  <span><strong>Oferta especial:</strong> 14 dias grátis + até 15% de desconto no plano anual</span>
+  <button class="pb-cta">Aproveitar</button>
+</div>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="container row">
+    <a class="brand" href="#">
+      <img src="../../assets/bellory-logo.svg" alt="Bellory">
+      <span class="wordmark">Bellory</span>
+    </a>
+    <nav class="nav-links">
+      <div class="nav-item">
+        <a class="nav-link">Funcionalidades <svg class="chev"><use href="#i-chevron-down"/></svg><span class="underline"></span></a>
+        <div class="dropdown">
+          <div class="dropdown-item">
+            <div class="tile"><svg width="18" height="18"><use href="#i-calendar"/></svg></div>
+            <div><div class="t"><span class="title">Agenda Online</span><span class="pill pill-popular">Popular</span></div><div class="desc">Agendamento 24/7 para seus clientes</div></div>
+          </div>
+          <div class="dropdown-item">
+            <div class="tile"><svg width="18" height="18"><use href="#i-users"/></svg></div>
+            <div><div class="t"><span class="title">CRM de Clientes</span></div><div class="desc">Histórico completo, preferências, anotações</div></div>
+          </div>
+          <div class="dropdown-item">
+            <div class="tile"><svg width="18" height="18"><use href="#i-dollar"/></svg></div>
+            <div><div class="t"><span class="title">Financeiro</span></div><div class="desc">Fluxo de caixa e comissões em um só lugar</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link">Agente IA <svg class="chev"><use href="#i-chevron-down"/></svg><span class="underline"></span></a>
+        <div class="dropdown">
+          <div class="dropdown-item">
+            <div class="tile"><svg width="18" height="18"><use href="#i-message"/></svg></div>
+            <div><div class="t"><span class="title">WhatsApp Integrado</span><span class="pill pill-popular">Novo</span></div><div class="desc">Atendimento automático no seu tom</div></div>
+          </div>
+          <div class="dropdown-item">
+            <div class="tile"><svg width="18" height="18"><use href="#i-brain"/></svg></div>
+            <div><div class="t"><span class="title">IA que Aprende</span></div><div class="desc">Recomendações baseadas no seu fluxo</div></div>
+          </div>
+        </div>
+      </div>
+      <a class="nav-link" href="#pricing">Planos<span class="underline"></span></a>
+      <a class="nav-link" href="#about">Sobre nós<span class="underline"></span></a>
+    </nav>
+    <div class="header-ctas">
+      <button class="btn btn-outline"><svg width="14" height="14"><use href="#i-login"/></svg> Entrar</button>
+      <button class="btn btn-primary">Comece grátis <svg width="14" height="14"><use href="#i-arrow-right"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="dot-pattern"></div>
+  <div class="blob accent" style="width:480px;height:480px;top:-120px;right:-80px"></div>
+  <div class="blob sage" style="width:420px;height:420px;bottom:-100px;left:-60px;animation-delay:-4s"></div>
+  <div class="container hero-grid">
+    <div class="fade-up">
+      <span class="eyebrow"><svg width="12" height="12"><use href="#i-sparkles"/></svg> Novidade — Agente IA no WhatsApp</span>
+      <h1>Transforme seu negócio <span class="gradient-line">em um império digital</span></h1>
+      <p class="subtitle">Gestão completa + site personalizado + agente de IA no WhatsApp. Tudo em uma única plataforma para você focar no que importa: seus clientes.</p>
+      <div class="cta-row">
+        <button class="btn btn-primary">Comece grátis por 14 dias <svg width="14" height="14"><use href="#i-arrow-right"/></svg></button>
+        <button class="btn btn-outline">Agende uma demonstração</button>
+      </div>
+      <div class="proof">
+        <div class="proof-item"><svg><use href="#i-check"/></svg> 14 dias grátis</div>
+        <div class="proof-item"><svg><use href="#i-shield"/></svg> LGPD 100% Compliance</div>
+        <div class="proof-item"><svg><use href="#i-check"/></svg> 99.9% uptime</div>
+      </div>
+    </div>
+    <div class="mockup-cluster fade-up" style="animation-delay:.2s">
+      <div class="mockup left"><img src="../../assets/mockup-white.png" alt=""></div>
+      <div class="mockup center"><img src="../../assets/mockup-white1.png" alt=""></div>
+      <div class="mockup right"><img src="../../assets/mockup-white.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- Features (light) -->
+<section class="section-light features" id="features">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">Plataforma completa</span>
+      <h2>Tudo que seu salão precisa <small>para crescer sem complicação</small></h2>
+      <p>Da primeira mensagem no WhatsApp ao pós-atendimento, a Bellory cuida de cada etapa — para você focar nos seus clientes.</p>
+    </div>
+    <div class="grid-3">
+      <div class="feature-card">
+        <div class="icon-tile"><svg width="22" height="22"><use href="#i-calendar"/></svg></div>
+        <h3>Agenda Inteligente</h3>
+        <p>Agendamento 24/7 que aprende com seu fluxo, evita conflitos e lembra o cliente automaticamente.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-tile"><svg width="22" height="22"><use href="#i-users"/></svg></div>
+        <h3>CRM de Clientes</h3>
+        <p>Histórico, preferências e anotações na palma da mão — atendimento pessoal, do básico ao VIP.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-tile"><svg width="22" height="22"><use href="#i-dollar"/></svg></div>
+        <h3>Financeiro Claro</h3>
+        <p>Fluxo de caixa, comissões e relatórios em tempo real. Saiba exatamente quanto seu negócio rende.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-tile"><svg width="22" height="22"><use href="#i-globe"/></svg></div>
+        <h3>Site Personalizado</h3>
+        <p>Sua marca online em minutos. Reservas diretas pelo seu site, sem depender de redes sociais.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-tile"><svg width="22" height="22"><use href="#i-scissors"/></svg></div>
+        <h3>Para Cada Especialidade</h3>
+        <p>Salão, barbearia, clínica, nail designer, spa ou estúdio — a Bellory se adapta ao seu serviço.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-tile"><svg width="22" height="22"><use href="#i-chart"/></svg></div>
+        <h3>Relatórios que decidem</h3>
+        <p>Entenda o que funciona e o que mudar. Dashboards simples, insights diretos ao ponto.</p>
+      </div>
+    </div>
+    <div class="feature-check-row">
+      <span><svg><use href="#i-check"/></svg> Sem setup técnico</span>
+      <span><svg><use href="#i-check"/></svg> Migração gratuita</span>
+      <span><svg><use href="#i-check"/></svg> Suporte humano em português</span>
+    </div>
+  </div>
+</section>
+
+<!-- Dark IA section -->
+<section class="section-dark" id="ai">
+  <div class="dot-pattern"></div>
+  <div class="blob accent" style="width:500px;height:500px;top:-120px;left:-100px"></div>
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow" style="color:var(--accent);background:rgba(219,111,87,0.15);border-color:rgba(219,111,87,0.3)"><svg width="12" height="12"><use href="#i-sparkles"/></svg> Exclusivo Bellory</span>
+      <h2 style="color:white">Um agente de IA que trabalha <br>no WhatsApp por você</h2>
+      <p>Ele responde, confirma agendamentos, reagenda e sugere horários livres — no tom da sua marca, 24 horas por dia.</p>
+    </div>
+    <div class="grid-3">
+      <div class="feature-card dark">
+        <div class="icon-tile"><svg width="22" height="22"><use href="#i-message"/></svg></div>
+        <h3>Conversas naturais</h3>
+        <p>Seu cliente fala como sempre falou. A IA entende e responde como se fosse você.</p>
+      </div>
+      <div class="feature-card dark">
+        <div class="icon-tile"><svg width="22" height="22"><use href="#i-brain"/></svg></div>
+        <h3>Aprende seu tom</h3>
+        <p>Configure uma vez. A IA adapta vocabulário, emojis e ritmo ao estilo do seu negócio.</p>
+      </div>
+      <div class="feature-card dark">
+        <div class="icon-tile"><svg width="22" height="22"><use href="#i-bot"/></svg></div>
+        <h3>Sempre disponível</h3>
+        <p>Noites, finais de semana, feriados. Seu cliente nunca fica sem resposta.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Comparison (light) -->
+<section class="section-light" id="compare">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">Por que Bellory</span>
+      <h2>Uma plataforma que faz <br>o que três fazem separadas</h2>
+      <p>Sem integrações quebradas, sem planilhas à parte. Uma assinatura, uma interface, um time de suporte.</p>
+    </div>
+    <div class="compare">
+      <table>
+        <thead>
+          <tr><th>Recurso</th><th class="col-us">Bellory</th><th>Agenda avulsa</th><th>Site genérico</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Agenda inteligente 24/7</td><td class="col-us yes"><svg width="18" height="18" style="vertical-align:middle"><use href="#i-check"/></svg></td><td class="yes"><svg width="18" height="18"><use href="#i-check"/></svg></td><td class="no"><svg width="18" height="18"><use href="#i-x"/></svg></td></tr>
+          <tr><td>CRM completo de clientes</td><td class="col-us yes"><svg width="18" height="18"><use href="#i-check"/></svg></td><td class="no"><svg width="18" height="18"><use href="#i-x"/></svg></td><td class="no"><svg width="18" height="18"><use href="#i-x"/></svg></td></tr>
+          <tr><td>Agente IA no WhatsApp</td><td class="col-us yes"><svg width="18" height="18"><use href="#i-check"/></svg></td><td class="no"><svg width="18" height="18"><use href="#i-x"/></svg></td><td class="no"><svg width="18" height="18"><use href="#i-x"/></svg></td></tr>
+          <tr><td>Site personalizado da marca</td><td class="col-us yes"><svg width="18" height="18"><use href="#i-check"/></svg></td><td class="no"><svg width="18" height="18"><use href="#i-x"/></svg></td><td class="yes"><svg width="18" height="18"><use href="#i-check"/></svg></td></tr>
+          <tr><td>Financeiro e comissões</td><td class="col-us yes"><svg width="18" height="18"><use href="#i-check"/></svg></td><td class="no"><svg width="18" height="18"><use href="#i-x"/></svg></td><td class="no"><svg width="18" height="18"><use href="#i-x"/></svg></td></tr>
+          <tr><td>Suporte humano em português</td><td class="col-us yes"><svg width="18" height="18"><use href="#i-check"/></svg></td><td>Limitado</td><td>Chat genérico</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing (muted) -->
+<section class="section-muted" id="pricing">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">Planos</span>
+      <h2>Preço justo, sem surpresas</h2>
+      <p>Comece grátis por 14 dias. Cancele quando quiser. Sem fidelidade.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="tier-name">Básico</div>
+        <div class="price">R$ 79<small> /mês</small></div>
+        <p style="font-size:13px;color:var(--fg-2);margin:0">Ideal para profissionais autônomos começando agora.</p>
+        <ul>
+          <li><svg><use href="#i-check"/></svg> Agenda online ilimitada</li>
+          <li><svg><use href="#i-check"/></svg> CRM de clientes</li>
+          <li><svg><use href="#i-check"/></svg> Relatórios básicos</li>
+          <li><svg><use href="#i-check"/></svg> Lembretes por WhatsApp</li>
+        </ul>
+        <button class="btn btn-outline" style="margin-top:auto;justify-content:center">Começar grátis</button>
+      </div>
+      <div class="price-card highlight">
+        <span class="popular-tag">Popular</span>
+        <div class="tier-name">Profissional</div>
+        <div class="price">R$ 179<small> /mês</small></div>
+        <p style="font-size:13px;color:var(--fg-on-dark-3);margin:0">Para salões e barbearias em crescimento.</p>
+        <ul>
+          <li><svg><use href="#i-check"/></svg> Tudo do Básico</li>
+          <li><svg><use href="#i-check"/></svg> Agente IA no WhatsApp</li>
+          <li><svg><use href="#i-check"/></svg> Site personalizado</li>
+          <li><svg><use href="#i-check"/></svg> Financeiro + comissões</li>
+          <li><svg><use href="#i-check"/></svg> Até 5 profissionais</li>
+        </ul>
+        <button class="btn btn-primary" style="margin-top:auto;justify-content:center">Assinar agora</button>
+      </div>
+      <div class="price-card">
+        <div class="tier-name">Premium</div>
+        <div class="price">R$ 349<small> /mês</small></div>
+        <p style="font-size:13px;color:var(--fg-2);margin:0">Para grupos e redes com múltiplas unidades.</p>
+        <ul>
+          <li><svg><use href="#i-check"/></svg> Tudo do Profissional</li>
+          <li><svg><use href="#i-check"/></svg> Profissionais ilimitados</li>
+          <li><svg><use href="#i-check"/></svg> Multi-unidade</li>
+          <li><svg><use href="#i-check"/></svg> API + integrações</li>
+          <li><svg><use href="#i-check"/></svg> Gerente de conta dedicado</li>
+        </ul>
+        <button class="btn btn-outline" style="margin-top:auto;justify-content:center">Falar com vendas</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials (light) -->
+<section class="section-light" id="about">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">Quem já usa</span>
+      <h2>Mais de 2.400 negócios<br>transformaram a rotina com a Bellory</h2>
+    </div>
+    <div class="testimonial-grid">
+      <div class="testimonial-card">
+        <div class="stars"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div>
+        <p class="quote">"A agenda se tornou minha melhor recepcionista. Reduzi 90% das faltas com os lembretes automáticos."</p>
+        <div class="who"><img src="../../assets/owner-salon.jpg" alt=""><div><div class="name">Marina Ferraz</div><div class="role">Salão Boutique · São Paulo</div></div></div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div>
+        <p class="quote">"O agente de IA responde os clientes como se fosse eu. Consegui dobrar os agendamentos sem contratar ninguém."</p>
+        <div class="who"><img src="../../assets/owner-barbershop.jpg" alt=""><div><div class="name">Rafael Costa</div><div class="role">Barbearia Nova Era · Belo Horizonte</div></div></div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div>
+        <p class="quote">"Meu financeiro era uma bagunça de planilhas. Em um mês com a Bellory, já sei exatamente quanto cada serviço rende."</p>
+        <div class="who"><img src="../../assets/owner-clinic.jpg" alt=""><div><div class="name">Dra. Beatriz Lopes</div><div class="role">Clínica Estética Aura · Curitiba</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ (muted) -->
+<section class="section-muted" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">Dúvidas</span>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Como funcionam os 14 dias grátis?<svg class="chev"><use href="#i-chevron-down"/></svg></summary>
+        <p>Você cria sua conta em 2 minutos, sem cartão. Testa todos os recursos do plano Profissional, incluindo o agente de IA. Se não quiser continuar, não cobramos nada — sua conta é encerrada automaticamente.</p>
+      </details>
+      <details>
+        <summary>Preciso instalar alguma coisa?<svg class="chev"><use href="#i-chevron-down"/></svg></summary>
+        <p>Não. Bellory roda no navegador e no celular. Seu site, sua agenda e o agente de IA funcionam direto na nuvem — é só acessar e começar.</p>
+      </details>
+      <details>
+        <summary>Meu WhatsApp continua sendo meu?<svg class="chev"><use href="#i-chevron-down"/></svg></summary>
+        <p>Sim. Você continua com seu número e seu histórico. O agente de IA trabalha em cima do WhatsApp Business oficial, com suas configurações e seu tom.</p>
+      </details>
+      <details>
+        <summary>E se eu já uso outro sistema?<svg class="chev"><use href="#i-chevron-down"/></svg></summary>
+        <p>Nosso time de migração traz seus clientes, agenda e histórico sem custo. Demora em média 48 horas e você não perde nenhum agendamento.</p>
+      </details>
+      <details>
+        <summary>Posso cancelar quando quiser?<svg class="chev"><use href="#i-chevron-down"/></svg></summary>
+        <p>Sim, sem burocracia e sem multa. Você cancela pelo próprio painel e mantém acesso até o final do ciclo já pago.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA block -->
+<section class="section-light" style="padding:40px 0 96px">
+  <div class="container">
+    <div class="cta-block">
+      <div class="dot-pattern" style="opacity:0.06"></div>
+      <div class="blob accent" style="width:400px;height:400px;top:-100px;right:-50px"></div>
+      <div class="blob sage" style="width:380px;height:380px;bottom:-100px;left:-50px"></div>
+      <div style="position:relative">
+        <span class="eyebrow" style="color:var(--accent);background:rgba(219,111,87,0.15);border-color:rgba(219,111,87,0.3)"><svg width="12" height="12"><use href="#i-sparkles"/></svg> Comece hoje</span>
+        <h2 style="font-family:var(--font-serif);font-weight:700;font-size:clamp(32px,4vw,48px);line-height:1.1;letter-spacing:-0.02em;margin:16px 0">Seu negócio merece<br>uma plataforma à altura.</h2>
+        <p>Junte-se a milhares de profissionais que deixaram de se afogar em mensagens e passaram a crescer com calma.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-primary">Comece grátis por 14 dias <svg width="14" height="14"><use href="#i-arrow-right"/></svg></button>
+          <button class="btn" style="background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.25)">Agende uma demonstração</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="#" style="margin-bottom:14px">
+          <img src="../../assets/bellory-logo.svg" alt="Bellory" style="filter:brightness(0) invert(1)">
+          <span class="wordmark">Bellory</span>
+        </a>
+        <p style="font-size:14px;color:var(--fg-on-dark-3);line-height:1.6;margin:14px 0 0;max-width:340px">Gestão completa para salões, barbearias, clínicas e estúdios que querem crescer no digital.</p>
+
+        <h4 style="margin-top:28px">Fique por dentro das novidades</h4>
+        <p style="font-size:13px;color:var(--fg-on-dark-3);margin:0 0 4px">Receba dicas de gestão, novidades do produto e ofertas exclusivas.</p>
+        <form class="newsletter" onsubmit="event.preventDefault()">
+          <input class="input" placeholder="Seu melhor e-mail" type="email">
+          <button type="submit">Inscrever <svg width="14" height="14"><use href="#i-arrow-right"/></svg></button>
+        </form>
+      </div>
+      <div>
+        <h4>Produto</h4>
+        <ul>
+          <li><a>Funcionalidades</a></li>
+          <li><a>Agente IA</a></li>
+          <li><a>Planos</a></li>
+          <li><a>Migração</a></li>
+          <li><a>Novidades</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Empresa</h4>
+        <ul>
+          <li><a>Sobre nós</a></li>
+          <li><a>Blog</a></li>
+          <li><a>Carreiras</a></li>
+          <li><a>Imprensa</a></li>
+          <li><a>Contato</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Suporte</h4>
+        <ul>
+          <li><a>Central de ajuda</a></li>
+          <li><a>Status</a></li>
+          <li><a>Termos</a></li>
+          <li><a>Privacidade · LGPD</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Bellory. Feito com <svg width="14" height="14" style="color:var(--accent);vertical-align:middle"><use href="#i-heart"/></svg> no Brasil.</span>
+      <div class="socials">
+        <a><svg><use href="#i-instagram"/></svg></a>
+        <a><svg><use href="#i-facebook"/></svg></a>
+        <a><svg><use href="#i-linkedin"/></svg></a>
+        <a><svg><use href="#i-mail"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

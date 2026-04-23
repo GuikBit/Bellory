@@ -1,26 +1,29 @@
 import { useState, useEffect } from "react"
 import { Controller } from "react-hook-form"
-import { MapPin, Search, Loader2, Check, Map as MapIcon, X } from "lucide-react"
-import { InputMask } from "primereact/inputmask"
-import { InputText } from "primereact/inputtext"
-import { Button } from "primereact/button"
+import { MapPin, Loader2, Check, Map as MapIcon, X, Info } from "lucide-react"
 import { Dialog } from "primereact/dialog"
 import { motion, AnimatePresence } from "framer-motion"
 import { useTheme } from "@/contexts/HeroThemeContext"
-import { cadastroThemeConfig } from "@/app/cadastro/page"
+import { FormInput, FormButton } from "@/components/form"
 import dynamic from "next/dynamic"
 
-  // Importa o MapaCaptura dinamicamente para evitar erro de SSR
+// Importa o MapaCaptura dinamicamente para evitar erro de SSR
 const MapaCaptura = dynamic(() => import("@/components/MapaCaptura"), {
   ssr: false,
   loading: () => (
-    <div className="h-64 w-full bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse rounded-xl flex items-center justify-center">
-      <div className="flex items-center gap-2 text-gray-500">
-        <Loader2 className="w-5 h-5 animate-spin" />
-        <span>Carregando Mapa...</span>
+    <div
+      className="h-64 w-full rounded-2xl flex items-center justify-center animate-pulse"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(219,111,87,0.08) 0%, rgba(79,111,100,0.06) 100%)",
+      }}
+    >
+      <div className="flex items-center gap-2 text-[#5a4a42]/65">
+        <Loader2 className="w-5 h-5 animate-spin text-[#db6f57]" />
+        <span className="text-sm font-medium">Carregando mapa...</span>
       </div>
     </div>
-  )
+  ),
 })
 
 interface AddressFormProps {
@@ -37,8 +40,6 @@ export const AddressForm = ({ control, errors, setValue, watch }: AddressFormPro
   const [cepError, setCepError] = useState("")
   const [showMapModal, setShowMapModal] = useState(false)
   const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null)
-
-  const theme = isDark ? cadastroThemeConfig.dark : cadastroThemeConfig.light
 
   const cepValue = watch("cep")
   const latitude = watch("latitude")
@@ -140,333 +141,294 @@ export const AddressForm = ({ control, errors, setValue, watch }: AddressFormPro
     }
   }
 
-  // Cores dinâmicas baseadas no tema
-  const colors = {
-    // Backgrounds
-    sectionHeaderBg: isDark ? "bg-[#E07A62]/10" : "bg-[#4f6f64]/10",
-    sectionIconBg: isDark ? "bg-[#E07A62]/20" : "bg-[#4f6f64]/10",
-    tipBg: isDark ? "bg-[#E07A62]/10 border-[#E07A62]/20" : "bg-[#db6f57]/10 border-[#db6f57]/20",
-    successBg: isDark ? "bg-[#6B8F82]/10 border-[#6B8F82]/20" : "bg-[#4f6f64]/10 border-[#4f6f64]/20",
+  const hasCoords = latitude !== undefined && latitude !== null && longitude !== undefined && longitude !== null
+  const showMapBlock = cepFound && !!numero && hasCoords
 
-    // Borders
-    sectionBorder: isDark ? "border-[#2D2925]" : "border-[#d8ccc4]",
-    inputBorder: isDark ? "border-[#2D2925]" : "border-[#d8ccc4]",
-    inputFocusBorder: isDark ? "focus:border-[#E07A62]" : "focus:border-[#4f6f64]",
-    inputErrorBorder: isDark ? "border-[#E07A62]" : "border-[#d15847]",
-    inputSuccessBorder: isDark ? "border-[#6B8F82]" : "border-[#4f6f64]",
-
-    // Text
-    headingText: isDark ? "text-[#F5F0EB]" : "text-[#2a2420]",
-    subtitleText: isDark ? "text-[#B8AEA4]" : "text-[#4f6f64]",
-    labelText: isDark ? "text-[#F5F0EB]" : "text-[#2a2420]",
-    errorText: isDark ? "text-[#E07A62]" : "text-[#d15847]",
-    tipText: isDark ? "text-[#E07A62]" : "text-[#6b2f2a]",
-    successText: isDark ? "text-[#6B8F82]" : "text-[#4f6f64]",
-    requiredMark: isDark ? "text-[#E07A62]" : "text-[#d15847]",
-
-    // Icons
-    iconColor: isDark ? "text-[#E07A62]" : "text-[#4f6f64]",
-    searchIconColor: isDark ? "text-[#7A716A]" : "text-[#9ca3af]",
-
-    // Input backgrounds
-    inputBg: isDark ? "bg-[#1A1715]" : "bg-white",
-    disabledBg: isDark ? "bg-[#1A1715]/60" : "bg-gray-50",
-
-    // Buttons
-    primaryBtn: "bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white",
-  }
-
-  // Classes de input dinâmicas
-  const getInputClasses = (hasError: boolean, isSuccess: boolean = false, disabled: boolean = false) => {
-    const baseClasses = `w-full px-4 py-3 border-2 rounded-xl transition-all ${colors.inputBg} ${colors.headingText}`
-
-    if (disabled) {
-      return `${baseClasses} ${colors.disabledBg} cursor-not-allowed opacity-60 ${colors.inputBorder}`
-    }
-
-    if (hasError) {
-      return `${baseClasses} ${colors.inputErrorBorder}`
-    }
-
-    if (isSuccess) {
-      return `${baseClasses} ${colors.inputSuccessBorder}`
-    }
-
-    return `${baseClasses} ${colors.inputBorder} ${colors.inputFocusBorder}`
-  }
+  // Tokens auxiliares apenas para o cabeçalho/blocos auxiliares
+  const headingClass = isDark ? "text-[#F5F0EB]" : "text-[#2a2420]"
+  const subtitleClass = isDark ? "text-[#B8AEA4]" : "text-[#6b5d57]"
+  const eyebrowDash = "h-px w-8 bg-[#db6f57] opacity-50"
+  const eyebrowText = "text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]"
 
   return (
-    <div className="space-y-6">
-      <div className={`flex items-center gap-3 mb-6 pb-4 border-b ${colors.sectionBorder}`}>
-        <div className={`w-12 h-12 rounded-xl ${colors.sectionIconBg} flex items-center justify-center`}>
-          <MapPin className={`w-6 h-6 ${colors.iconColor}`} />
+    <div className="space-y-8">
+      {/* ─── Section header (sem border-b, alinhado ao Step 0) ─── */}
+      <div className="flex items-center gap-3 mb-2 transition-colors duration-300">
+        <div className="w-12 h-12 rounded-xl bg-[#4f6f64]/10 flex items-center justify-center">
+          <MapPin className={`w-6 h-6 ${isDark ? "text-[#6B8F82]" : "text-[#4f6f64]"}`} />
         </div>
         <div>
-          <h3 className={`text-xl font-bold ${colors.headingText}`}>Localização</h3>
-          <p className={`text-sm ${colors.subtitleText}`}>Endereço do estabelecimento</p>
+          <h3 className={`font-serif text-xl md:text-2xl font-bold ${headingClass} transition-colors duration-300 leading-tight`}>
+            Localização
+          </h3>
+          <p className={`text-sm ${subtitleClass} transition-colors duration-300 mt-0.5`}>
+            Onde fica seu negócio.
+          </p>
         </div>
       </div>
 
-      {/* CEP com busca automática */}
-      <div className="space-y-4">
-        <div>
-          <label className={`block text-sm font-semibold ${colors.labelText} mb-2`}>
-            CEP <span className={colors.requiredMark}>*</span>
-          </label>
-          <div className="relative">
-            <Controller
-              name="cep"
-              control={control}
-              rules={{ required: "CEP é obrigatório" }}
-              render={({ field }) => (
-                <InputMask
-                  {...field}
-                  mask="99999-999"
-                  placeholder="00000-000"
-                  className={getInputClasses(errors.cep || cepError, cepFound)}
-                  style={{ paddingRight: '3rem' }}
-                />
-              )}
+      {/* ─── Bloco 1: CEP do endereço ─── */}
+      <div className="space-y-5">
+        <div className="flex items-center gap-2">
+          <span aria-hidden className={eyebrowDash} />
+          <span className={eyebrowText}>CEP do endereço</span>
+        </div>
+
+        <Controller
+          name="cep"
+          control={control}
+          rules={{ required: "CEP é obrigatório" }}
+          render={({ field }) => (
+            <FormInput
+              label="CEP"
+              mask="99999-999"
+              placeholder="00000-000"
+              name={field.name}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              required
+              isDark={isDark}
+              autoFocus
+              loading={isSearching}
+              loadingMessage="Buscando informações do CEP..."
+              success={cepFound}
+              successMessage={cepFound ? "Endereço encontrado · campos preenchidos automaticamente" : undefined}
+              error={cepError ? cepError : (errors.cep && !cepFound ? errors.cep.message : undefined)}
+              helperText={!cepFound && !isSearching && !cepError ? "Digite o CEP e a gente preenche o resto pra você." : undefined}
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              {isSearching ? (
-                <Loader2 className={`w-5 h-5 ${colors.iconColor} animate-spin`} />
-              ) : cepFound ? (
-                <Check className={`w-5 h-5 ${colors.successText}`} />
-              ) : (
-                <Search className={`w-5 h-5 ${colors.searchIconColor}`} />
-              )}
-            </div>
-          </div>
-          {(errors.cep || cepError) && (
-            <small className={`${colors.errorText} text-sm mt-1 block`}>
-              {errors.cep?.message || cepError}
-            </small>
           )}
-          {isSearching && (
-            <small className={`${colors.subtitleText} text-sm mt-1 block flex items-center gap-1`}>
-              <Loader2 className="w-3 h-3 animate-spin" />
-              Buscando informações do CEP...
-            </small>
-          )}
-        </div>
-
-        {/* Info sobre CEP */}
-        <AnimatePresence>
-          {!cepFound && !isSearching && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className={`${colors.tipBg} border rounded-xl p-4`}
-            >
-              <p className={`text-sm ${colors.tipText} flex items-center gap-2`}>
-                <Search className="w-4 h-4" />
-                <span>
-                  <strong>Dica:</strong> Digite o CEP e os campos serão preenchidos automaticamente
-                </span>
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        />
       </div>
 
-      {/* Campos de endereço (bloqueados até buscar CEP) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="md:col-span-2">
-          <label className={`block text-sm font-semibold ${colors.labelText} mb-2`}>
-            Rua <span className={colors.requiredMark}>*</span>
-          </label>
-          <Controller
-            name="rua"
-            control={control}
-            rules={{ required: "Rua é obrigatória" }}
-            render={({ field }) => (
-              <InputText
-                {...field}
-                placeholder={cepFound ? "Nome da rua" : "Digite o CEP primeiro"}
-                disabled={!cepFound}
-                className={getInputClasses(errors.rua, false, !cepFound)}
-              />
-            )}
-          />
-          {errors.rua && <small className={`${colors.errorText} text-sm mt-1 block`}>{errors.rua.message}</small>}
-        </div>
+      {/* ─── Bloco 2: Endereço (revela quando o CEP é encontrado) ─── */}
+      <AnimatePresence initial={false}>
+        {cepFound && (
+          <motion.div
+            key="endereco-block"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-5">
+              <div className="flex items-center gap-2">
+                <span aria-hidden className={eyebrowDash} />
+                <span className={eyebrowText}>Endereço</span>
+              </div>
 
-        <div>
-          <label className={`block text-sm font-semibold ${colors.labelText} mb-2`}>
-            Número <span className={colors.requiredMark}>*</span>
-          </label>
-          <Controller
-            name="numero"
-            control={control}
-            rules={{ required: "Número é obrigatório" }}
-            render={({ field }) => (
-              <InputText
-                {...field}
-                placeholder={cepFound ? "000" : "Digite o CEP primeiro"}
-                disabled={!cepFound}
-                className={getInputClasses(errors.numero, false, !cepFound)}
-              />
-            )}
-          />
-          {errors.numero && <small className={`${colors.errorText} text-sm mt-1 block`}>{errors.numero.message}</small>}
-        </div>
-
-        <div>
-          <label className={`block text-sm font-semibold ${colors.labelText} mb-2`}>Complemento</label>
-          <Controller
-            name="complemento"
-            control={control}
-            render={({ field }) => (
-              <InputText
-                {...field}
-                placeholder={cepFound ? "Opcional" : "Digite o CEP primeiro"}
-                disabled={!cepFound}
-                className={getInputClasses(false, false, !cepFound)}
-              />
-            )}
-          />
-        </div>
-
-        <div>
-          <label className={`block text-sm font-semibold ${colors.labelText} mb-2`}>
-            Bairro <span className={colors.requiredMark}>*</span>
-          </label>
-          <Controller
-            name="bairro"
-            control={control}
-            rules={{ required: "Bairro é obrigatório" }}
-            render={({ field }) => (
-              <InputText
-                {...field}
-                placeholder={cepFound ? "Nome do bairro" : "Digite o CEP primeiro"}
-                disabled={!cepFound}
-                className={getInputClasses(errors.bairro, false, !cepFound)}
-              />
-            )}
-          />
-          {errors.bairro && <small className={`${colors.errorText} text-sm mt-1 block`}>{errors.bairro.message}</small>}
-        </div>
-
-        <div>
-          <label className={`block text-sm font-semibold ${colors.labelText} mb-2`}>
-            Cidade <span className={colors.requiredMark}>*</span>
-          </label>
-          <Controller
-            name="cidade"
-            control={control}
-            rules={{ required: "Cidade é obrigatória" }}
-            render={({ field }) => (
-              <InputText
-                {...field}
-                placeholder={cepFound ? "Nome da cidade" : "Digite o CEP primeiro"}
-                disabled={!cepFound}
-                className={getInputClasses(errors.cidade, false, !cepFound)}
-              />
-            )}
-          />
-          {errors.cidade && <small className={`${colors.errorText} text-sm mt-1 block`}>{errors.cidade.message}</small>}
-        </div>
-
-        <div>
-          <label className={`block text-sm font-semibold ${colors.labelText} mb-2`}>
-            UF <span className={colors.requiredMark}>*</span>
-          </label>
-          <Controller
-            name="estado"
-            control={control}
-            rules={{ required: "Estado é obrigatório" }}
-            render={({ field }) => (
-              <InputText
-                {...field}
-                placeholder={cepFound ? "Estado" : "Digite o CEP primeiro"}
-                disabled={!cepFound}
-                maxLength={2}
-                className={`${getInputClasses(errors.estado, false, !cepFound)} uppercase`}
-              />
-            )}
-          />
-          {errors.estado && <small className={`${colors.errorText} text-sm mt-1 block`}>{errors.estado.message}</small>}
-        </div>
-      </div>
-
-      {/* Coordenadas e Mapa */}
-      {cepFound && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`space-y-4 pt-6 border-t ${colors.sectionBorder}`}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className={`text-lg font-bold ${colors.headingText}`}>Localização Exata</h4>
-              <p className={`text-sm ${colors.subtitleText}`}>Ajuste a localização no mapa se necessário</p>
-            </div>
-            <Button
-              type="button"
-              onClick={() => setShowMapModal(true)}
-              className={`${colors.primaryBtn} ${!numero && 'opacity-60'} border-0 px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-all`}
-              disabled={!numero?true:false}
-            >
-              <MapIcon className="w-4 h-4 mr-2" />
-              Abrir Mapa
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className={`block text-sm font-semibold ${colors.labelText} mb-2`}>Latitude</label>
-              <Controller
-                name="latitude"
-                control={control}
-                render={({ field }) => (
-                  <InputText
-                    {...field}
-                    value={field.value?.toFixed(6) || ""}
-                    disabled
-                    className={`${getInputClasses(false, false, true)}`}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="md:col-span-2">
+                  <Controller
+                    name="rua"
+                    control={control}
+                    rules={{ required: "Rua é obrigatória" }}
+                    render={({ field }) => (
+                      <FormInput
+                        label="Rua"
+                        placeholder="Nome da rua"
+                        name={field.name}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        required
+                        isDark={isDark}
+                        error={errors.rua?.message}
+                      />
+                    )}
                   />
-                )}
-              />
-            </div>
+                </div>
 
-            <div>
-              <label className={`block text-sm font-semibold ${colors.labelText} mb-2`}>Longitude</label>
-              <Controller
-                name="longitude"
-                control={control}
-                render={({ field }) => (
-                  <InputText
-                    {...field}
-                    value={field.value?.toFixed(6) || ""}
-                    disabled
-                    className={`${getInputClasses(false, false, true)}`}
-                  />
-                )}
-              />
-            </div>
-          </div>
+                <Controller
+                  name="numero"
+                  control={control}
+                  rules={{ required: "Número é obrigatório" }}
+                  render={({ field }) => (
+                    <FormInput
+                      label="Número"
+                      placeholder="000"
+                      name={field.name}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      required
+                      isDark={isDark}
+                      error={errors.numero?.message}
+                    />
+                  )}
+                />
 
-          {latitude && longitude && (
-            <div className={`${colors.successBg} border rounded-xl p-4`}>
-              <p className={`text-sm ${colors.headingText} flex items-center gap-2`}>
-                <Check className={`w-4 h-4 ${colors.successText}`} />
-                <span>
-                  Localização registrada com sucesso! Você pode ajustar no mapa se necessário.
-                </span>
+                <Controller
+                  name="complemento"
+                  control={control}
+                  render={({ field }) => (
+                    <FormInput
+                      label="Complemento"
+                      placeholder="Sala, andar, referência…"
+                      name={field.name}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      isDark={isDark}
+                      helperText="Opcional"
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="bairro"
+                  control={control}
+                  rules={{ required: "Bairro é obrigatório" }}
+                  render={({ field }) => (
+                    <FormInput
+                      label="Bairro"
+                      placeholder="Nome do bairro"
+                      name={field.name}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      required
+                      isDark={isDark}
+                      error={errors.bairro?.message}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="cidade"
+                  control={control}
+                  rules={{ required: "Cidade é obrigatória" }}
+                  render={({ field }) => (
+                    <FormInput
+                      label="Cidade"
+                      placeholder="Nome da cidade"
+                      name={field.name}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      required
+                      isDark={isDark}
+                      error={errors.cidade?.message}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="estado"
+                  control={control}
+                  rules={{ required: "Estado é obrigatório" }}
+                  render={({ field }) => (
+                    <FormInput
+                      label="UF"
+                      placeholder="SP"
+                      name={field.name}
+                      value={field.value}
+                      onChange={(e: any) => field.onChange((e?.target?.value ?? "").toUpperCase())}
+                      onBlur={field.onBlur}
+                      required
+                      isDark={isDark}
+                      maxLength={2}
+                      inputClassName="uppercase"
+                      error={errors.estado?.message}
+                    />
+                  )}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── Bloco 3: Confirme no mapa (revela quando há número + coordenadas) ─── */}
+      <AnimatePresence initial={false}>
+        {showMapBlock && (
+          <motion.div
+            key="mapa-block"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-5">
+              <div className="flex items-center gap-2">
+                <span aria-hidden className={eyebrowDash} />
+                <span className={eyebrowText}>Confirme no mapa</span>
+              </div>
+
+              <p className={`text-sm ${subtitleClass} -mt-1`}>
+                Confira se o pino está no lugar certo. Se não, clique em Ajustar.
               </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <Controller
+                  name="latitude"
+                  control={control}
+                  render={({ field }) => (
+                    <FormInput
+                      label="Latitude"
+                      name={field.name}
+                      value={field.value !== undefined && field.value !== null && field.value !== "" ? Number(field.value).toFixed(6) : ""}
+                      onChange={() => { /* read-only display */ }}
+                      disabled
+                      isDark={isDark}
+                      showStatusIcon={false}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="longitude"
+                  control={control}
+                  render={({ field }) => (
+                    <FormInput
+                      label="Longitude"
+                      name={field.name}
+                      value={field.value !== undefined && field.value !== null && field.value !== "" ? Number(field.value).toFixed(6) : ""}
+                      onChange={() => { /* read-only display */ }}
+                      disabled
+                      isDark={isDark}
+                      showStatusIcon={false}
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div
+                  className={`flex items-start gap-2 text-[12px] leading-snug ${
+                    isDark ? "text-[#7AB8A4]" : "text-[#5a7a6e]"
+                  }`}
+                >
+                  <Check className="w-4 h-4 mt-px flex-shrink-0" />
+                  <span>Localização registrada · você pode ajustar se precisar.</span>
+                </div>
+
+                <FormButton
+                  type="button"
+                  label="Ajustar localização"
+                  variant="primary"
+                  size="sm"
+                  icon={MapPin}
+                  iconPosition="left"
+                  isDark={isDark}
+                  onClick={() => setShowMapModal(true)}
+                />
+              </div>
             </div>
-          )}
-        </motion.div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Modal do Mapa */}
       <InteractiveMapModal
         visible={showMapModal}
         onHide={() => setShowMapModal(false)}
         currentLocation={currentLocation}
-        endereco={watch("rua") + ", " + watch("numero") + " - " + watch("bairro") + ", " + watch("cidade") + " - " + watch("estado")}
+        endereco={
+          watch("rua") + ", " + watch("numero") + " - " + watch("bairro") + ", " + watch("cidade") + " - " + watch("estado")
+        }
         onLocationSelect={(lat, lng) => {
           setValue("latitude", lat)
           setValue("longitude", lng)
@@ -491,233 +453,260 @@ interface MapModalProps {
 
 const InteractiveMapModal = ({ visible, onHide, currentLocation, endereco, onLocationSelect, isDark }: MapModalProps) => {
   const [selectedLocation, setSelectedLocation] = useState(currentLocation)
-  const [isSearchingAddress, setIsSearchingAddress] = useState(false)
 
   useEffect(() => {
     setSelectedLocation(currentLocation)
   }, [currentLocation])
 
-  // Cores dinâmicas baseadas no tema
-  const colors = {
-    // Modal background
-    modalBg: isDark ? "bg-[#1A1715]" : "bg-white",
-    headerBg: isDark ? "bg-[#1A1715]" : "bg-white",
-    contentBg: isDark ? "bg-[#0D0B0A]" : "bg-gray-50",
+  // ─── Tokens alinhados com o Card do cadastro ───
+  const cardBg = isDark ? "rgba(26,23,21,0.95)" : "rgba(255,255,255,0.95)"
+  const cardBorderColor = isDark ? "#3d2e28" : "#db6f5728"
+  const cardShadow = isDark
+    ? "0 30px 60px -20px rgba(0,0,0,0.55), 0 12px 24px -12px rgba(0,0,0,0.35)"
+    : "0 30px 60px -20px rgba(42,36,32,0.18), 0 12px 24px -12px rgba(42,36,32,0.10)"
+  const headingText = isDark ? "text-[#F5F0EB]" : "text-[#2a2420]"
+  const subtitleText = isDark ? "text-[#B8AEA4]" : "text-[#5a4a42]/65"
+  const closeColor = isDark ? "text-[#B8AEA4] hover:text-[#E07A62]" : "text-[#5a4a42]/55 hover:text-[#db6f57]"
+  const tipText = isDark ? "text-[#F5F0EB]" : "text-[#2a2420]"
 
-    // Borders
-    border: isDark ? "border-[#2D2925]" : "border-[#d8ccc4]",
-
-    // Text
-    headingText: isDark ? "text-[#F5F0EB]" : "text-[#2a2420]",
-    subtitleText: isDark ? "text-[#B8AEA4]" : "text-[#4f6f64]",
-    mutedText: isDark ? "text-[#7A716A]" : "text-[#6b5d57]",
-
-    // Icons
-    iconBg: "bg-gradient-to-br from-[#db6f57] to-[#c55a42]",
-    closeIconBg: isDark ? "bg-[#E07A62]/10" : "bg-[#db6f57]/20",
-    closeIconColor: isDark ? "text-[#E07A62]" : "text-[#db6f57]",
-
-    // Info boxes
-    infoBg: isDark ? "bg-[#E07A62]/10 border-[#E07A62]/20" : "bg-gradient-to-r from-[#db6f57]/10 to-[#c55a42]/10 border-[#db6f57]/20",
-    infoText: isDark ? "text-[#F5F0EB]" : "text-[#2a2420]",
-    tipBg: isDark ? "bg-[#E07A62]/10 border-[#E07A62]/20" : "bg-yellow-50 border-yellow-200",
-    tipText: isDark ? "text-[#E07A62]" : "text-yellow-800",
-
-    // Inputs
-    inputBg: isDark ? "bg-[#1A1715]" : "bg-white",
-    inputBorder: isDark ? "border-[#2D2925]" : "border-[#d8ccc4]",
-    inputFocus: isDark ? "focus:border-[#E07A62]" : "focus:border-[#db6f57]",
-    inputText: isDark ? "text-[#F5F0EB]" : "text-[#2a2420]",
-
-    // Buttons
-    primaryBtn: "bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white",
-    secondaryBtn: isDark
-      ? "bg-transparent text-[#B8AEA4] border-2 border-[#2D2925] hover:border-[#E07A62]"
-      : "bg-transparent text-[#4f6f64] border-2 border-[#d8ccc4] hover:border-[#4f6f64]",
-    googleBtn: "bg-gradient-to-r from-[#4285F4] to-[#34A853] text-white",
-    viewMapBtn: isDark
-      ? "bg-[#1A1715] text-[#B8AEA4] border-2 border-[#2D2925] hover:border-[#E07A62]"
-      : "bg-white text-[#4f6f64] border-2 border-[#d8ccc4] hover:border-[#4f6f64]",
-  }
-
-  const handleCoordinateChange = (type: 'lat' | 'lng', value: string) => {
+  const handleCoordinateChange = (type: "lat" | "lng", value: string) => {
     const numValue = parseFloat(value)
     if (!isNaN(numValue)) {
       setSelectedLocation((prev) => ({
-        lat: type === 'lat' ? numValue : prev?.lat || 0,
-        lng: type === 'lng' ? numValue : prev?.lng || 0,
+        lat: type === "lat" ? numValue : prev?.lat || 0,
+        lng: type === "lng" ? numValue : prev?.lng || 0,
       }))
     }
   }
 
-  // Handler para quando o mapa é clicado
   const handleMapClick = (lat: number, lng: number) => {
     setSelectedLocation({ lat, lng })
   }
-
-
 
   return (
     <Dialog
       modal
       visible={visible}
       onHide={onHide}
-      style={{ width: "90vw", maxWidth: "900px" }}
-      className={`${colors.modalBg} rounded-2xl`}
+      style={{ width: "90vw", maxWidth: "920px" }}
+      pt={{
+        mask: {
+          className: "!bg-[#2a2420]/55 !backdrop-blur-sm",
+        },
+        root: {
+          className: "!shadow-none !border-0 !bg-transparent",
+        },
+      }}
       content={() => (
-        <div className={`${colors.modalBg} rounded-2xl overflow-hidden`}>
-          {/* Header */}
-          <div className={`flex items-center justify-between gap-3 px-6 py-4 border-b ${colors.border}`}>
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl ${colors.iconBg} flex items-center justify-center`}>
-                <MapPin className="w-5 h-5 text-white" />
+        <div
+          className="relative rounded-3xl overflow-hidden border"
+          style={{
+            backgroundColor: cardBg,
+            borderColor: cardBorderColor,
+            boxShadow: cardShadow,
+            backdropFilter: "blur(16px)",
+          }}
+        >
+          {/* ─── Watermark serif decorativo ─── */}
+          <span
+            aria-hidden
+            className="absolute top-3 right-6 font-serif font-black leading-none select-none pointer-events-none z-0"
+            style={{
+              fontSize: "clamp(80px, 11vw, 140px)",
+              color: isDark ? "rgba(224,122,98,0.05)" : "rgba(219,111,87,0.06)",
+              letterSpacing: "-0.06em",
+            }}
+          >
+            GPS
+          </span>
+
+          {/* ─── Blob ambiente sutil ─── */}
+          <motion.div
+            aria-hidden
+            className="absolute -bottom-24 -left-20 w-[360px] h-[360px] rounded-full blur-3xl pointer-events-none z-0"
+            style={{
+              background:
+                "radial-gradient(ellipse, rgba(79,111,100,0.10), transparent 65%)",
+            }}
+            animate={{ scale: [1, 1.12, 1], opacity: [0.45, 0.7, 0.45] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          {/* ─── Header ─── */}
+          <div className="relative z-10 flex items-start justify-between gap-3 px-6 md:px-8 pt-6 md:pt-7">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-3">
+                <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                  Ajuste fino · GPS
+                </span>
               </div>
-              <div>
-                <h3 className={`text-lg font-bold ${colors.headingText}`}>Ajuste a Localização</h3>
-                <p className={`text-xs ${colors.subtitleText}`}>Clique no mapa para selecionar a posição exata</p>
-              </div>
+              <h3 className={`font-serif text-xl md:text-2xl font-bold ${headingText} leading-[1.08]`}>
+                Confirme a{" "}
+                <span
+                  className="bg-clip-text text-transparent"
+                  style={{
+                    backgroundImage: "linear-gradient(90deg, #db6f57 0%, #8b3d35 100%)",
+                  }}
+                >
+                  localização exata
+                </span>
+              </h3>
+              <p className={`text-[13px] ${subtitleText} mt-2 leading-relaxed max-w-md`}>
+                Clique no mapa, arraste pra explorar ou use a busca — o pino marca onde sua loja vai aparecer pros clientes.
+              </p>
             </div>
 
-            <div
-              className={`w-10 h-10 rounded-xl cursor-pointer ${colors.closeIconBg} flex items-center justify-center hover:scale-105 transition-all`}
+            <button
+              type="button"
               onClick={onHide}
+              className={`flex-shrink-0 w-9 h-9 rounded-full cursor-pointer flex items-center justify-center transition-all ${closeColor} hover:bg-[#db6f57]/8`}
+              aria-label="Fechar"
             >
-              <X className={`w-5 h-5 ${colors.closeIconColor}`} />
-            </div>
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
-          {/* Content */}
-          <div className={`space-y-6 p-6 overflow-y-auto max-h-[70vh] scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-primary scrollbar-track-transparent ${colors.contentBg}`}>
-            {/* Instruções */}
-            <div className={`${colors.infoBg} border rounded-xl p-4`}>
-              <p className={`text-sm ${colors.infoText} flex items-center gap-2 mb-2`}>
-                <MapIcon className="w-4 h-4 text-[#db6f57]" />
-                <strong>Como ajustar a localização:</strong>
+          {/* ─── Content ─── */}
+          <div className="relative z-10 space-y-6 px-6 md:px-8 py-6 overflow-y-auto max-h-[68vh]">
+            {/* Tip box no padrão warm card translúcido */}
+            <div
+              className="rounded-2xl border p-4 backdrop-blur"
+              style={{
+                backgroundColor: isDark ? "rgba(224,122,98,0.06)" : "rgba(219,111,87,0.05)",
+                borderColor: isDark ? "rgba(224,122,98,0.18)" : "rgba(219,111,87,0.18)",
+              }}
+            >
+              <p className={`text-sm font-semibold ${tipText} flex items-center gap-2 mb-2.5`}>
+                <Info className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-[#E07A62]" : "text-[#db6f57]"}`} />
+                Como ajustar a localização
               </p>
-              <ul className={`text-sm ${colors.subtitleText} space-y-1 ml-6 list-disc`}>
-                <li>Clique diretamente no mapa para mover o marcador</li>
-                <li>Use a busca para encontrar um endereço específico</li>
-                <li>Arraste o mapa para explorar a região</li>
+              <ul className={`text-[13px] ${subtitleText} space-y-1.5 ml-6 list-disc marker:text-[#db6f57]`}>
+                <li>Clique no mapa pra mover o marcador.</li>
+                <li>Use a busca pra encontrar um endereço específico.</li>
+                <li>Arraste o mapa pra explorar a região.</li>
               </ul>
             </div>
 
-            {/* Mapa Interativo */}
-            <div className="space-y-2">
-              <h4 className={`text-sm font-bold ${colors.headingText}`}>Mapa Interativo</h4>
-              <MapaCaptura
-                latInicial={selectedLocation?.lat}
-                lngInicial={selectedLocation?.lng}
-                aoSelecionar={handleMapClick}
-                isDark={isDark}
-                endereco={endereco}
-              />
-            </div>
-
-            {/* Coordenadas Atuais */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className={`text-sm font-bold ${colors.headingText}`}>Coordenadas Selecionadas:</h4>
-                {isSearchingAddress && (
-                  <div className={`flex items-center gap-2 text-xs ${colors.subtitleText}`}>
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    Atualizando...
-                  </div>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className={`block text-sm font-semibold ${colors.headingText} mb-2`}>
-                    Latitude
-                  </label>
-                  <InputText
-                    value={selectedLocation?.lat.toFixed(6) || ""}
-                    onChange={(e) => handleCoordinateChange('lat', e.target.value)}
-                    placeholder="-23.550520"
-                    className={`w-full px-4 py-3 border-2 ${colors.inputBorder} ${colors.inputBg} ${colors.inputText} rounded-xl ${colors.inputFocus} transition-all`}
-                  />
-                  <small className={`text-xs ${colors.mutedText} mt-1 block`}>
-                    Exemplo: -23.550520
-                  </small>
-                </div>
-                <div>
-                  <label className={`block text-sm font-semibold ${colors.headingText} mb-2`}>
-                    Longitude
-                  </label>
-                  <InputText
-                    value={selectedLocation?.lng.toFixed(6) || ""}
-                    onChange={(e) => handleCoordinateChange('lng', e.target.value)}
-                    placeholder="-46.633308"
-                    className={`w-full px-4 py-3 border-2 ${colors.inputBorder} ${colors.inputBg} ${colors.inputText} rounded-xl ${colors.inputFocus} transition-all`}
-                  />
-                  <small className={`text-xs ${colors.mutedText} mt-1 block`}>
-                    Exemplo: -46.633308
-                  </small>
-                </div>
-              </div>
-            </div>
-
-            {/* Alternativa: Google Maps */}
-            <div className={`${colors.tipBg} border rounded-xl p-4`}>
-              <p className={`text-sm ${colors.tipText} flex items-start gap-2`}>
-                <span className="text-lg">💡</span>
-                <span>
-                  <strong>Alternativa:</strong> Você também pode encontrar coordenadas precisas no Google Maps.
-                  Clique com o botão direito no local desejado e copie as coordenadas.
+            {/* Mapa interativo com wrapper para suavizar bordas legacy */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                  Mapa interativo
                 </span>
-              </p>
+              </div>
+              <div
+                className="rounded-2xl overflow-hidden border"
+                style={{
+                  borderColor: isDark ? "#2D2925" : "#e6d9d4",
+                  boxShadow: isDark
+                    ? "0 8px 24px -8px rgba(0,0,0,0.4)"
+                    : "0 8px 24px -8px rgba(42,36,32,0.12)",
+                }}
+              >
+                <MapaCaptura
+                  latInicial={selectedLocation?.lat}
+                  lngInicial={selectedLocation?.lng}
+                  aoSelecionar={handleMapClick}
+                  isDark={isDark}
+                  endereco={endereco}
+                />
+              </div>
             </div>
 
-            <div className="flex gap-3">
-              <Button
+            {/* Coordenadas selecionadas */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                  Coordenadas selecionadas
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <FormInput
+                  label="Latitude"
+                  placeholder="-23.550520"
+                  value={selectedLocation?.lat !== undefined ? selectedLocation.lat.toFixed(6) : ""}
+                  onChange={(e: any) => handleCoordinateChange("lat", e.target.value)}
+                  isDark={isDark}
+                  helperText="Exemplo: -23.550520"
+                  showStatusIcon={false}
+                />
+                <FormInput
+                  label="Longitude"
+                  placeholder="-46.633308"
+                  value={selectedLocation?.lng !== undefined ? selectedLocation.lng.toFixed(6) : ""}
+                  onChange={(e: any) => handleCoordinateChange("lng", e.target.value)}
+                  isDark={isDark}
+                  helperText="Exemplo: -46.633308"
+                  showStatusIcon={false}
+                />
+              </div>
+            </div>
+
+            {/* Atalhos pro Google Maps */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <FormButton
                 type="button"
+                label="Abrir no Google Maps"
+                variant="secondary"
+                size="sm"
+                icon={MapIcon}
+                iconPosition="left"
+                isDark={isDark}
+                fullWidth
                 onClick={() => {
                   const searchQuery = encodeURIComponent(endereco)
-                  window.open(`https://www.google.com/maps/search/${searchQuery}`, '_blank')
+                  window.open(`https://www.google.com/maps/search/${searchQuery}`, "_blank")
                 }}
-                className={`flex-1 ${colors.googleBtn} border-0 px-4 py-2 rounded-xl text-sm font-semibold hover:scale-105 transition-all flex items-center justify-center gap-2`}
-              >
-                <MapIcon className="w-4 h-4" />
-                Abrir no Google Maps
-              </Button>
-
+              />
               {selectedLocation && (
-                <Button
+                <FormButton
                   type="button"
+                  label="Ver coordenadas no Maps"
+                  variant="secondary"
+                  size="sm"
+                  icon={MapIcon}
+                  iconPosition="left"
+                  isDark={isDark}
+                  fullWidth
                   onClick={() => {
                     window.open(
                       `https://www.google.com/maps/@${selectedLocation.lat},${selectedLocation.lng},18z`,
-                      '_blank'
+                      "_blank"
                     )
                   }}
-                  className={`flex-1 ${colors.viewMapBtn} px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2`}
-                >
-                  <MapIcon className="w-4 h-4" />
-                  Ver no Google Maps
-                </Button>
+                />
               )}
             </div>
           </div>
 
-          {/* Footer */}
-          <div className={`flex gap-3 justify-end p-6 border-t ${colors.border} ${colors.modalBg}`}>
-            <Button
+          {/* ─── Footer ─── */}
+          <div className="relative z-10 flex flex-col sm:flex-row gap-3 sm:justify-end px-6 md:px-8 pb-6 md:pb-7 pt-2">
+            <FormButton
               type="button"
               label="Cancelar"
+              variant="secondary"
+              size="md"
+              isDark={isDark}
               onClick={onHide}
-              className={`${colors.secondaryBtn} px-6 py-2 rounded-xl text-sm font-semibold transition-all`}
             />
-            <Button
+            <FormButton
               type="button"
-              label="Confirmar Localização"
-              icon={<Check className="mr-2 w-4 h-4" />}
+              label="Confirmar localização"
+              variant="primary"
+              size="md"
+              icon={Check}
+              iconPosition="left"
+              isDark={isDark}
+              disabled={!selectedLocation}
               onClick={() => {
                 if (selectedLocation) {
                   onLocationSelect(selectedLocation.lat, selectedLocation.lng)
                 }
               }}
-              disabled={!selectedLocation}
-              className={`${colors.primaryBtn} border-0 px-6 py-2 rounded-xl text-sm font-semibold hover:scale-105 transition-all disabled:opacity-60`}
             />
           </div>
         </div>

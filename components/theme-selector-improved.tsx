@@ -1,114 +1,174 @@
+"use client"
+
 import { Controller } from "react-hook-form"
 import { Palette, Check, Moon, Sun, Sparkles, Eye } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { useState } from "react"
+import { useTheme } from "@/contexts/HeroThemeContext"
 
-// Componente de Preview do Tema
-const ThemePreview = ({ theme, isSelected }: { theme: any; isSelected: boolean }) => {
+// ─────────────────────────────────────────────────────────────────
+// ThemePreview — card individual de tema (com preview visual real)
+// ─────────────────────────────────────────────────────────────────
+const ThemePreview = ({
+  theme,
+  isSelected,
+  isDark,
+}: {
+  theme: any
+  isSelected: boolean
+  isDark: boolean
+}) => {
   const [showDetails, setShowDetails] = useState(false)
+  const prefersReduced = useReducedMotion()
+
+  const cardBg = isSelected
+    ? isDark
+      ? "rgba(224,122,98,0.08)"
+      : "rgba(219,111,87,0.05)"
+    : isDark
+    ? "rgba(26,23,21,0.6)"
+    : "rgba(255,255,255,0.85)"
+
+  const cardBorder = isSelected
+    ? isDark
+      ? "#E07A62"
+      : "#db6f57"
+    : isDark
+    ? "#2D2925"
+    : "#e6d9d4"
+
+  const cardShadow = isSelected
+    ? isDark
+      ? "0 12px 32px -8px rgba(224,122,98,0.35), 0 4px 12px -4px rgba(224,122,98,0.20)"
+      : "0 12px 32px -8px rgba(219,111,87,0.30), 0 4px 12px -4px rgba(219,111,87,0.15)"
+    : isDark
+    ? "0 4px 16px -4px rgba(0,0,0,0.4)"
+    : "0 4px 16px -4px rgba(42,36,32,0.06)"
+
+  const titleColor = isDark ? "#F5F0EB" : "#2a2420"
+  const subtleColor = isDark ? "#B8AEA4" : "#5a4a42"
+  const dividerColor = isDark ? "#2D2925" : "#e6d9d4"
 
   return (
     <motion.button
       type="button"
-      whileHover={{ y: -8, scale: 1.01 }}
-      whileTap={{ scale: 1 }}
+      whileHover={prefersReduced ? undefined : { y: -6, scale: 1.01 }}
+      whileTap={prefersReduced ? undefined : { scale: 0.99 }}
       onMouseEnter={() => setShowDetails(true)}
       onMouseLeave={() => setShowDetails(false)}
-      className={`relative p-6 rounded-2xl border-2 transition-all duration-300 w-full ${
-        isSelected
-          ? "border-[#db6f57] bg-gradient-to-br from-[#db6f57]/10 to-[#db6f57]/5 shadow-2xl"
-          : "border-[#d8ccc4] hover:border-[#db6f57]/50 bg-white"
-      }`}
+      className="relative p-5 rounded-2xl border transition-colors duration-300 w-full text-left backdrop-blur"
+      style={{
+        backgroundColor: cardBg,
+        borderColor: cardBorder,
+        boxShadow: cardShadow,
+        borderWidth: isSelected ? "1.5px" : "1px",
+      }}
     >
-      {/* Badge de Seleção */}
+      {/* Badge de seleção */}
       <AnimatePresence>
         {isSelected && (
           <motion.div
-            initial={{ scale: 0, rotate: -180 }}
+            initial={prefersReduced ? false : { scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
-            exit={{ scale: 0, rotate: 180 }}
-            className="absolute -top-3 -right-3 w-10 h-10 rounded-full bg-gradient-to-br from-[#db6f57] to-[#c55a42] shadow-lg flex items-center justify-center"
+            exit={prefersReduced ? undefined : { scale: 0, rotate: 180 }}
+            className="absolute -top-2.5 -right-2.5 w-9 h-9 rounded-full flex items-center justify-center z-10"
+            style={{
+              background: "linear-gradient(135deg, #db6f57 0%, #c55a42 100%)",
+              boxShadow: "0 8px 16px -4px rgba(219,111,87,0.45)",
+            }}
           >
-            <Check className="w-5 h-5 text-white" />
+            <Check className="w-4.5 h-4.5 text-white" strokeWidth={3} />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Header do Tema */}
+      {/* Header do tema */}
       <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="font-bold text-lg text-[#2a2420]">{theme.name}</h4>
+        <div className="flex items-center justify-between mb-1.5">
+          <h4
+            className="font-serif text-base font-bold leading-tight"
+            style={{ color: titleColor }}
+          >
+            {theme.name}
+          </h4>
           {theme.isDark ? (
-            <Moon className="w-5 h-5 text-[#4f6f64]" />
+            <Moon
+              className="w-4 h-4 flex-shrink-0"
+              style={{ color: isDark ? "#B8AEA4" : "#5a4a42" }}
+            />
           ) : (
-            <Sun className="w-5 h-5 text-[#db6f57]" />
+            <Sun
+              className="w-4 h-4 flex-shrink-0"
+              style={{ color: isDark ? "#E07A62" : "#db6f57" }}
+            />
           )}
         </div>
-        <p className="text-xs text-[#4f6f64] capitalize">
+        <p
+          className="text-[10px] uppercase tracking-[0.18em] font-bold"
+          style={{ color: isDark ? "#7A716A" : "#5a4a42" }}
+        >
           Tema {theme.type}
         </p>
       </div>
 
-      {/* Preview Visual do Card */}
-      <div 
-        className="rounded-xl overflow-hidden mb-4 shadow-md transition-all duration-300"
-        style={{ 
+      {/* Preview visual real do template */}
+      <div
+        className="rounded-xl overflow-hidden mb-4 transition-all duration-300"
+        style={{
           backgroundColor: theme.colors.background,
-          minHeight: '120px'
+          minHeight: "120px",
+          boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.05)",
         }}
       >
-        {/* Mini Header */}
-        <div 
+        <div
           className="px-3 py-2 flex items-center gap-2"
-          style={{ 
+          style={{
             backgroundColor: theme.colors.cardBackground,
-            borderBottom: `1px solid ${theme.colors.border}`
+            borderBottom: `1px solid ${theme.colors.border}`,
           }}
         >
-          <div 
+          <div
             className="w-6 h-6 rounded-full flex items-center justify-center"
             style={{ backgroundColor: theme.colors.primary }}
           >
             <Sparkles className="w-3 h-3 text-white" />
           </div>
           <div className="flex-1">
-            <div 
+            <div
               className="h-2 rounded-full w-20 mb-1"
               style={{ backgroundColor: theme.colors.text, opacity: 0.8 }}
             />
-            <div 
+            <div
               className="h-1.5 rounded-full w-16"
               style={{ backgroundColor: theme.colors.textSecondary, opacity: 0.5 }}
             />
           </div>
         </div>
 
-        {/* Mini Content */}
-        <div 
+        <div
           className="p-3 space-y-2"
           style={{ backgroundColor: theme.colors.cardBackground }}
         >
-          <div 
+          <div
             className="h-2 rounded-full w-full"
             style={{ backgroundColor: theme.colors.text, opacity: 0.3 }}
           />
-          <div 
+          <div
             className="h-2 rounded-full w-4/5"
             style={{ backgroundColor: theme.colors.text, opacity: 0.3 }}
           />
-          <div 
+          <div
             className="h-2 rounded-full w-3/5"
             style={{ backgroundColor: theme.colors.text, opacity: 0.3 }}
           />
         </div>
 
-        {/* Mini Button */}
         <div className="p-3">
-          <div 
+          <div
             className="h-8 rounded-lg flex items-center justify-center"
-            style={{ 
+            style={{
               background: theme.colors.backgroundLinear || theme.colors.primary,
-              color: theme.colors.buttonText
+              color: theme.colors.buttonText,
             }}
           >
             <span className="text-xs font-semibold">Botão</span>
@@ -116,177 +176,219 @@ const ThemePreview = ({ theme, isSelected }: { theme: any; isSelected: boolean }
         </div>
       </div>
 
-      {/* Paleta de Cores */}
-      <div className="space-y-3">
+      {/* Paleta de cores */}
+      <div className="space-y-2">
+        <span
+          className="text-[10px] uppercase tracking-wider font-bold block"
+          style={{ color: isDark ? "#B8AEA4" : "#5a4a42" }}
+        >
+          Paleta
+        </span>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-[#4f6f64] font-medium">Cores Principais:</span>
-        </div>
-        <div className="flex items-center justify-center gap-2">
           {[
-            { color: theme.colors.primary, label: 'Primária' },
-            { color: theme.colors.secondary, label: 'Secundária' },
-            { color: theme.colors.accent, label: 'Destaque' },
-            { color: theme.colors.background, label: 'Fundo' }
+            { color: theme.colors.primary, label: "Primária" },
+            { color: theme.colors.secondary, label: "Secundária" },
+            { color: theme.colors.accent, label: "Destaque" },
+            { color: theme.colors.background, label: "Fundo" },
           ].map((item, idx) => (
             <div key={idx} className="relative group">
               <motion.div
-                whileHover={{ scale: 1.2 }}
-                className="w-8 h-8 rounded-full shadow-md ring-2 ring-white transition-all"
-                style={{ backgroundColor: item.color }}
+                whileHover={prefersReduced ? undefined : { scale: 1.18 }}
+                className="w-7 h-7 rounded-full transition-all"
+                style={{
+                  backgroundColor: item.color,
+                  boxShadow: `0 0 0 1.5px ${
+                    isDark ? "rgba(245,240,235,0.15)" : "rgba(255,255,255,0.95)"
+                  }, 0 2px 6px rgba(0,0,0,0.12)`,
+                }}
               />
-              {showDetails && (
-                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#2a2420] text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                  {item.label}
-                </div>
-              )}
+              <div
+                className="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-0.5 text-[10px] font-medium rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20"
+                style={{
+                  backgroundColor: isDark ? "#0D0B0A" : "#2a2420",
+                  color: "#F5F0EB",
+                }}
+              >
+                {item.label}
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Detalhes Expandidos */}
-      <AnimatePresence>
-        {/* {showDetails && ( */}
+      {/* Detalhes expandidos (hover real) */}
+      <AnimatePresence initial={false}>
+        {showDetails && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="mt-4 pt-4 border-t border-[#d8ccc4] overflow-hidden"
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="overflow-hidden"
           >
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-[#4f6f64]">Fonte Título:</span>
-              <span className="font-semibold text-[#2a2420]" style={{ fontFamily: theme.fonts?.heading }}>
-                Aa
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-xs mt-2">
-              <span className="text-[#4f6f64]">Fonte Corpo:</span>
-              <span className="font-semibold text-[#2a2420]" style={{ fontFamily: theme.fonts?.body }}>
-                Aa
-              </span>
+            <div
+              className="mt-4 pt-3 space-y-1.5 border-t"
+              style={{ borderColor: dividerColor }}
+            >
+              <div className="flex items-center justify-between text-[11px]">
+                <span style={{ color: subtleColor }}>Fonte título</span>
+                <span
+                  className="font-semibold"
+                  style={{
+                    color: titleColor,
+                    fontFamily: theme.fonts?.heading,
+                  }}
+                >
+                  Aa Bb
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[11px]">
+                <span style={{ color: subtleColor }}>Fonte corpo</span>
+                <span
+                  className="font-semibold"
+                  style={{
+                    color: titleColor,
+                    fontFamily: theme.fonts?.body,
+                  }}
+                >
+                  Aa Bb
+                </span>
+              </div>
             </div>
           </motion.div>
-        {/* )} */}
+        )}
       </AnimatePresence>
-
-      {/* Hover Indicator */}
-      <motion.div
-        className="absolute inset-0 rounded-2xl pointer-events-none"
-        initial={{ opacity: 0 }}
-        whileHover={{ opacity: 1 }}
-        style={{
-          background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.secondary}15)`,
-        }}
-      />
     </motion.button>
   )
 }
 
-// Componente Principal de Seleção de Tema
+// ─────────────────────────────────────────────────────────────────
+// ThemeSelector — wrapper do step
+// ─────────────────────────────────────────────────────────────────
 export const ThemeSelector = ({ control, errors, themeArray }: any) => {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const { isDark } = useTheme()
+
+  const headingColor = isDark ? "text-[#F5F0EB]" : "text-[#2a2420]"
+  const mutedColor = isDark ? "text-[#7A716A]" : "text-[#5a4a42]/65"
+  const lightCount = themeArray.filter((t: any) => !t.isDark).length
+  const darkCount = themeArray.filter((t: any) => t.isDark).length
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-[#d8ccc4]">
-        <div className="flex items-center gap-3 pb-4">
-          <div className="w-12 h-12 rounded-xl bg-[#db6f57]/10 flex items-center justify-center">
-            <Palette className="w-6 h-6 text-[#db6f57]" />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-[#2a2420]">Escolha seu Tema</h3>
-            <p className="text-sm text-[#4f6f64]">Personalize a identidade visual</p>
-          </div>
+    <div className="space-y-8">
+      {/* ─── Section header ─── */}
+      <div className="flex items-center gap-3 mb-2 transition-colors duration-300">
+        <div className="w-12 h-12 rounded-xl bg-[#db6f57]/10 flex items-center justify-center">
+          <Palette
+            className={`w-6 h-6 ${isDark ? "text-[#E07A62]" : "text-[#db6f57]"}`}
+          />
         </div>
-        <div className="grid grid-cols-3 gap-4 ">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-[#db6f57] mb-1">
-              {themeArray.length}
-            </div>
-            <div className="text-xs text-[#4f6f64]">Temas disponíveis</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-[#db6f57] mb-1">
-              {themeArray.filter((t: any) => !t.isDark).length}
-            </div>
-            <div className="text-xs text-[#4f6f64]">Temas claros</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-[#db6f57] mb-1">
-              {themeArray.filter((t: any) => t.isDark).length}
-            </div>
-            <div className="text-xs text-[#4f6f64]">Temas escuros</div>
-          </div>
+        <div className="flex-1 min-w-0">
+          <h3
+            className={`font-serif text-xl md:text-2xl font-bold leading-tight ${headingColor} transition-colors duration-300`}
+          >
+            Escolha seu tema
+          </h3>
+          <p
+            className={`text-sm ${mutedColor} transition-colors duration-300 mt-0.5`}
+          >
+            A identidade visual da sua loja online.{" "}
+            <span className="hidden sm:inline">
+              {themeArray.length} opções · {lightCount} claros · {darkCount} escuros.
+            </span>
+          </p>
         </div>
       </div>
 
-      {/* Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-4 rounded-xl bg-gradient-to-r from-[#db6f57]/10 to-[#c55a42]/10 border border-[#db6f57]/20"
-      >
-        <div className="flex items-start gap-3">
-          <Eye className="w-5 h-5 text-[#db6f57] flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm text-[#2a2420] font-medium">
-              Passe o mouse sobre os temas para ver mais detalhes
-            </p>
-            <p className="text-xs text-[#4f6f64] mt-1">
-              Você poderá personalizar cores e fontes depois na plataforma
-            </p>
-          </div>
+      {/* ─── Bloco: Galeria ─── */}
+      <div className="space-y-5">
+        <div className="flex items-center gap-2">
+          <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+          <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+            Identidade visual
+          </span>
         </div>
-      </motion.div>
 
-      {/* Themes Grid/List */}
-      <Controller
-        name="tema"
-        control={control}
-        rules={{ required: "Selecione um tema para continuar" }}
-        render={({ field }) => (
-          <motion.div
-            layout
-            className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 `}
+        {/* Tip card warm translúcido */}
+        <div
+          className="rounded-2xl border p-4 backdrop-blur"
+          style={{
+            backgroundColor: isDark
+              ? "rgba(224,122,98,0.06)"
+              : "rgba(219,111,87,0.05)",
+            borderColor: isDark
+              ? "rgba(224,122,98,0.18)"
+              : "rgba(219,111,87,0.18)",
+          }}
+        >
+          <p
+            className={`text-[13px] leading-relaxed flex items-start gap-2 ${
+              isDark ? "text-[#F5F0EB]" : "text-[#2a2420]"
+            }`}
           >
-            {themeArray.map((tema: any, index: number) => (
-              <motion.div
-                key={tema.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                onClick={() => field.onChange(tema.id)}
-                className=""
+            <Eye
+              className={`w-4 h-4 mt-0.5 flex-shrink-0 ${
+                isDark ? "text-[#E07A62]" : "text-[#db6f57]"
+              }`}
+            />
+            <span>
+              Passe o mouse pra ver detalhes de tipografia.
+              Você vai poder ajustar tudo depois — cores, fontes, espaçamento — direto na plataforma.
+            </span>
+          </p>
+        </div>
+
+        {/* Grid de temas */}
+        <Controller
+          name="tema"
+          control={control}
+          rules={{ required: "Selecione um tema pra continuar" }}
+          render={({ field }) => (
+            <motion.div
+              layout
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+            >
+              {themeArray.map((tema: any, index: number) => (
+                <motion.div
+                  key={tema.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.06, duration: 0.4, ease: "easeOut" }}
+                  onClick={() => field.onChange(tema.id)}
+                >
+                  <ThemePreview
+                    theme={tema}
+                    isSelected={field.value === tema.id}
+                    isDark={isDark}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        />
+
+        {/* Erro inline */}
+        <AnimatePresence initial={false}>
+          {errors.tema && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center justify-center"
+            >
+              <p
+                className="text-[12px] text-[#d15847] font-medium px-4 py-2 rounded-full"
+                style={{
+                  backgroundColor: "rgba(209,88,71,0.10)",
+                  border: "1px solid rgba(209,88,71,0.22)",
+                }}
               >
-                <ThemePreview 
-                  theme={tema} 
-                  isSelected={field.value === tema.id}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      />
-
-      {/* Error Message */}
-      <AnimatePresence>
-        {errors.tema && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="text-center"
-          >
-            <p className="text-[#d15847] text-sm font-medium bg-[#d15847]/10 px-4 py-2 rounded-lg inline-block">
-              {errors.tema.message}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Footer Stats */}
-      
+                {errors.tema.message}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }

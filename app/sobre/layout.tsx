@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import PrimeProvider from "@/components/PrimeProvider"
 
 export const metadata: Metadata = {
   title: "Sobre Nós",
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/og-image.png',
+        url: '/bellory2sfundo.svg',
         width: 1200,
         height: 630,
         alt: 'Sobre a Bellory',
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Sobre a Bellory - Nossa História',
     description: 'Conheça a história da Bellory e como transformamos a gestão de salões e barbearias',
-    images: ['/og-image.png'],
+    images: ['/bellory2sfundo.svg'],
   },
 }
 
@@ -46,5 +47,5 @@ export default function SobreLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return <PrimeProvider>{children}</PrimeProvider>
 }

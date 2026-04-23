@@ -8,19 +8,19 @@ export interface MockupConfig {
 export const MOCKUPS: MockupConfig[] = [
   {
     position: "left",
-    src: "/mockup-white.png",
+    src: "/mockup-white.webp",
     alt: "Bellory app - agenda inteligente",
     rotate: -5,
   },
   {
     position: "center",
-    src: "/mockup_white1.png",
+    src: "/mockup_white1.webp",
     alt: "Bellory app - gestão completa",
     rotate: 0,
   },
   {
     position: "right",
-    src: "/mockup-white.png",
+    src: "/mockup-white.webp",
     alt: "Bellory app - site personalizado",
     rotate: 5,
   },

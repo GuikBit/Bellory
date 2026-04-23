@@ -1,0 +1,15 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><style>
+  body { padding: 0; background: #faf8f6; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .promo { width: 100%; background: linear-gradient(90deg,#8b3d35,#db6f57 50%,#8b3d35); color: white; font-family: Inter, sans-serif; padding: 10px 20px; display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 13px; box-shadow: 0 10px 30px rgba(139,61,53,0.25); position: relative; overflow: hidden; }
+  .promo::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); transform: translateX(-100%); animation: shimmer 3s linear infinite; }
+  @keyframes shimmer { to { transform: translateX(100%); } }
+  svg { width: 14px; height: 14px; position: relative; z-index: 1; }
+  .text { font-weight: 600; position: relative; z-index: 1; }
+  .btn { background: white; color: #8b3d35; font-weight: 700; font-size: 11.5px; padding: 4px 12px; border-radius: 8px; border: 0; position: relative; z-index: 1; cursor: pointer; box-shadow: 0 4px 10px rgba(42,36,32,0.15); }
+</style></head><body>
+  <div class="promo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg>
+    <span class="text">Oferta especial: 14 dias grátis + até 15% de desconto no plano anual</span>
+    <button class="btn">Aproveitar</button>
+  </div>
+</body></html>

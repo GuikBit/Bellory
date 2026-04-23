@@ -1,17 +1,22 @@
-/* 1. Importe o CSS principal do PrimeReact */
-@import '../node_modules/primereact/resources/primereact.min.css';
-
-/* 2. Importe o tema desejado */
-@import '../node_modules/primereact/resources/themes/lara-light-blue/theme.css' layer(primereact);
-
-/* 3. Importe o CSS do Leaflet para o mapa */
-/* @import 'leaflet/dist/leaflet.css'; */
-
-/* 4. Importe o Tailwind e outras folhas de estilo */
+/* Importe o Tailwind e outras folhas de estilo
+   PrimeReact CSS é carregado lazy via components/PrimeProvider.tsx
+   (montado apenas nas rotas /cadastro e /sobre) */
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @plugin 'tailwind-scrollbar';
+
+/* ## Paleta de Cores para Seções da Landing Page
+
+### Estrutura Proposta
+
+| Seção                   | Fundo                        | Texto Principal            | Destaque
+|-----                    |-----                         |-----                       |-----
+| **Hero**                | `#ffffff` (branco puro)      | `#2a2420` (marrom escuro)  | `#db6f57` (coral principal)
+| **Features/Benefícios** | `#faf8f6` (off-white quente) | `#2a2420`                  | `#db6f57`
+| **Como Funciona**       | `#4f6f64` (verde-azulado)    | `#ffffff`                  | `#f0e8e3` (bege claro)
+| **Depoimentos**         | `#f0e8e3` (bege muted)       | `#2a2420`                  | `#8b3d35` (terracota escuro)
+| **Preços/CTA**          | `#2a2420` (marrom escuro)    | `#ffffff`                  | `#db6f57` */
 
 /* Custom theme for Bellory — clean, profissional com #db6f57 como cor principal */
 :root {
@@ -63,8 +68,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-inter);
-  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-poppins);
+  --font-serif: var(--font-poppins);
   --font-mono: var(--font-geist-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -102,6 +107,32 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* StarBorder animations */
+  --animate-star-movement-bottom: star-movement-bottom linear infinite alternate;
+  --animate-star-movement-top: star-movement-top linear infinite alternate;
+
+  @keyframes star-movement-bottom {
+    0% {
+      transform: translate(0%, 0%);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-100%, 0%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes star-movement-top {
+    0% {
+      transform: translate(0%, 0%);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(100%, 0%);
+      opacity: 0;
+    }
+  }
 }
 
 @layer base {
@@ -111,4 +142,11 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Force Poppins everywhere (override PrimeReact theme) */
+*,
+*::before,
+*::after {
+  font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif !important;
 }

@@ -1,12 +1,10 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Playfair_Display, Inter } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
+import { Poppins } from "next/font/google"
 import { Suspense } from "react"
 import './globals.css'; // Mantenha apenas esta importação de CSS
 // import './theme.css'
 
-import PrimeProvider from "@/components/PrimeProvider"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import ReactQueryProvider from "@/providers/ReactQueryProvider"
 import { Loader2Icon } from "lucide-react"
@@ -15,16 +13,12 @@ import StructuredData from "@/components/structured-data"
 import { ThemeProvider } from "@/contexts/HeroThemeContext"
 import { TrackingProvider } from "@/contexts/TrackingContext"
 import { TrackingSetup } from "@/components/tracking"
+import { CookieBanner } from "@/components/CookieBanner"
 
-const playfair = Playfair_Display({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-})
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
   display: "swap",
 })
 
@@ -113,23 +107,21 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" className={`${playfair.variable} ${inter.variable} overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-primary scrollbar-track-background`}>
+    <html lang="pt-BR" className={`${poppins.variable} overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-primary scrollbar-track-background`}>
       <head>
         <StructuredData />
       </head>
-      <body className="font-sans antialiased ">
+      <body className="font-sans antialiased " suppressHydrationWarning>
         <Suspense fallback={<Spinner />}>
           <TrackingProvider>
             <TrackingSetup />
             <ThemeProvider>
               <ReactQueryProvider>
-                <PrimeProvider>
-                  {children}
-                </PrimeProvider>
+                {children}
+                <CookieBanner />
               </ReactQueryProvider>
             </ThemeProvider>
           </TrackingProvider>
-          <Analytics />
         </Suspense>
       </body>
     </html>

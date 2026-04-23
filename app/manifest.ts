@@ -12,25 +12,19 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: 'portrait-primary',
     icons: [
       {
-        src: '/icon-192x192.png',
-        sizes: '192x192',
-        type: 'image/png',
-        purpose: 'maskable'
-      },
-      {
-        src: '/icon-512x512.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable'
-      },
-      {
-        src: '/icon-192x192.png',
-        sizes: '192x192',
-        type: 'image/png',
+        src: '/bellory2sfundo.svg',
+        sizes: 'any',
+        type: 'image/svg+xml',
         purpose: 'any'
       },
       {
-        src: '/icon-512x512.png',
+        src: '/bellory2sfundo.svg',
+        sizes: 'any',
+        type: 'image/svg+xml',
+        purpose: 'maskable'
+      },
+      {
+        src: '/Bellory_transparente.png',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any'
@@ -46,14 +40,14 @@ export default function manifest(): MetadataRoute.Manifest {
         short_name: 'Cadastrar',
         description: 'Criar uma nova conta',
         url: '/cadastro',
-        icons: [{ src: '/icon-192x192.png', sizes: '192x192' }]
+        icons: [{ src: '/bellory2sfundo.svg', sizes: 'any', type: 'image/svg+xml' }]
       },
       {
         name: 'Sobre',
         short_name: 'Sobre',
         description: 'Conheça a Bellory',
         url: '/sobre',
-        icons: [{ src: '/icon-192x192.png', sizes: '192x192' }]
+        icons: [{ src: '/bellory2sfundo.svg', sizes: 'any', type: 'image/svg+xml' }]
       }
     ]
   }

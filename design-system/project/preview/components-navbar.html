@@ -1,0 +1,31 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><style>
+  body { padding: 0; background: #faf8f6; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .nav { width: 100%; background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(230,217,212,0.5); box-shadow: 0 6px 20px rgba(42,36,32,0.05); padding: 14px 26px; display: flex; align-items: center; justify-content: space-between; font-family: Inter, sans-serif; }
+  .brand { display: flex; align-items: center; gap: 8px; }
+  .brand img { height: 24px; }
+  .brand-text { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; background: linear-gradient(90deg,#db6f57,#8b3d35); -webkit-background-clip: text; color: transparent; }
+  .links { display: flex; gap: 22px; font-size: 13px; color: #2a2420; }
+  .links a { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+  .links a.active { color: #db6f57; }
+  .links svg { width: 12px; height: 12px; }
+  .ctas { display: flex; gap: 8px; }
+  .enter { font-size: 12px; font-weight: 600; color: #8b3d35; border: 2px solid rgba(139,61,53,0.3); border-radius: 10px; padding: 7px 14px; background: white; display: flex; align-items: center; gap: 6px; }
+  .go { font-size: 12px; font-weight: 600; color: white; background: linear-gradient(90deg,#db6f57,#c55a42,#8b3d35); border-radius: 10px; padding: 7px 14px; display: flex; align-items: center; gap: 6px; }
+</style></head><body>
+  <nav class="nav">
+    <div class="brand">
+      <img src="../assets/bellory-logo.svg" alt="Bellory" />
+      <span class="brand-text">Bellory</span>
+    </div>
+    <div class="links">
+      <a class="active">Funcionalidades <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></a>
+      <a>Agente IA <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></a>
+      <a>Planos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></a>
+      <a>Sobre nós</a>
+    </div>
+    <div class="ctas">
+      <button class="enter"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Entrar</button>
+      <button class="go">Comece grátis →</button>
+    </div>
+  </nav>
+</body></html>
