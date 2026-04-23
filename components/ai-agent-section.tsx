@@ -490,16 +490,20 @@ function PhoneMockup({ isInView }: { isInView: boolean }) {
     const chat = chatContainerRef.current
     if (!chat) return
 
-    updatePositions()
-    chat.addEventListener("scroll", updatePositions, { passive: true })
-    window.addEventListener("resize", updatePositions)
+    // rAF em todas as chamadas de updatePositions — evita reflow forçado
+    // sincrono ao paint (Lighthouse: "Reflow forçado").
+    const scheduleUpdate = () => requestAnimationFrame(updatePositions)
+
+    scheduleUpdate()
+    chat.addEventListener("scroll", scheduleUpdate, { passive: true })
+    window.addEventListener("resize", scheduleUpdate)
 
     // Also update on a small delay after animations
-    const timer = setTimeout(updatePositions, 1500)
+    const timer = setTimeout(scheduleUpdate, 1500)
 
     return () => {
-      chat.removeEventListener("scroll", updatePositions)
-      window.removeEventListener("resize", updatePositions)
+      chat.removeEventListener("scroll", scheduleUpdate)
+      window.removeEventListener("resize", scheduleUpdate)
       clearTimeout(timer)
     }
   }, [updatePositions, isInView])
@@ -507,7 +511,7 @@ function PhoneMockup({ isInView }: { isInView: boolean }) {
   // Recalc when section becomes visible
   useEffect(() => {
     if (isInView) {
-      const timer = setTimeout(updatePositions, 800)
+      const timer = setTimeout(() => requestAnimationFrame(updatePositions), 800)
       return () => clearTimeout(timer)
     }
   }, [isInView, updatePositions])

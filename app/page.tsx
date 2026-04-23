@@ -4,21 +4,18 @@ import { Hero } from "@/components/hero"
 import { FeaturesInternal } from "@/components/features-internal"
 import { AIAgentSection } from "@/components/ai-agent-section"
 import { SectionTransition } from "@/components/section-transitions"
+import { Contact } from "@/components/contact"
+import { Footer } from "@/components/footer"
 
-// Below-the-fold: code-split os pesados pra reduzir o JS inicial.
-// Mantém SSR (default) — a marcação ainda vai no HTML pra SEO; só o chunk
-// de hidratação fica adiado.
+// Code-split só Pricing e ProductFAQ — são os mais abaixo e com mais JS
+// (tabelas de plano, FAQ accordion). Contact e Footer voltaram pra import
+// estático porque o overhead de HTTP requests extras (+ CSS chunks) dos
+// dynamic imports estava custando mais que economizava em bundle size.
 const Pricing = dynamic(() =>
   import("@/components/pricing").then((m) => ({ default: m.Pricing })),
 )
 const ProductFAQ = dynamic(() =>
   import("@/components/product-faq").then((m) => ({ default: m.ProductFAQ })),
-)
-const Contact = dynamic(() =>
-  import("@/components/contact").then((m) => ({ default: m.Contact })),
-)
-const Footer = dynamic(() =>
-  import("@/components/footer").then((m) => ({ default: m.Footer })),
 )
 
 

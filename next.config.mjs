@@ -42,6 +42,9 @@ const nextConfig = {
       'date-fns',
       'recharts',
     ],
+    // Inline critical CSS e adia o resto (via critters) — ataca o
+    // "Renderizar solicitações de bloqueio 1010ms" do Lighthouse.
+    optimizeCss: true,
   },
   async headers() {
     return [

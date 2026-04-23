@@ -459,7 +459,7 @@ function CenterLogo({ isInView }: { isInView: boolean }) {
       />
 
       <div
-        className="relative w-28 h-28 md:w-36 md:h-36 rounded-full flex items-center justify-center"
+        className="relative w-28 h-28 md:w-36 md:h-36 mt-14 md:mt-0 rounded-full flex items-center justify-center"
         style={{
           background:
             "linear-gradient(135deg, #ffffff 0%, #f3eeea 50%, #ffffff 100%)",
