@@ -893,7 +893,7 @@ export default function Cadastro() {
 
   return (
     <main className={`relative min-h-screen flex flex-col justify-center overflow-hidden pt-10 pb-16 ${theme.mainBg} transition-colors duration-300`}>
-      <Header isMenu={false} isCadastro={false} />
+      <Header isMenu={true} isCadastro={false}/>
 
       {/* Background decorativo */}
       <div className="absolute inset-0 transition-opacity duration-500"
@@ -1130,16 +1130,14 @@ export default function Cadastro() {
 
             {/* Form Content */}
             <form
-              onSubmit={handleSubmit(onSubmit)}
+              onSubmit={(e) => e.preventDefault()}
               onKeyDown={(e) => {
                 // Bloqueia Enter em inputs/selects de disparar submit do form.
-                // O submit só pode acontecer via clique explícito no botão "Finalizar cadastro".
-                // Textarea e o próprio botão submit ficam livres.
+                // O submit só pode acontecer via clique explícito no botão "Finalizar cadastro"
+                // (que agora é type="button" e chama handleSubmit programaticamente).
                 if (e.key !== "Enter") return
-                const target = e.target as HTMLElement
-                const tag = target.tagName
+                const tag = (e.target as HTMLElement).tagName
                 if (tag === "TEXTAREA") return
-                if (tag === "BUTTON" && (target as HTMLButtonElement).type === "submit") return
                 e.preventDefault()
               }}
               autoComplete="off"
@@ -2538,9 +2536,12 @@ export default function Cadastro() {
                                     {isAnnual ? "Cobrança anual" : "Cobrança mensal"}
                                   </p>
                                   {cupomValid && cupomDados && (
-                                    <p className={`text-[11px] mt-1.5 font-semibold ${isDark ? 'text-[#7AB8A4]' : 'text-[#4f6f64]'}`}>
-                                      Cupom aplicado
-                                    </p>
+                                    <div className={`inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full ${isDark ? 'bg-[#4f6f64]/15' : 'bg-[#4f6f64]/10'}`}>
+                                      <Gift className={`w-3 h-3 ${isDark ? 'text-[#7AB8A4]' : 'text-[#4f6f64]'}`} />
+                                      <span className={`font-mono text-[11px] font-bold tracking-wider ${isDark ? 'text-[#7AB8A4]' : 'text-[#4f6f64]'}`}>
+                                        {cupomCodigo}
+                                      </span>
+                                    </div>
                                   )}
                                 </div>
                               </div>
@@ -2585,6 +2586,44 @@ export default function Cadastro() {
                               </div>
                             </div>
                           )}
+
+                          {/* Detalhe do cupom aplicado */}
+                          {cupomValid && cupomDados && (
+                            <div
+                              className="mt-5 pt-5 border-t"
+                              style={{ borderColor: isDark ? "#2D2925" : "#e6d9d4" }}
+                            >
+                              <div className="flex items-center justify-between text-[13px]">
+                                <span className={isDark ? "text-[#B8AEA4]" : "text-[#5a4a42]/70"}>
+                                  Desconto{" "}
+                                  <span className="font-mono">
+                                    ({cupomDados.discountType === 'PERCENTAGE'
+                                      ? `${cupomDados.percentualDiscount}%`
+                                      : `R$ ${cupomDados.discountAmount.toFixed(2).replace('.', ',')}`})
+                                  </span>
+                                </span>
+                                <span className={`font-semibold ${isDark ? 'text-[#7AB8A4]' : 'text-[#4f6f64]'}`}>
+                                  − R$ {(cupomDados.originalValue - cupomDados.finalValue).toFixed(2).replace('.', ',')}
+                                </span>
+                              </div>
+                              <div
+                                className={`mt-3 px-3 py-2 rounded-xl text-[12px] flex items-start gap-2 ${
+                                  cupomDados.applicationType === 'RECURRING'
+                                    ? isDark ? 'bg-[#4f6f64]/15 text-[#7AB8A4]' : 'bg-[#4f6f64]/8 text-[#4f6f64]'
+                                    : isDark ? 'bg-[#db6f57]/15 text-[#E07A62]' : 'bg-[#db6f57]/8 text-[#db6f57]'
+                                }`}
+                              >
+                                <CheckCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                                <span className="leading-snug">
+                                  {cupomDados.applicationDescription
+                                    ? cupomDados.applicationDescription
+                                    : cupomDados.applicationType === 'RECURRING'
+                                      ? 'Desconto aplicado em todas as cobranças enquanto o cupom estiver vigente.'
+                                      : 'Desconto aplicado somente na primeira cobrança.'}
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </SectionCard>
 
                         {/* Banner final warm sage */}
@@ -2624,7 +2663,8 @@ export default function Cadastro() {
 
                 {activeStep === steps.length - 1 ? (
                   <FormButton
-                    type="submit"
+                    type="button"
+                    onClick={handleSubmit(onSubmit)}
                     icon={Check}
                     iconPosition="left"
                     label="Finalizar cadastro"

@@ -62,17 +62,26 @@ function computePositions(
   // Cards rendered at h * negative_factor appear ABOVE the container top
   // (visible because SVG overflow: visible). This puts them flanking the
   // title / subtitle / CTAs above.
+  // Horizontal inset for larger screens: at ≤1440px (14" laptops) it is 0 —
+  // positions stay as-is. Beyond that, pull cards inward linearly so they
+  // don't drift to the far edges on 24"+ monitors. Clamped at 0.08 (~8% of
+  // width) so ultrawides don't overshoot toward the center column.
+  const inset = Math.min(Math.max((w - 1440) / 1400, 0), 0.08)
+
+  // Organic, slightly asymmetric placement: each card has its own x offset
+  // and uneven vertical step so the column doesn't read as a perfect grid.
+  // Left and right sides are intentionally not exact mirrors.
   const cards = [
-    // Left side (4 cards), staggered in/out from edge
-    { cx: w * 0.04, cy: h * -0.6 },
-    { cx: w * -0.02, cy: h * -0.4 },
-    { cx: w * 0.04, cy: h * -0.2 },
-    { cx: w * -0.02, cy: h * 0.02 },
-    // Right side
-    { cx: w * 0.96, cy: h * -0.6 },
-    { cx: w * 1.02, cy: h * -0.4 },
-    { cx: w * 0.96, cy: h * -0.2 },
-    { cx: w * 1.02, cy: h * 0.02 },
+    // Left side (4 cards)
+    { cx: w * (0.045 + inset), cy: h * -0.37 },
+    { cx: w * (0.082 + inset), cy: h * -0.185 },
+    { cx: w * (0.038 + inset), cy: h * -0.005 },
+    { cx: w * (0.072 + inset), cy: h * 0.178 },
+    // Right side (4 cards)
+    { cx: w * (0.958 - inset), cy: h * -0.345 },
+    { cx: w * (0.922 - inset), cy: h * -0.168 },
+    { cx: w * (0.965 - inset), cy: h * 0.018 },
+    { cx: w * (0.928 - inset), cy: h * 0.192 },
   ]
 
   // viewBox uses pixel-matched units so measurements from the DOM can be
@@ -711,6 +720,15 @@ export function Hero() {
           />
         </div>
       </div>
+
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-30 md:h-20 z-20"
+        style={{
+          background:
+            "linear-gradient(to top, #FAF8F6 0%, rgba(250,248,246,0.7) 55%, rgba(250,248,246,0) 100%)",
+        }}
+      />
 
       <style jsx>{`
         @keyframes gradient {

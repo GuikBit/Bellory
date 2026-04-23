@@ -8,7 +8,8 @@
       "Bash(curl *)",
       "Bash(tasklist *)",
       "Bash(node scripts/optimize-images.mjs)",
-      "Bash(npx next *)"
+      "Bash(npx next *)",
+      "Bash(git -C \"C:/Users/Pluri Sistemas/Desktop/Guikbit/GitHubRepository/Bellory\" diff HEAD -- app/cadastro/page.tsx)"
     ]
   }
 }
