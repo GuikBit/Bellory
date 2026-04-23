@@ -4,12 +4,11 @@ import { Header } from "@/components/header"
 import { useEffect, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "primereact/button"
-import { Card } from "primereact/card"
 import { InputText } from "primereact/inputtext"
 import { InputMask } from "primereact/inputmask"
 import { Dropdown } from "primereact/dropdown"
 import { useForm, Controller, useWatch } from "react-hook-form"
-import { motion, AnimatePresence, useInView } from "framer-motion"
+import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-motion"
 import { 
   Building2, 
   MapPin, 
@@ -34,15 +33,18 @@ import {
   FileText,
   MapPinned,
   Lock,
-  Paintbrush
+  Paintbrush,
+  Pencil
 } from "lucide-react"
 import Link from "next/link"
 import { themes } from "@/utils/themes"
 import { AddressForm } from "@/components/address-form-improved"
 import { ThemeSelector } from "@/components/theme-selector-improved"
 import { useGetPlanos, useMutationPostOrganizacao, useMutationValidaCNPJ, useMutationValidaEmail, useMutationValidaUsername, useMutationValidarCupom } from "@/service/Querys/Organizacao"
+import { consultarCNPJBrasilAPI } from "@/service/API/Organizacao"
 import { useTheme } from "@/contexts/HeroThemeContext"
 import { useConversionTracker } from "@/hooks/tracking"
+import { FormInput, FormSelect, FormPillSelector, FormCheckbox, FormButton } from "@/components/form"
 
 // ============================================================================
 // CONFIGURAÇÃO DOS TEMAS DO CADASTRO
@@ -72,6 +74,7 @@ export const cadastroThemeConfig = {
 
     // Blobs
     blob1: "bg-gradient-to-br from-[#db6f57]/20 to-[#8b3d35]/20",
+    blob2: "bg-gradient-to-br from-[#4f6f64]/15 to-[#5a7d71]/15",
 
     // Section headers
     sectionBg: "bg-[#db6f57]/10",
@@ -120,6 +123,7 @@ export const cadastroThemeConfig = {
 
     // Blobs
     blob1: "bg-gradient-to-br from-[#E07A62]/15 to-[#A8524A]/15",
+    blob2: "bg-gradient-to-br from-[#5a7d71]/12 to-[#4f6f64]/12",
 
     // Section headers
     sectionBg: "bg-[#E07A62]/10",
@@ -236,6 +240,7 @@ const steps = [
 export default function Cadastro() {
   const { isDark } = useTheme()
   const theme = isDark ? cadastroThemeConfig.dark : cadastroThemeConfig.light
+  const prefersReduced = useReducedMotion()
   const searchParams = useSearchParams()
   const { trackCadastroStarted, trackCadastroStep, trackCadastroCompleted, trackCadastroAbandoned, trackPlanSelected } = useConversionTracker()
   const cadastroTracked = useRef(false)
@@ -251,6 +256,11 @@ export default function Cadastro() {
   const [cnpjFound, setCnpjFound] = useState(false)
   const [cnpjError, setCnpjError] = useState("")
   const [cnpjValid, setCnpjValid] = useState(false)
+  const [cnpjEnriching, setCnpjEnriching] = useState(false)
+
+  // Checkboxes para reaproveitar contato da empresa no responsável (reduz fricção)
+  const [sameEmailAsCompany, setSameEmailAsCompany] = useState(true)
+  const [samePhoneAsCompany, setSamePhoneAsCompany] = useState(true)
 
   const [emailFound, setEmailFound] = useState(false)
   const [emailError, setEmailError] = useState("")
@@ -406,6 +416,44 @@ export default function Cadastro() {
       setCnpjError("")
     }
   }, [cnpjValue, validaCNPJ])
+
+  // Auto-fill via BrasilAPI quando CNPJ for considerado válido pelo backend.
+  // Roda só se o usuário ainda não digitou Razão Social manualmente — preserva edição.
+  useEffect(() => {
+    if (!cnpjValid || !cnpjFound) return
+    const cnpjLimpo = cnpjValue?.replace(/\D/g, "") || ""
+    if (cnpjLimpo.length !== 14) return
+
+    const razaoAtual = getValues("razaoSocial")
+    if (razaoAtual && razaoAtual.trim().length > 0) return
+
+    let cancelled = false
+    setCnpjEnriching(true)
+    consultarCNPJBrasilAPI(cnpjLimpo)
+      .then((dados) => {
+        if (cancelled || !dados) return
+        // Só preenche campos vazios — usuário sempre pode editar
+        if (dados.razaoSocial && !getValues("razaoSocial")) {
+          setValue("razaoSocial", dados.razaoSocial, { shouldValidate: true })
+        }
+        if (dados.nomeFantasia && !getValues("nomeFantasia")) {
+          setValue("nomeFantasia", dados.nomeFantasia, { shouldValidate: true })
+        }
+        if (dados.email && !getValues("email")) {
+          setValue("email", dados.email, { shouldValidate: true })
+        }
+        if (dados.telefone && !getValues("telefone")) {
+          setValue("telefone", dados.telefone, { shouldValidate: true })
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setCnpjEnriching(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [cnpjValid, cnpjFound, cnpjValue, getValues, setValue])
 
   // Validação de Email
   const emailValue = watch("email")
@@ -588,11 +636,13 @@ export default function Cadastro() {
       if (!cnpjValid || !cnpjFound) {
         return
       }
-      
+
       fieldsToValidate = [
         "cnpj", "razaoSocial", "nomeFantasia", "email", "telefone",
-        "nomeResponsavel", "emailResponsavel", "telefoneResponsavel", "publicoAlvo", "segmento"
+        "nomeResponsavel", "publicoAlvo", "segmento"
       ]
+      if (!sameEmailAsCompany) fieldsToValidate.push("emailResponsavel")
+      if (!samePhoneAsCompany) fieldsToValidate.push("telefoneResponsavel")
     } else if (activeStep === 1) {
       fieldsToValidate = ["cep", "rua", "numero", "bairro", "cidade", "estado"]
     } else if (activeStep === 2) {
@@ -628,23 +678,32 @@ export default function Cadastro() {
   }
 
   const onSubmit = (data: FormData) => {
+    // Guard duro: o cadastro SÓ pode ser efetivado quando o user está no último step
+    // e clicou explicitamente em "Finalizar cadastro". Qualquer outro disparo
+    // (Enter em input, submit fantasma do form, re-render de animação) é ignorado.
+    if (activeStep !== steps.length - 1) {
+      return
+    }
+
     const selectedPlanData = plano.find(p => p.id === selectedPlan)
     const selectedThemeData = themeArray.find(t => t.id === data.tema)
     
     // Monta objeto base
+    // Inscrição Estadual foi adiada para o onboarding pós-login (campo opcional, payload vazio)
+    // Email/Telefone do responsável: se checkbox marcado, copia da empresa para preservar contrato da API
     const finalData: any = {
       cnpj: data.cnpj,
       razaoSocial: data.razaoSocial,
       nomeFantasia: data.nomeFantasia,
-      inscricaoEstadual: data.inscricaoEstadual || "",
+      inscricaoEstadual: "",
       email: data.email,
       telefone: data.telefone,
       publicoAlvo: data.publicoAlvo,
       segmento: data.segmento,
       responsavel: {
         nome: data.nomeResponsavel,
-        email: data.emailResponsavel,
-        telefone: data.telefoneResponsavel
+        email: sameEmailAsCompany ? data.email : data.emailResponsavel,
+        telefone: samePhoneAsCompany ? data.telefone : data.telefoneResponsavel
       },
       endereco: {
         cep: data.cep,
@@ -724,12 +783,14 @@ export default function Cadastro() {
   const isCurrentStepValid = () => {
     if (activeStep === 0) {
       const values = getValues()
+      const emailRespOk = sameEmailAsCompany || !!values.emailResponsavel
+      const phoneRespOk = samePhoneAsCompany || !!values.telefoneResponsavel
       return !!(
         values.cnpj && values.razaoSocial && values.nomeFantasia &&
         values.email && values.telefone && values.nomeResponsavel &&
-        values.emailResponsavel && values.telefoneResponsavel && 
+        emailRespOk && phoneRespOk &&
         values.publicoAlvo && values.segmento && cnpjValid && cnpjFound &&
-        emailValid && emailFound // CORREÇÃO 3: Adicionar validação de email
+        emailValid && emailFound
       )
     } else if (activeStep === 1) {
       const values = getValues()
@@ -771,34 +832,59 @@ export default function Cadastro() {
             transition={{ duration: 0.5 }}
             className="max-w-2xl mx-auto text-center"
           >
-            <Card className={`p-12 ${theme.cardBg} border-2 ${theme.cardBorder} rounded-3xl shadow-2xl transition-colors duration-300`}>
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: "spring" }}
-                className={`w-24 h-24 rounded-full bg-gradient-to-br ${theme.successIconBg} flex items-center justify-center mx-auto mb-6`}
+            <div
+              className="relative p-12 rounded-3xl border overflow-hidden transition-colors duration-300"
+              style={{
+                backgroundColor: isDark ? "rgba(26,23,21,0.92)" : "rgba(255,255,255,0.92)",
+                backdropFilter: "blur(16px)",
+                borderColor: isDark ? "#3d2e28" : "#db6f5728",
+                boxShadow: isDark
+                  ? "0 30px 60px -20px rgba(0,0,0,0.5), 0 12px 24px -12px rgba(0,0,0,0.3)"
+                  : "0 30px 60px -20px rgba(42,36,32,0.16), 0 12px 24px -12px rgba(42,36,32,0.08)",
+              }}
+            >
+              {/* Decorative serif watermark */}
+              <span
+                aria-hidden
+                className="absolute top-4 right-5 font-serif font-black leading-none select-none pointer-events-none"
+                style={{
+                  fontSize: "clamp(100px, 14vw, 160px)",
+                  color: isDark ? "rgba(224,122,98,0.05)" : "rgba(219,111,87,0.07)",
+                  letterSpacing: "-0.06em",
+                }}
               >
-                <CheckCircle2 className="w-12 h-12 text-white" />
-              </motion.div>
+                Oba
+              </span>
 
-              <h1 className={`font-serif text-4xl font-bold mb-4 ${theme.headingColor} transition-colors duration-300`}>
-                Cadastro Realizado!
-              </h1>
+              <div className="relative">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring" }}
+                  className={`w-24 h-24 rounded-full bg-gradient-to-br ${theme.successIconBg} flex items-center justify-center mx-auto mb-6`}
+                >
+                  <CheckCircle2 className="w-12 h-12 text-white" />
+                </motion.div>
 
-              <p className={`text-lg  mb-8 leading-relaxed transition-colors duration-300`} style={{color: theme.textSecondary }}>
-                Seu cadastro foi realizado com sucesso!<br />
-                Em breve você receberá um email com as instruções para acessar sua conta.
-              </p>
+                <h1 className={`font-serif text-4xl font-bold mb-4 ${theme.headingColor} transition-colors duration-300`}>
+                  Cadastro Realizado!
+                </h1>
 
-              <Link href="/">
-                <Button
-                  label="Voltar para Home"
-                  icon={<ArrowRight className="mr-2" size={16} />}
-                  iconPos="right"
-                  className="bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 hover:scale-105 transition-all px-10 py-4 rounded-xl font-bold shadow-lg"
-                />
-              </Link>
-            </Card>
+                <p className={`text-lg  mb-8 leading-relaxed transition-colors duration-300`} style={{color: theme.textSecondary }}>
+                  Seu cadastro foi realizado com sucesso!<br />
+                  Em breve você receberá um email com as instruções para acessar sua conta.
+                </p>
+
+                <Link href="/">
+                  <Button
+                    label="Voltar para Home"
+                    icon={<ArrowRight className="mr-2" size={16} />}
+                    iconPos="right"
+                    className="bg-gradient-to-r from-[#db6f57] to-[#c55a42] text-white border-0 hover:scale-105 transition-all px-10 py-4 rounded-xl font-bold shadow-lg"
+                  />
+                </Link>
+              </div>
+            </div>
           </motion.div>
         </div>
       </main>
@@ -819,103 +905,245 @@ export default function Cadastro() {
 
       {/* Blobs animados */}
       <motion.div
-        className={`absolute top-0 right-0 w-96 h-96 ${theme.blob1} rounded-full blur-3xl`}
-        animate={{
-          scale: [1, 1.2, 1],
-          x: [0, 50, 0],
-        }}
+        aria-hidden
+        className={`absolute top-0 right-0 w-96 h-96 ${theme.blob1} rounded-full blur-3xl pointer-events-none`}
+        animate={
+          prefersReduced
+            ? undefined
+            : {
+                scale: [1, 1.2, 1],
+                x: [0, 50, 0],
+              }
+        }
         transition={{
           duration: 8,
           repeat: Infinity,
-          ease: "easeInOut"
+          ease: "easeInOut",
+        }}
+      />
+      <motion.div
+        aria-hidden
+        className={`absolute bottom-0 left-0 w-[480px] h-[480px] ${theme.blob2} rounded-full blur-3xl pointer-events-none`}
+        animate={
+          prefersReduced
+            ? undefined
+            : {
+                scale: [1, 1.15, 1],
+                x: [0, -30, 0],
+              }
+        }
+        transition={{
+          duration: 11,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2,
         }}
       />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }} 
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-5xl mx-auto"
         >
           {/* Header do cadastro */}
           <div className="text-center mb-12 mt-20">
-            <h1 className={`font-serif text-4xl md:text-5xl font-bold ${theme.headingColor} mb-4 transition-colors duration-300`}>
-              Crie sua conta no Bellory
+            <div className="inline-flex items-center gap-3 mb-5">
+              <span aria-hidden className="h-px w-10 bg-[#db6f57] opacity-60" />
+              <span className="text-[11px] uppercase tracking-[0.3em] font-semibold text-[#db6f57]">
+                Cadastro
+                <span className="mx-2 opacity-40">·</span>
+                14 dias grátis
+              </span>
+              <span aria-hidden className="h-px w-10 bg-[#db6f57] opacity-60" />
+            </div>
+            <h1 className={`font-serif text-4xl md:text-5xl font-bold ${theme.headingColor} mb-4 leading-[1.05] transition-colors duration-300`}>
+              Crie sua conta{" "}
+              <span
+                className="bg-clip-text text-transparent"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(90deg, #db6f57 0%, #8b3d35 100%)",
+                }}
+              >
+                no Bellory
+              </span>
             </h1>
             <p className={`text-lg ${theme.textSecondary} max-w-2xl mx-auto transition-colors duration-300`}>
               Preencha os dados abaixo para começar a transformar seu negócio
             </p>
           </div>
 
-          <Card className={`md:p-8 p-4 ${theme.cardBg} border-2 ${theme.cardBorder} rounded-3xl shadow-2xl transition-colors duration-300`}>
-            
-            {/* Stepper Header */}
-            <div className="mb-12">
-              <div
-                className="grid items-center justify-center"
-                style={{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }}
+          <div
+            className="relative md:p-8 p-4 rounded-3xl border overflow-hidden transition-colors duration-300"
+            style={{
+              backgroundColor: isDark ? "rgba(26,23,21,0.92)" : "rgba(255,255,255,0.92)",
+              backdropFilter: "blur(16px)",
+              borderColor: isDark ? "#3d2e28" : "#db6f5728",
+              boxShadow: isDark
+                ? "0 30px 60px -20px rgba(0,0,0,0.5), 0 12px 24px -12px rgba(0,0,0,0.3)"
+                : "0 30px 60px -20px rgba(42,36,32,0.16), 0 12px 24px -12px rgba(42,36,32,0.08)",
+            }}
+          >
+            {/* Watermark serif decorativo — número do step animado */}
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={`watermark-${activeStep}`}
+                aria-hidden
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.1 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute top-2 right-5 md:top-4 md:right-8 font-serif font-black leading-none select-none pointer-events-none tabular-nums"
+                style={{
+                  fontSize: "clamp(120px, 16vw, 200px)",
+                  color: isDark ? "rgba(224,122,98,0.05)" : "rgba(219,111,87,0.06)",
+                  letterSpacing: "-0.06em",
+                }}
               >
-                {steps.map((step, index) => {
-                  const isCompleted = completedSteps.includes(step.id)
-                  const isActive = activeStep === step.id
-                  const StepIcon = step.icon
-                  
-                  return (
-                    <div key={step.id} className="relative flex flex-col items-center">
-      
-                      {/* Linha */}
-                      {index < steps.length - 1 && (
-                        <div
-                          className={`absolute top-5 md:top-7 md:left-4/5 left-10/11 md:w-4/11 w-2/12 h-1 rounded-full transition-all duration-300 ${
-                            isCompleted
-                              ? "bg-gradient-to-r from-[#5a7a6e] to-[#4f6f64]"
-                              : `${isDark?"bg-[#e6d9d4]/20":`bg-[#e6d9d4]`}`
-                          }`}
-                        />
-                      )}
+                {String(activeStep + 1).padStart(2, "0")}
+              </motion.span>
+            </AnimatePresence>
 
-                      {/* Ícone */}
-                      <motion.div
-                        animate={{ scale: isActive ? 1.1 : 1 }}
-                        className={`relative z-10 md:w-14 md:h-14 w-10 h-10 md:rounded-2xl rounded-lg flex items-center justify-center transition-all duration-300 ${
-                          isCompleted
-                            ? "bg-gradient-to-br from-[#5a7a6e] to-[#4f6f64] text-white shadow-lg"
-                            : isActive
-                            ? "border-2 text-white shadow-xl"
-                            : `${isDark? `bg-[#e6d9d4]/20 ${theme.textSecondary}`:'bg-[#e6d9d4] text-[#4f6f64]'}`
-                        }`}
-                        style={
-                          isActive && !isCompleted
-                            ? {
-                                background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)`,
-                                borderColor: step.color
-                              }
-                            : {}
-                        }
-                      >
-                        {isCompleted ? (
-                          <Check className="w-6 h-6" />
-                        ) : (
-                          <StepIcon className="w-6 h-6" />
+            <div className="relative">
+              {/* Stepper Header */}
+              <div className="mb-10 md:mb-12">
+                {/* Progress feedback row */}
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] uppercase tracking-wider font-semibold text-[#db6f57]">
+                    Passo {activeStep + 1} de {steps.length}
+                  </span>
+                  <span
+                    className={`text-[11px] tracking-wider font-medium ${
+                      isDark ? "text-[#B8AEA4]/70" : "text-[#5a4a42]/55"
+                    }`}
+                  >
+                    {Math.round(((activeStep + 1) / steps.length) * 100)}% completo
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div
+                  className={`relative h-1 rounded-full overflow-hidden mb-8 md:mb-10 ${
+                    isDark ? "bg-[#2D2925]" : "bg-[#e6d9d4]"
+                  }`}
+                >
+                  <motion.div
+                    className="absolute inset-y-0 left-0 rounded-full overflow-hidden"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, #db6f57 0%, #c55a42 100%)",
+                    }}
+                    initial={false}
+                    animate={{
+                      width: `${((activeStep + 1) / steps.length) * 100}%`,
+                    }}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {!prefersReduced && (
+                      <motion.span
+                        aria-hidden
+                        className="absolute inset-0"
+                        style={{
+                          background:
+                            "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%)",
+                        }}
+                        animate={{ x: ["-100%", "100%"] }}
+                        transition={{
+                          duration: 2.2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          repeatDelay: 0.6,
+                        }}
+                      />
+                    )}
+                  </motion.div>
+                </div>
+
+                {/* Stepper — flexbox-based, no magic numbers */}
+                <div className="flex items-start justify-between gap-1 md:gap-2">
+                  {steps.map((step, index) => {
+                    const isCompleted = completedSteps.includes(step.id)
+                    const isActive = activeStep === step.id
+                    const StepIcon = step.icon
+                    const nextCompleted =
+                      index < steps.length - 1 &&
+                      completedSteps.includes(steps[index].id)
+
+                    return (
+                      <div key={step.id} className="flex items-start flex-1 min-w-0 last:flex-none">
+                        {/* Icon + label column */}
+                        <div className="flex flex-col items-center flex-shrink-0">
+                          <motion.div
+                            animate={{ scale: isActive ? 1.1 : 1 }}
+                            className={`relative z-10 md:w-14 md:h-14 w-10 h-10 md:rounded-2xl rounded-lg flex items-center justify-center transition-all duration-300 ${
+                              isCompleted
+                                ? "bg-gradient-to-br from-[#5a7a6e] to-[#4f6f64] text-white shadow-lg"
+                                : isActive
+                                ? "border-2 text-white shadow-xl"
+                                : `${isDark ? `bg-[#e6d9d4]/20 ${theme.textSecondary}` : "bg-[#e6d9d4] text-[#4f6f64]"}`
+                            }`}
+                            style={
+                              isActive && !isCompleted
+                                ? {
+                                    background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)`,
+                                    borderColor: step.color,
+                                  }
+                                : {}
+                            }
+                          >
+                            {isCompleted ? (
+                              <Check className="w-6 h-6" />
+                            ) : (
+                              <StepIcon className="w-6 h-6" />
+                            )}
+                          </motion.div>
+
+                          <span
+                            className={`hidden md:block text-xs mt-3 font-semibold transition-colors duration-300 text-center ${
+                              isActive ? theme.textPrimary : theme.textMuted
+                            }`}
+                          >
+                            {step.label}
+                          </span>
+                        </div>
+
+                        {/* Connector — flex-grow space between icons */}
+                        {index < steps.length - 1 && (
+                          <div className="flex-1 flex items-center md:h-14 h-10 px-1 md:px-2 min-w-[8px]">
+                            <div
+                              className={`w-full h-0.5 md:h-1 rounded-full transition-all duration-500 ${
+                                nextCompleted
+                                  ? "bg-gradient-to-r from-[#5a7a6e] to-[#4f6f64]"
+                                  : isDark
+                                  ? "bg-[#2D2925]"
+                                  : "bg-[#e6d9d4]"
+                              }`}
+                            />
+                          </div>
                         )}
-                      </motion.div>
-
-                      {/* Label */}
-                      <span
-                        className={`hidden md:block text-xs mt-3 font-semibold transition-colors duration-300 ${
-                          isActive ? theme.textPrimary : theme.textMuted
-                        }`}
-                      >
-                        {step.label}
-                      </span>
-                    </div>
-                  )
-                })}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
 
             {/* Form Content */}
-            <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              onKeyDown={(e) => {
+                // Bloqueia Enter em inputs/selects de disparar submit do form.
+                // O submit só pode acontecer via clique explícito no botão "Finalizar cadastro".
+                // Textarea e o próprio botão submit ficam livres.
+                if (e.key !== "Enter") return
+                const target = e.target as HTMLElement
+                const tag = target.tagName
+                if (tag === "TEXTAREA") return
+                if (tag === "BUTTON" && (target as HTMLButtonElement).type === "submit") return
+                e.preventDefault()
+              }}
+              autoComplete="off"
+            >
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeStep}
@@ -927,26 +1155,36 @@ export default function Cadastro() {
                 >
                   {/* Step 0: Empresa */}
                   {activeStep === 0 && (
-                    <div className="space-y-6">
-                      <div className={`flex items-center gap-3 mb-6 pb-4 border-b ${theme.cardBorder} transition-colors duration-300`}>
-                        <div className={`w-12 h-12 rounded-xl bg-[#db6f57]/10 flex items-center justify-center`}>
+                    <div className="space-y-8">
+                      {/* ─── Section header ─── */}
+                      <div className="flex items-center gap-3 mb-2 transition-colors duration-300">
+                        <div className="w-12 h-12 rounded-xl bg-[#db6f57]/10 flex items-center justify-center">
                           <Building2 className={`w-6 h-6 ${isDark ? 'text-[#E07A62]' : 'text-[#db6f57]'}`} />
                         </div>
                         <div>
-                          <h3 className={`text-xl font-bold ${theme.textPrimary} transition-colors duration-300`}>Informações da Empresa</h3>
-                          <p className={`text-sm ${theme.textMuted} transition-colors duration-300`}>Dados legais do estabelecimento</p>
+                          <h3 className={`font-serif text-xl md:text-2xl font-bold ${theme.textPrimary} transition-colors duration-300 leading-tight`}>
+                            Informações da empresa
+                          </h3>
+                          <p className={`text-sm ${theme.textMuted} transition-colors duration-300 mt-0.5`}>
+                            Comece pelo CNPJ — a gente preenche o resto pra você.
+                          </p>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            CNPJ <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
+                      {/* ─── Bloco: Identificação ─── */}
+                      <div className="space-y-5">
+                        <div className="flex items-center gap-2">
+                          <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                          <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                            Identificação
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                           <Controller
                             name="cnpj"
                             control={control}
-                            rules={{ 
+                            rules={{
                               required: "CNPJ é obrigatório",
                               validate: () => {
                                 if (!cnpjFound) return "Aguardando validação do CNPJ"
@@ -955,201 +1193,127 @@ export default function Cadastro() {
                               }
                             }}
                             render={({ field }) => (
-                              <div className="relative">
-                                <InputMask
-                                  {...field}
-                                  mask="99.999.999/9999-99"
-                                  placeholder="00.000.000/0000-00"
-                                  className={`w-full ${theme.textSecondary} px-4 py-3 border-2 rounded-xl transition-all ${
-                                    errors.cnpj 
-                                      ? "border-[#d15847]" 
-                                      : cnpjValid && cnpjFound
-                                      ? isDark?'border-[#5a7a6e]':"border-green-500"
-                                      : cnpjFound && !cnpjValid
-                                      ? "border-[#d15847]"
-                                      : `${theme.inputBorder} ${theme.inputFocus}`
-                                  }`}
-                                  disabled={isPending}
-                                />
-                                {isPending && (
-                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    <div className="w-5 h-5 border-2 border-[#db6f57] border-t-transparent rounded-full animate-spin" />
-                                  </div>
-                                )}
-                                {cnpjFound && cnpjValid && (
-                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    <Check className={`w-5 h-5 ${isDark? `text-[#5a7a6e]`:`text-green-500`}`} />
-                                  </div>
-                                )}
-                                {cnpjFound && !cnpjValid && (
-                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    <X className="w-5 h-5 text-[#d15847]" />
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          />
-                          {isPending && (
-                            <small className={`${theme.textSecondary} text-sm mt-1 block flex items-center gap-2`}>
-                              <div className="w-3 h-3 border-2 border-[#4f6f64] border-t-transparent rounded-full animate-spin" />
-                              Validando CNPJ...
-                            </small>
-                          )}
-                          {cnpjError && cnpjFound && (
-                            <small className={`text-sm mt-1 block ${cnpjValid ? `${isDark? `text-[#5a7a6e]`:`text-green-600`}` : "text-[#d15847]"}`}>
-                              {cnpjError}
-                            </small>
-                          )}
-                          {errors.cnpj && !cnpjFound && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.cnpj.message}</small>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Inscrição Estadual
-                          </label>
-                          <Controller
-                            name="inscricaoEstadual"
-                            control={control}
-                            render={({ field }) => (
-                              <InputText
-                                {...field}
-                                placeholder="Opcional"
-                                className={`w-full ${theme.textSecondary} px-4 py-3 border-2 rounded-xl focus:border-[#db6f57] transition-all  ${theme.inputBorder} ${theme.inputFocus}`}
+                              <FormInput
+                                label="CNPJ"
+                                mask="99.999.999/9999-99"
+                                placeholder="00.000.000/0000-00"
+                                name={field.name}
+                                value={field.value}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                required
+                                isDark={isDark}
+                                loading={isPending}
+                                loadingMessage="Validando CNPJ..."
+                                success={cnpjFound && cnpjValid}
+                                successMessage={cnpjEnriching ? "Buscando dados da empresa..." : (cnpjFound && cnpjValid ? cnpjError : undefined)}
+                                error={cnpjFound && !cnpjValid ? cnpjError : (errors.cnpj && !cnpjFound ? errors.cnpj.message : undefined)}
+                                autoFocus
                               />
                             )}
                           />
-                        </div>
 
-                        <div className="md:col-span-2">
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Razão Social <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
-                          <Controller
-                            name="razaoSocial"
-                            control={control}
-                            rules={{ required: "Razão Social é obrigatória" }}
-                            render={({ field }) => (
-                              <InputText
-                                {...field}
-                                placeholder="Nome legal da empresa"
-                                className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.razaoSocial ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
-                                }`}
-                              />
-                            )}
-                          />
-                          {errors.razaoSocial && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.razaoSocial.message}</small>
-                          )}
-                        </div>
-
-                        <div className="md:col-span-2">
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Nome Fantasia <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
                           <Controller
                             name="nomeFantasia"
                             control={control}
                             rules={{ required: "Nome Fantasia é obrigatório" }}
                             render={({ field }) => (
-                              <InputText
-                                {...field}
+                              <FormInput
+                                label="Nome fantasia"
                                 placeholder="Como seu negócio é conhecido"
-                                className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.nomeFantasia ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
-                                }`}
+                                name={field.name}
+                                value={field.value}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                required
+                                isDark={isDark}
+                                error={errors.nomeFantasia?.message}
                               />
                             )}
                           />
-                          {errors.nomeFantasia && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.nomeFantasia.message}</small>
-                          )}
+
+                          <div className="md:col-span-2">
+                            <Controller
+                              name="razaoSocial"
+                              control={control}
+                              rules={{ required: "Razão Social é obrigatória" }}
+                              render={({ field }) => (
+                                <FormInput
+                                  label="Razão social"
+                                  placeholder="Nome legal da empresa"
+                                  name={field.name}
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                  onBlur={field.onBlur}
+                                  required
+                                  isDark={isDark}
+                                  loading={cnpjEnriching}
+                                  helperText={!field.value && !cnpjEnriching ? "Vai ser preenchido automaticamente quando você digitar o CNPJ." : undefined}
+                                  error={errors.razaoSocial?.message}
+                                />
+                              )}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* ─── Bloco: Categoria ─── */}
+                      <div className="space-y-5">
+                        <div className="flex items-center gap-2">
+                          <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                          <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                            Categoria do negócio
+                          </span>
                         </div>
 
-                        <div>
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Público Alvo <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
-                          <Controller
-                            name="publicoAlvo"
-                            control={control}
-                            rules={{ required: "Público Alvo é obrigatório" }}
-                            render={({ field }) => (
-                              <Dropdown
-                                {...field}
-                                options={publicoAlvoOptions}
-                                optionLabel="name"
-                                optionValue="code"
-                                placeholder="Selecione o público alvo"
-                                className={`${theme.textSecondary} w-full border-2 rounded-xl transition-all ${theme.inputBg} ${
-                                  errors.publicoAlvo ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
-                                }`}
-                                pt={{
-                                  input: { className: "px-4 py-3 text-sm" },
-                                  trigger: { className: "px-3" },
-                                  panel: { className: `border ${isDark ? 'bg-[#1a1a1a] border-[#333]' : 'bg-white border-[#d8ccc4]'} rounded-xl shadow-lg mt-1 overflow-hidden` },
-                                  list: { className: "py-1" },
-                                  item: ({ context }: any) => ({
-                                    className: `px-4 py-3 text-sm cursor-pointer transition-colors ${
-                                      context?.selected
-                                        ? isDark ? 'bg-[#4f6f64]/30 text-[#7ab8a4]' : 'bg-[#4f6f64]/10 text-[#4f6f64]'
-                                        : isDark ? 'text-[#ccc] hover:bg-[#2a2a2a]' : 'text-[#2a2420] hover:bg-[#f5f0ec]'
-                                    }`
-                                  })
-                                }}
-                              />
-                            )}
-                          />
-                          {errors.publicoAlvo && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.publicoAlvo.message}</small>
+                        <Controller
+                          name="publicoAlvo"
+                          control={control}
+                          rules={{ required: "Público Alvo é obrigatório" }}
+                          render={({ field }) => (
+                            <FormPillSelector
+                              label="Público alvo"
+                              required
+                              isDark={isDark}
+                              options={publicoAlvoOptions}
+                              value={field.value}
+                              onChange={field.onChange}
+                              error={errors.publicoAlvo?.message}
+                            />
                           )}
+                        />
+
+                        <Controller
+                          name="segmento"
+                          control={control}
+                          rules={{ required: "Segmento é obrigatório" }}
+                          render={({ field }) => (
+                            <FormSelect
+                              label="Segmento"
+                              required
+                              isDark={isDark}
+                              options={segmentoOptions}
+                              optionLabel="name"
+                              optionValue="code"
+                              placeholder="Selecione o segmento"
+                              value={field.value}
+                              onChange={(e) => field.onChange(e.value)}
+                              error={errors.segmento?.message}
+                            />
+                          )}
+                        />
+                      </div>
+
+                      {/* ─── Bloco: Contato da empresa ─── */}
+                      <div className="space-y-5">
+                        <div className="flex items-center gap-2">
+                          <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                          <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                            Contato da empresa
+                          </span>
                         </div>
 
-                        <div>
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Segmento <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
-                          <Controller
-                            name="segmento"
-                            control={control}
-                            rules={{ required: "Segmento é obrigatório" }}
-                            render={({ field }) => (
-                              <Dropdown
-                                {...field}
-                                options={segmentoOptions}
-                                optionLabel="name"
-                                optionValue="code"
-                                placeholder="Selecione o segmento"
-                                className={`${theme.textSecondary} w-full border-2 rounded-xl transition-all ${theme.inputBg} ${
-                                  errors.segmento ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
-                                }`}
-                                pt={{
-                                  input: { className: "px-4 py-3 text-sm" },
-                                  trigger: { className: "px-3" },
-                                  panel: { className: `border ${isDark ? 'bg-[#1a1a1a] border-[#333]' : 'bg-white border-[#d8ccc4]'} rounded-xl shadow-lg mt-1 overflow-hidden` },
-                                  list: { className: "py-1" },
-                                  item: ({ context }: any) => ({
-                                    className: `px-4 py-3 text-sm cursor-pointer transition-colors ${
-                                      context?.selected
-                                        ? isDark ? 'bg-[#4f6f64]/30 text-[#7ab8a4]' : 'bg-[#4f6f64]/10 text-[#4f6f64]'
-                                        : isDark ? 'text-[#ccc] hover:bg-[#2a2a2a]' : 'text-[#2a2420] hover:bg-[#f5f0ec]'
-                                    }`
-                                  })
-                                }}
-                              />
-                            )}
-                          />
-                          {errors.segmento && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.segmento.message}</small>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Email da Empresa <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                           <Controller
                             name="email"
                             control={control}
@@ -1162,164 +1326,163 @@ export default function Cadastro() {
                               validate: () => {
                                 const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
                                 const email = getValues("email")
-                                
-                                if (!email || !emailRegex.test(email)) return true // Deixa a validação de pattern cuidar disso
+                                if (!email || !emailRegex.test(email)) return true
                                 if (!emailFound) return "Aguardando validação do email"
                                 if (!emailValid) return "Email já cadastrado"
                                 return true
                               }
                             }}
                             render={({ field }) => (
-                              <div className="relative">
-                                <InputText
-                                  {...field}
-                                  type="email"
-                                  placeholder="contato@empresa.com"
-                                  className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                    errors.email 
-                                      ? "border-[#d15847]" 
-                                      : emailValid && emailFound
-                                      ? isDark?'border-[#5a7a6e]':"border-green-500"
-                                      : emailFound && !emailValid
-                                      ? "border-[#d15847]"
-                                      : `${theme.inputBorder} ${theme.inputFocus}`
-                                  }`}
-                                  disabled={isPendingEmail}
-                                />
-                                {isPendingEmail && (
-                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    <div className="w-5 h-5 border-2 border-[#db6f57] border-t-transparent rounded-full animate-spin" />
-                                  </div>
-                                )}
-                                {emailFound && emailValid && (
-                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    <Check className={`w-5 h-5 ${isDark? `text-[#5a7a6e]`:`text-green-500`}`} />
-                                  </div>
-                                )}
-                                {emailFound && !emailValid && (
-                                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                    <X className="w-5 h-5 text-[#d15847]" />
-                                  </div>
-                                )}
-                              </div>
+                              <FormInput
+                                label="E-mail da empresa"
+                                type="email"
+                                placeholder="contato@empresa.com"
+                                name={field.name}
+                                value={field.value}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                required
+                                isDark={isDark}
+                                loading={isPendingEmail}
+                                loadingMessage="Validando email..."
+                                success={emailFound && emailValid}
+                                successMessage={emailFound && emailValid ? emailError : undefined}
+                                error={emailFound && !emailValid ? emailError : (errors.email && !emailFound ? errors.email.message : undefined)}
+                              />
                             )}
                           />
-                          {isPendingEmail && (
-                            <small className={`${theme.textSecondary} text-sm mt-1 block flex items-center gap-2`}>
-                              <div className="w-3 h-3 border-2 border-[#4f6f64] border-t-transparent rounded-full animate-spin" />
-                              Validando email...
-                            </small>
-                          )}
-                          {emailError && emailFound && (
-                            <small className={`text-sm mt-1 block ${emailValid ? `${isDark? `text-[#5a7a6e]`:`text-green-600`}` : "text-[#d15847]"}`}>
-                              {emailError}
-                            </small>
-                          )}
-                          {errors.email && !emailFound && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.email.message}</small>
-                          )}
-                        </div>
 
-                        <div>
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Telefone da Empresa <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
                           <Controller
                             name="telefone"
                             control={control}
                             rules={{ required: "Telefone é obrigatório" }}
                             render={({ field }) => (
-                              <InputMask
-                                {...field}
+                              <FormInput
+                                label="Telefone da empresa"
                                 mask="(99) 99999-9999"
                                 placeholder="(00) 00000-0000"
-                                className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.telefone ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
-                                }`}
+                                name={field.name}
+                                value={field.value}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                required
+                                isDark={isDark}
+                                error={errors.telefone?.message}
                               />
                             )}
                           />
-                          {errors.telefone && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.telefone.message}</small>
-                          )}
+                        </div>
+                      </div>
+
+                      {/* ─── Bloco: Responsável ─── */}
+                      <div className="space-y-5">
+                        <div className="flex items-center gap-2">
+                          <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                          <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                            Pessoa responsável
+                          </span>
                         </div>
 
-                        <div className="md:col-span-2">
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Nome do Responsável <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
-                          <Controller
-                            name="nomeResponsavel"
-                            control={control}
-                            rules={{ required: "Nome do Responsável é obrigatório" }}
-                            render={({ field }) => (
-                              <InputText
-                                {...field}
-                                placeholder="Nome completo do responsável"
-                                className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.nomeResponsavel ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
-                                }`}
-                              />
-                            )}
-                          />
-                          {errors.nomeResponsavel && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.nomeResponsavel.message}</small>
+                        <Controller
+                          name="nomeResponsavel"
+                          control={control}
+                          rules={{ required: "Nome do Responsável é obrigatório" }}
+                          render={({ field }) => (
+                            <FormInput
+                              label="Nome do responsável"
+                              placeholder="Nome completo de quem gerencia"
+                              name={field.name}
+                              value={field.value}
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              required
+                              isDark={isDark}
+                              error={errors.nomeResponsavel?.message}
+                            />
                           )}
+                        />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <FormCheckbox
+                            label="Mesmo e-mail da empresa"
+                            description="Marque se o responsável usa o e-mail informado acima."
+                            checked={sameEmailAsCompany}
+                            onChange={setSameEmailAsCompany}
+                            isDark={isDark}
+                          />
+                          <FormCheckbox
+                            label="Mesmo telefone da empresa"
+                            description="Marque se o responsável atende no mesmo número."
+                            checked={samePhoneAsCompany}
+                            onChange={setSamePhoneAsCompany}
+                            isDark={isDark}
+                          />
                         </div>
 
-                        <div>
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Email do Responsável <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
-                          <Controller
-                            name="emailResponsavel"
-                            control={control}
-                            rules={{
-                              required: "Email do Responsável é obrigatório",
-                              pattern: {
-                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                message: "Email inválido",
-                              },
-                            }}
-                            render={({ field }) => (
-                              <InputText
-                                {...field}
-                                type="email"
-                                placeholder="responsavel@email.com"
-                                className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.emailResponsavel ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
-                                }`}
-                              />
-                            )}
-                          />
-                          {errors.emailResponsavel && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.emailResponsavel.message}</small>
-                          )}
-                        </div>
+                        <AnimatePresence initial={false}>
+                          {(!sameEmailAsCompany || !samePhoneAsCompany) && (
+                            <motion.div
+                              key="responsavel-extra"
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.25, ease: "easeOut" }}
+                              className="overflow-hidden"
+                            >
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1">
+                                {!sameEmailAsCompany && (
+                                  <Controller
+                                    name="emailResponsavel"
+                                    control={control}
+                                    rules={{
+                                      required: "Email do Responsável é obrigatório",
+                                      pattern: {
+                                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                        message: "Email inválido",
+                                      },
+                                    }}
+                                    render={({ field }) => (
+                                      <FormInput
+                                        label="E-mail do responsável"
+                                        type="email"
+                                        placeholder="responsavel@email.com"
+                                        name={field.name}
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        onBlur={field.onBlur}
+                                        required
+                                        isDark={isDark}
+                                        error={errors.emailResponsavel?.message}
+                                      />
+                                    )}
+                                  />
+                                )}
 
-                        <div>
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Telefone do Responsável <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
-                          <Controller
-                            name="telefoneResponsavel"
-                            control={control}
-                            rules={{ required: "Telefone do Responsável é obrigatório" }}
-                            render={({ field }) => (
-                              <InputMask
-                                {...field}
-                                mask="(99) 99999-9999"
-                                placeholder="(00) 00000-0000"
-                                className={`${theme.textSecondary} w-full px-4 py-3 border-2 rounded-xl transition-all ${
-                                  errors.telefoneResponsavel ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
-                                }`}
-                              />
-                            )}
-                          />
-                          {errors.telefoneResponsavel && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.telefoneResponsavel.message}</small>
+                                {!samePhoneAsCompany && (
+                                  <Controller
+                                    name="telefoneResponsavel"
+                                    control={control}
+                                    rules={{ required: "Telefone do Responsável é obrigatório" }}
+                                    render={({ field }) => (
+                                      <FormInput
+                                        label="Telefone do responsável"
+                                        mask="(99) 99999-9999"
+                                        placeholder="(00) 00000-0000"
+                                        name={field.name}
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        onBlur={field.onBlur}
+                                        required
+                                        isDark={isDark}
+                                        error={errors.telefoneResponsavel?.message}
+                                      />
+                                    )}
+                                  />
+                                )}
+                              </div>
+                            </motion.div>
                           )}
-                        </div>
+                        </AnimatePresence>
                       </div>
                     </div>
                   )}
@@ -1336,162 +1499,206 @@ export default function Cadastro() {
 
                   {/* Step 2: Acesso */}
                   {activeStep === 2 && (
-                    <div className="space-y-6">
-                      <div className={`flex items-center gap-3 mb-6 pb-4 border-b ${theme.cardBorder} transition-colors duration-300`}>
-                        <div className={`w-12 h-12 rounded-xl ${theme.sectionIconBg('#8b3d35')} flex items-center justify-center`}>
+                    <div className="space-y-8">
+                      {/* ─── Section header ─── */}
+                      <div className="flex items-center gap-3 mb-2 transition-colors duration-300">
+                        <div className="w-12 h-12 rounded-xl bg-[#8b3d35]/10 flex items-center justify-center">
                           <KeyRound className={`w-6 h-6 ${isDark ? 'text-[#A8524A]' : 'text-[#8b3d35]'}`} />
                         </div>
                         <div>
-                          <h3 className={`text-xl font-bold ${theme.textPrimary} transition-colors duration-300`}>Acesso ao Sistema</h3>
-                          <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>Crie suas credenciais</p>
+                          <h3 className={`font-serif text-xl md:text-2xl font-bold ${theme.textPrimary} transition-colors duration-300 leading-tight`}>
+                            Acesso ao sistema
+                          </h3>
+                          <p className={`text-sm ${theme.textMuted} transition-colors duration-300 mt-0.5`}>
+                            Suas credenciais pra entrar no Bellory.
+                          </p>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="md:col-span-2">
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Login/Usuário <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
+                      {/* ─── Bloco: Identificação de usuário ─── */}
+                      <div className="space-y-5">
+                        <div className="flex items-center gap-2">
+                          <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                          <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                            Nome de usuário
+                          </span>
+                        </div>
+
+                        <Controller
+                          name="login"
+                          control={control}
+                          rules={{
+                            required: "Login é obrigatório",
+                            minLength: {
+                              value: 6,
+                              message: "Mínimo 6 caracteres"
+                            },
+                            validate: () => {
+                              const username = getValues("login")
+                              if (!username || username.length < 6) return true
+                              if (!usernameFound) return "Aguardando validação do username"
+                              if (!usernameValid) return "Username já cadastrado"
+                              return true
+                            }
+                          }}
+                          render={({ field }) => (
+                            <FormInput
+                              label="Login / usuário"
+                              placeholder="ex: barbeariadojoao"
+                              name={field.name}
+                              value={field.value}
+                              onBlur={field.onBlur}
+                              onChange={(e: any) => field.onChange(e.target.value.toLowerCase())}
+                              required
+                              isDark={isDark}
+                              autoFocus
+                              loading={isPendingUsername}
+                              loadingMessage="Validando username..."
+                              success={usernameFound && usernameValid}
+                              successMessage={usernameFound && usernameValid ? usernameError : undefined}
+                              error={
+                                usernameFound && !usernameValid
+                                  ? usernameError
+                                  : (errors.login && !usernameFound ? errors.login.message : undefined)
+                              }
+                              helperText={!field.value ? "Mínimo 6 caracteres · só letras minúsculas e números" : undefined}
+                            />
+                          )}
+                        />
+                      </div>
+
+                      {/* ─── Bloco: Senha ─── */}
+                      <div className="space-y-5">
+                        <div className="flex items-center gap-2">
+                          <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                          <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                            Senha de acesso
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                           <Controller
-                            name="login"
+                            name="senha"
                             control={control}
-                            rules={{ 
-                              required: "Login é obrigatório",
+                            rules={{
+                              required: "Senha é obrigatória",
                               minLength: {
                                 value: 6,
                                 message: "Mínimo 6 caracteres"
-                              },
-                              validate: () => {
-                                const username = getValues("login")
-                                
-                                if (!username || username.length < 6) return true // Deixa a validação de minLength cuidar disso
-                                if (!usernameFound) return "Aguardando validação do username"
-                                if (!usernameValid) return "Username já cadastrado"
-                                return true
                               }
                             }}
                             render={({ field }) => (
-                              <div className="relative">
-                                <InputText
-                                  {...field}
-                                  onChange={(e) => field.onChange(e.target.value.toLowerCase())}
-                                  placeholder="Escolha um nome de usuário (mínimo 6 caracteres)"
-                                  className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${theme.textSecondary} ${
-                                    errors.login
-                                      ? "border-[#d15847]"
-                                      : usernameValid && usernameFound
-                                      ? isDark ? "border-[#5a7a6e]" : "border-green-500"
-                                      : usernameFound && !usernameValid
-                                      ? "border-[#d15847]"
-                                      : `${theme.inputBorder} ${theme.inputFocus}`
-                                  }`}
-                                  style={{ textTransform: "lowercase" }}
-                                />
-                                {/* Indicador sempre visível no canto direito */}
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                  {isPendingUsername && (
-                                    <div className={`w-5 h-5 border-2 ${isDark ? 'border-[#A8524A]' : 'border-[#8b3d35]'} border-t-transparent rounded-full animate-spin`} />
-                                  )}
-                                  {!isPendingUsername && usernameFound && usernameValid && (
-                                    <Check className={`w-5 h-5 ${isDark ? 'text-[#5a7a6e]' : 'text-green-500'}`} />
-                                  )}
-                                  {!isPendingUsername && usernameFound && !usernameValid && (
-                                    <X className="w-5 h-5 text-[#d15847]" />
-                                  )}
-                                </div>
-                              </div>
+                              <FormInput
+                                label="Senha"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Mínimo 6 caracteres"
+                                name={field.name}
+                                value={field.value}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                required
+                                isDark={isDark}
+                                showStatusIcon={false}
+                                error={errors.senha?.message}
+                                endAdornment={
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                                    className={`transition-colors ${
+                                      isDark
+                                        ? "text-[#B8AEA4] hover:text-[#E07A62]"
+                                        : "text-[#5a4a42]/55 hover:text-[#db6f57]"
+                                    }`}
+                                  >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                  </button>
+                                }
+                              />
                             )}
                           />
-                          {isPendingUsername && (
-                            <small className={`${theme.textSecondary} text-sm mt-1 block flex items-center gap-2`}>
-                              <div className={`w-3 h-3 border-2 ${isDark ? 'border-[#6B8F82]' : 'border-[#4f6f64]'} border-t-transparent rounded-full animate-spin`} />
-                              Validando username...
-                            </small>
-                          )}
-                          {usernameError && usernameFound && !isPendingUsername && (
-                            <small className={`text-sm mt-1 block ${usernameValid ? (isDark ? 'text-[#5a7a6e]' : 'text-green-600') : "text-[#d15847]"}`}>
-                              {usernameError}
-                            </small>
-                          )}
-                          {errors.login && !usernameFound && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.login.message}</small>
-                          )}
-                        </div>
 
-                        <div>
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Senha <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
-                          <div className="relative">
-                            <Controller
-                              name="senha"
-                              control={control}
-                              rules={{
-                                required: "Senha é obrigatória",
-                                minLength: {
-                                  value: 6,
-                                  message: "Mínimo 6 caracteres"
+                          <Controller
+                            name="confSenha"
+                            control={control}
+                            rules={{
+                              required: "Confirme a senha",
+                              validate: (value) =>
+                                value === watch("senha") || "As senhas não coincidem"
+                            }}
+                            render={({ field }) => (
+                              <FormInput
+                                label="Confirmar senha"
+                                type={showConfPassword ? "text" : "password"}
+                                placeholder="Digite a senha novamente"
+                                name={field.name}
+                                value={field.value}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                required
+                                isDark={isDark}
+                                showStatusIcon={false}
+                                error={errors.confSenha?.message}
+                                success={
+                                  !!field.value &&
+                                  !!watch("senha") &&
+                                  field.value === watch("senha") &&
+                                  !errors.confSenha
                                 }
-                              }}
-                              render={({ field }) => (
-                                <InputText
-                                  {...field}
-                                  type={showPassword ? "text" : "password"}
-                                  placeholder="Mínimo 6 caracteres"
-                                  className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${theme.textSecondary} ${
-                                    errors.senha ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
-                                  }`}
-                                />
-                              )}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowPassword(!showPassword)}
-                              className={`absolute right-4 top-1/2 -translate-y-1/2 ${theme.textSecondary} ${isDark ? 'hover:text-[#A8524A]' : 'hover:text-[#8b3d35]'}`}
-                            >
-                              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
-                          </div>
-                          {errors.senha && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.senha.message}</small>
-                          )}
+                                successMessage={
+                                  !!field.value &&
+                                  !!watch("senha") &&
+                                  field.value === watch("senha") &&
+                                  !errors.confSenha
+                                    ? "Senhas conferem"
+                                    : undefined
+                                }
+                                endAdornment={
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowConfPassword(!showConfPassword)}
+                                    aria-label={showConfPassword ? "Ocultar senha" : "Mostrar senha"}
+                                    className={`transition-colors ${
+                                      isDark
+                                        ? "text-[#B8AEA4] hover:text-[#E07A62]"
+                                        : "text-[#5a4a42]/55 hover:text-[#db6f57]"
+                                    }`}
+                                  >
+                                    {showConfPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                  </button>
+                                }
+                              />
+                            )}
+                          />
                         </div>
 
-                        <div>
-                          <label className={`block text-sm font-semibold ${theme.textPrimary} mb-2 transition-colors duration-300`}>
-                            Confirmar Senha <span className={`${isDark ? 'text-[#E07A62]' : 'text-[#d15847]'}`}>*</span>
-                          </label>
-                          <div className="relative">
-                            <Controller
-                              name="confSenha"
-                              control={control}
-                              rules={{
-                                required: "Confirme a senha",
-                                validate: (value) =>
-                                  value === watch("senha") || "As senhas não coincidem"
-                              }}
-                              render={({ field }) => (
-                                <InputText
-                                  {...field}
-                                  type={showConfPassword ? "text" : "password"}
-                                  placeholder="Digite a senha novamente"
-                                  className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${theme.textSecondary} ${
-                                    errors.confSenha ? "border-[#d15847]" : `${theme.inputBorder} ${theme.inputFocus}`
-                                  }`}
-                                />
-                              )}
+                        {/* Dica de segurança discreta */}
+                        <div
+                          className="rounded-2xl border p-4 backdrop-blur"
+                          style={{
+                            backgroundColor: isDark
+                              ? "rgba(224,122,98,0.06)"
+                              : "rgba(219,111,87,0.05)",
+                            borderColor: isDark
+                              ? "rgba(224,122,98,0.18)"
+                              : "rgba(219,111,87,0.18)",
+                          }}
+                        >
+                          <p
+                            className={`text-[12px] leading-relaxed flex items-start gap-2 ${
+                              isDark ? "text-[#B8AEA4]" : "text-[#5a4a42]/80"
+                            }`}
+                          >
+                            <KeyRound
+                              className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${
+                                isDark ? "text-[#E07A62]" : "text-[#db6f57]"
+                              }`}
                             />
-                            <button
-                              type="button"
-                              onClick={() => setShowConfPassword(!showConfPassword)}
-                              className={`absolute right-4 top-1/2 -translate-y-1/2 ${theme.textSecondary} ${isDark ? 'hover:text-[#A8524A]' : 'hover:text-[#8b3d35]'}`}
-                            >
-                              {showConfPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
-                          </div>
-                          {errors.confSenha && (
-                            <small className="text-[#d15847] text-sm mt-1 block">{errors.confSenha.message}</small>
-                          )}
+                            <span>
+                              Use uma senha forte — combine letras maiúsculas, minúsculas, números e símbolos.
+                              Evite reaproveitar senha de outros lugares.
+                            </span>
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -1508,29 +1715,52 @@ export default function Cadastro() {
 
                   {/* Step 4: Plano */}
                   {activeStep === 4 && (
-                    <div className="space-y-6">
-                      <div className={`flex items-center gap-3 mb-6 pb-4 border-b ${theme.cardBorder} transition-colors duration-300`}>
-                        <div className={`w-12 h-12 rounded-xl ${theme.sectionIconBg('#4f6f64')} flex items-center justify-center`}>
+                    <div className="space-y-8">
+                      {/* ─── Section header ─── */}
+                      <div className="flex items-center gap-3 mb-2 transition-colors duration-300">
+                        <div className="w-12 h-12 rounded-xl bg-[#4f6f64]/10 flex items-center justify-center">
                           <CreditCard className={`w-6 h-6 ${isDark ? 'text-[#6B8F82]' : 'text-[#4f6f64]'}`} />
                         </div>
                         <div>
-                          <h3 className={`text-xl font-bold ${theme.textPrimary} transition-colors duration-300`}>Escolha seu plano</h3>
-                          <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>Selecione o plano ideal para você</p>
+                          <h3 className={`font-serif text-xl md:text-2xl font-bold ${theme.textPrimary} transition-colors duration-300 leading-tight`}>
+                            Escolha seu plano
+                          </h3>
+                          <p className={`text-sm ${theme.textMuted} transition-colors duration-300 mt-0.5`}>
+                            Comece grátis. Você só paga depois dos 14 dias se quiser continuar.
+                          </p>
                         </div>
                       </div>
 
-                      <div className={`${theme.infoBg} rounded-2xl p-6 mb-6 transition-colors duration-300`}>
-                        <p className={`text-center ${theme.infoText} font-semibold transition-colors duration-300`}>
-                          ✅ 14 dias grátis • Sem cartão de crédito • Cancele quando quiser
-                        </p>
-                      </div>
+                      {/* ─── Bloco: Período de cobrança ─── */}
+                      <div className="space-y-5">
+                        <div className="flex items-center gap-2">
+                          <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                          <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                            Período de cobrança
+                          </span>
+                        </div>
 
-                      {/* Toggle de período */}
-                      <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-8">
-                        <div className="hidden md:block w-[150px]" />
+                        {/* Tip card warm translúcido */}
+                        <div
+                          className="rounded-2xl border p-4 backdrop-blur"
+                          style={{
+                            backgroundColor: isDark ? "rgba(107,143,130,0.08)" : "rgba(79,111,100,0.06)",
+                            borderColor: isDark ? "rgba(107,143,130,0.20)" : "rgba(79,111,100,0.20)",
+                          }}
+                        >
+                          <p className={`text-[13px] leading-relaxed flex items-center justify-center gap-2 flex-wrap ${isDark ? 'text-[#F5F0EB]' : 'text-[#2a2420]'} font-medium`}>
+                            <CheckCircle className={`w-4 h-4 flex-shrink-0 ${isDark ? 'text-[#6B8F82]' : 'text-[#4f6f64]'}`} />
+                            <span>14 dias grátis</span>
+                            <span className={isDark ? 'text-[#7A716A]' : 'text-[#5a4a42]/40'}>·</span>
+                            <span>Sem cartão de crédito</span>
+                            <span className={isDark ? 'text-[#7A716A]' : 'text-[#5a4a42]/40'}>·</span>
+                            <span>Cancele quando quiser</span>
+                          </p>
+                        </div>
 
-                        <div className="flex items-center justify-center gap-4">
-                          <span className={`font-semibold transition-colors duration-300 ${!isAnnual ? theme.textPrimary : theme.textSecondary}`}>
+                        {/* Toggle Mensal/Anual */}
+                        <div className="flex items-center justify-center gap-4 pt-2">
+                          <span className={`text-[13px] font-semibold transition-colors duration-300 ${!isAnnual ? (isDark ? 'text-[#F5F0EB]' : 'text-[#2a2420]') : (isDark ? 'text-[#7A716A]' : 'text-[#5a4a42]/55')}`}>
                             Mensal
                           </span>
 
@@ -1538,34 +1768,55 @@ export default function Cadastro() {
                             type="button"
                             onClick={() => { setIsAnnual(!isAnnual); setCupomValid(false); setCupomError(""); setCupomDados(null); }}
                             className="relative w-16 h-8 rounded-full transition-colors duration-300"
-                            style={{ backgroundColor: isAnnual ? '#4f6f64' : '#d8ccc4' }}
+                            style={{
+                              background: isAnnual
+                                ? 'linear-gradient(90deg, #db6f57 0%, #c55a42 100%)'
+                                : isDark ? '#2D2925' : '#e6d9d4',
+                              boxShadow: isAnnual ? '0 4px 12px rgba(219,111,87,0.32)' : 'none',
+                            }}
+                            aria-label={isAnnual ? "Mudar para Mensal" : "Mudar para Anual"}
                           >
-                            <div 
+                            <div
                               className="absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300"
                               style={{ transform: isAnnual ? 'translateX(32px)' : 'translateX(0)' }}
                             />
                           </button>
 
-                          <span className={`font-semibold transition-colors duration-300 ${isAnnual ? theme.textPrimary : theme.textSecondary}`}>
+                          <span className={`text-[13px] font-semibold transition-colors duration-300 ${isAnnual ? (isDark ? 'text-[#F5F0EB]' : 'text-[#2a2420]') : (isDark ? 'text-[#7A716A]' : 'text-[#5a4a42]/55')}`}>
                             Anual
                           </span>
-                        </div>
 
-                        <div className="w-full md:w-[150px] flex items-center justify-center">
-                          {isAnnual && (
-                            <motion.span 
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              className="px-3 py-1 bg-[#5a7a6e] text-white text-sm font-bold rounded-full"
-                            >
-                              Economize 20%
-                            </motion.span>
-                          )}
+                          <AnimatePresence initial={false}>
+                            {isAnnual && (
+                              <motion.span
+                                initial={{ opacity: 0, scale: 0.85, x: -8 }}
+                                animate={{ opacity: 1, scale: 1, x: 0 }}
+                                exit={{ opacity: 0, scale: 0.85, x: -8 }}
+                                transition={{ duration: 0.25, ease: "easeOut" }}
+                                className="px-2.5 py-1 text-[11px] font-bold rounded-full text-white"
+                                style={{
+                                  background: "linear-gradient(135deg, #5a7a6e 0%, #4f6f64 100%)",
+                                  boxShadow: "0 4px 10px rgba(79,111,100,0.32)",
+                                }}
+                              >
+                                Economize 20%
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
                         </div>
                       </div>
 
+                      {/* ─── Bloco: Planos disponíveis ─── */}
+                      <div className="space-y-5">
+                        <div className="flex items-center gap-2">
+                          <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                          <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                            Planos disponíveis
+                          </span>
+                        </div>
+
                       {/* Cards de planos selecionáveis */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {plano.map((plan) => {
                           const hasMonthlyPromo =
                             !isAnnual && plan.promoMensalAtiva && plan.promoMensalPreco != null && plan.promoMensalPreco > 0
@@ -1596,19 +1847,34 @@ export default function Cadastro() {
                               key={plan.id}
                               type="button"
                               onClick={() => { setSelectedPlan(plan.id); setCupomValid(false); setCupomError(""); setCupomDados(null); }}
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              className={`relative p-6 rounded-2xl border-2 transition-all duration-300 text-left ${
-                                isSelected
-                                  ? theme.planSelected + ' shadow-xl'
-                                  : theme.planBorder + ' ' + theme.planBg + ' ' + theme.planHover + ' hover:shadow-lg'
-                              }`}
+                              whileHover={{ y: -4, scale: 1.01 }}
+                              whileTap={{ scale: 0.99 }}
+                              className="relative p-6 rounded-2xl border transition-colors duration-300 text-left backdrop-blur"
+                              style={{
+                                backgroundColor: isSelected
+                                  ? (isDark ? "rgba(224,122,98,0.08)" : "rgba(219,111,87,0.05)")
+                                  : (isDark ? "rgba(26,23,21,0.6)" : "rgba(255,255,255,0.85)"),
+                                borderColor: isSelected
+                                  ? (isDark ? "#E07A62" : "#db6f57")
+                                  : (isDark ? "#2D2925" : "#e6d9d4"),
+                                borderWidth: isSelected ? "1.5px" : "1px",
+                                boxShadow: isSelected
+                                  ? (isDark
+                                      ? "0 16px 36px -10px rgba(224,122,98,0.32), 0 4px 12px -4px rgba(224,122,98,0.18)"
+                                      : "0 16px 36px -10px rgba(219,111,87,0.28), 0 4px 12px -4px rgba(219,111,87,0.14)")
+                                  : (isDark
+                                      ? "0 4px 16px -4px rgba(0,0,0,0.4)"
+                                      : "0 4px 16px -4px rgba(42,36,32,0.06)"),
+                              }}
                             >
                               {/* Badge popular */}
                               {plan.badge && (
-                                <div 
-                                  className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white shadow-lg"
-                                  style={{ background: `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)` }}
+                                <div
+                                  className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold text-white"
+                                  style={{
+                                    background: `linear-gradient(135deg, ${plan.color}, ${plan.color}cc)`,
+                                    boxShadow: `0 6px 14px ${plan.color}55`,
+                                  }}
                                 >
                                   {plan.badge}
                                 </div>
@@ -1616,12 +1882,20 @@ export default function Cadastro() {
 
                               {/* Checkbox de seleção */}
                               <div className="absolute top-4 right-4">
-                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
-                                  isSelected
-                                    ? (isDark ? 'bg-[#E07A62] border-[#E07A62]' : 'bg-[#4f6f64] border-[#4f6f64]')
-                                    : theme.inputBorder
-                                }`}>
-                                  {isSelected && <Check className="w-4 h-4 text-white" />}
+                                <div
+                                  className="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300"
+                                  style={
+                                    isSelected
+                                      ? {
+                                          background: "linear-gradient(135deg, #db6f57 0%, #c55a42 100%)",
+                                          boxShadow: "0 4px 10px rgba(219,111,87,0.35)",
+                                        }
+                                      : {
+                                          border: `1.5px solid ${isDark ? "#2D2925" : "#e6d9d4"}`,
+                                        }
+                                  }
+                                >
+                                  {isSelected && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
                                 </div>
                               </div>
 
@@ -1767,441 +2041,613 @@ export default function Cadastro() {
                                 </div>
                               </div>
 
-                              {/* Indicador de seleção */}
-                              {isSelected && (
-                                <motion.div
-                                  initial={{ opacity: 0 }}
-                                  animate={{ opacity: 1 }}
-                                  className="absolute inset-0 rounded-2xl pointer-events-none"
-                                  style={{
-                                    boxShadow: `0 0 0 3px ${plan.color}20`
-                                  }}
-                                />
-                              )}
                             </motion.button>
                           )
                         })}
                       </div>
+                      </div>
 
-                      {/* Cupom de desconto */}
-                      <div className={`${theme.cardBg} border ${theme.cardBorder} rounded-2xl p-6 transition-colors duration-300`}>
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className={`w-10 h-10 rounded-lg ${theme.sectionIconBg('#db6f57')} flex items-center justify-center`}>
-                            <Gift className={`w-5 h-5 ${isDark ? 'text-[#E07A62]' : 'text-[#db6f57]'}`} />
-                          </div>
-                          <div>
-                            <h4 className={`font-bold ${theme.textPrimary} transition-colors duration-300`}>Cupom de Desconto</h4>
-                            <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>Possui um cupom? Insira abaixo</p>
-                          </div>
+                      {/* ─── Bloco: Cupom de desconto ─── */}
+                      <div className="space-y-5">
+                        <div className="flex items-center gap-2">
+                          <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                          <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                            Cupom de desconto
+                          </span>
                         </div>
-                        <div className="flex gap-3">
-                          <div className="relative flex-1">
-                            <InputText
+
+                        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
+                          <div className="flex-1">
+                            <FormInput
+                              label="Código do cupom"
+                              icon={Gift}
+                              placeholder={selectedPlan ? "ex: BELLORY10" : "Selecione um plano primeiro"}
                               value={cupomCodigo}
-                              onChange={(e) => {
+                              onChange={(e: any) => {
                                 setCupomCodigo(e.target.value.toUpperCase())
                                 setCupomValid(false)
                                 setCupomError("")
                                 setCupomDados(null)
                               }}
-                              placeholder={selectedPlan ? "Digite o código do cupom" : "Selecione um plano primeiro"}
-                              readOnly={!selectedPlan}
-                              className={`w-full px-4 py-3 pr-12 border-2 rounded-xl transition-all ${theme.textSecondary} ${
-                                !selectedPlan
-                                  ? `${theme.inputBorder} opacity-60 cursor-not-allowed`
-                                  : cupomValid
-                                  ? isDark ? "border-[#5a7a6e]" : "border-green-500"
-                                  : cupomError && !cupomValid
-                                  ? "border-[#d15847]"
-                                  : `${theme.inputBorder} ${theme.inputFocus}`
-                              }`}
-                              style={{ textTransform: "uppercase" }}
+                              disabled={!selectedPlan}
+                              isDark={isDark}
+                              loading={isPendingCupom}
+                              loadingMessage="Validando cupom..."
+                              success={cupomValid}
+                              successMessage={cupomValid ? cupomError : undefined}
+                              error={!cupomValid && cupomError ? cupomError : undefined}
+                              inputClassName="uppercase"
                             />
-                            {cupomValid && (
-                              <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                <Check className={`w-5 h-5 ${isDark ? 'text-[#5a7a6e]' : 'text-green-500'}`} />
-                              </div>
-                            )}
-                            {cupomError && !cupomValid && (
-                              <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                <X className="w-5 h-5 text-[#d15847]" />
-                              </div>
-                            )}
                           </div>
-                          <Button
+                          <FormButton
                             type="button"
                             onClick={handleValidarCupom}
                             disabled={!selectedPlan || !cupomCodigo.trim() || isPendingCupom}
-                            className={`px-6 py-3 rounded-xl font-semibold transition-all ${
-                              !selectedPlan || !cupomCodigo.trim()
-                                ? `${isDark ? 'bg-[#333] text-[#666]' : 'bg-gray-200 text-gray-400'} cursor-not-allowed`
-                                : `${isDark ? 'bg-[#4f6f64] hover:bg-[#5a7a6e]' : 'bg-[#4f6f64] hover:bg-[#5a7a6e]'} text-white`
-                            }`}
                             label={isPendingCupom ? "Aplicando..." : "Aplicar"}
-                            icon={isPendingCupom ? "pi pi-spin pi-spinner" : undefined}
-                            iconPos="left"
+                            variant="primary"
+                            size="md"
+                            isDark={isDark}
+                            loading={isPendingCupom}
+                            loadingLabel="Aplicando..."
                           />
                         </div>
-                        {cupomError && (
-                          <small className={`text-sm mt-2 block ${cupomValid ? (isDark ? 'text-[#5a7a6e]' : 'text-green-600') : 'text-[#d15847]'}`}>
-                            {cupomError}
-                          </small>
-                        )}
-                        {cupomValid && cupomDados && (
-                          <div className={`mt-4 p-4 rounded-xl border ${isDark ? 'bg-[#5a7a6e]/10 border-[#5a7a6e]/30' : 'bg-[#4f6f64]/5 border-[#4f6f64]/20'}`}>
-                            <div className="flex items-center justify-between text-sm">
-                              <span className={theme.textSecondary}>Valor original:</span>
-                              <span className={`${theme.textPrimary} line-through`}>R$ {cupomDados.originalValue.toFixed(2).replace('.', ',')}</span>
-                            </div>
-                            <div className="flex items-center justify-between text-sm mt-1">
-                              <span className={theme.textSecondary}>Desconto ({cupomDados.discountType === 'PERCENTAGE' ? `${cupomDados.percentualDiscount}%` : `R$ ${cupomDados.discountAmount.toFixed(2).replace('.', ',')}`}):</span>
-                              <span className={`font-semibold ${isDark ? 'text-[#5a7a6e]' : 'text-[#4f6f64]'}`}>
-                                - R$ {(cupomDados.originalValue - cupomDados.finalValue).toFixed(2).replace('.', ',')}
-                              </span>
-                            </div>
-                            <div className={`flex items-center justify-between mt-2 pt-2 border-t ${isDark ? 'border-[#5a7a6e]/30' : 'border-[#4f6f64]/20'}`}>
-                              <span className={`font-bold ${theme.textPrimary}`}>Valor final:</span>
-                              <span className={`text-lg font-bold ${isDark ? 'text-[#5a7a6e]' : 'text-[#4f6f64]'}`}>
-                                R$ {cupomDados.finalValue.toFixed(2).replace('.', ',')}/mês
-                              </span>
-                            </div>
-                            <div className={`mt-3 px-3 py-2 rounded-lg text-sm ${
-                              cupomDados.applicationType === 'RECURRING'
-                                ? isDark ? 'bg-[#4f6f64]/15 text-[#7ab8a4]' : 'bg-[#4f6f64]/10 text-[#4f6f64]'
-                                : isDark ? 'bg-[#db6f57]/15 text-[#E07A62]' : 'bg-[#db6f57]/10 text-[#db6f57]'
-                            }`}>
-                              {cupomDados.applicationDescription
-                                ? `${cupomDados.applicationType === 'RECURRING' ? '🔄' : '1️⃣'} ${cupomDados.applicationDescription}`
-                                : cupomDados.applicationType === 'RECURRING'
-                                  ? '🔄 Desconto aplicado em todas as cobranças enquanto o cupom estiver vigente.'
-                                  : '1️⃣ Desconto aplicado somente na primeira cobrança.'}
-                            </div>
-                          </div>
-                        )}
+
+                        {/* Detalhe do desconto aplicado */}
+                        <AnimatePresence initial={false}>
+                          {cupomValid && cupomDados && (
+                            <motion.div
+                              key="cupom-detalhe"
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.25, ease: "easeOut" }}
+                              className="overflow-hidden"
+                            >
+                              <div
+                                className="rounded-2xl border p-5 backdrop-blur"
+                                style={{
+                                  backgroundColor: isDark ? "rgba(107,143,130,0.10)" : "rgba(79,111,100,0.06)",
+                                  borderColor: isDark ? "rgba(107,143,130,0.25)" : "rgba(79,111,100,0.22)",
+                                }}
+                              >
+                                <div className="flex items-center justify-between text-[13px]">
+                                  <span className={isDark ? "text-[#B8AEA4]" : "text-[#5a4a42]/70"}>
+                                    Valor original
+                                  </span>
+                                  <span className={`${theme.textPrimary} line-through`}>
+                                    R$ {cupomDados.originalValue.toFixed(2).replace('.', ',')}
+                                  </span>
+                                </div>
+                                <div className="flex items-center justify-between text-[13px] mt-1.5">
+                                  <span className={isDark ? "text-[#B8AEA4]" : "text-[#5a4a42]/70"}>
+                                    Desconto{" "}
+                                    <span className="font-mono">
+                                      ({cupomDados.discountType === 'PERCENTAGE'
+                                        ? `${cupomDados.percentualDiscount}%`
+                                        : `R$ ${cupomDados.discountAmount.toFixed(2).replace('.', ',')}`})
+                                    </span>
+                                  </span>
+                                  <span className={`font-semibold ${isDark ? 'text-[#7AB8A4]' : 'text-[#4f6f64]'}`}>
+                                    − R$ {(cupomDados.originalValue - cupomDados.finalValue).toFixed(2).replace('.', ',')}
+                                  </span>
+                                </div>
+                                <div
+                                  className="flex items-center justify-between mt-3 pt-3 border-t"
+                                  style={{ borderColor: isDark ? "rgba(107,143,130,0.25)" : "rgba(79,111,100,0.22)" }}
+                                >
+                                  <span className={`font-bold text-[14px] ${theme.textPrimary}`}>Valor final</span>
+                                  <span className={`text-lg font-bold ${isDark ? 'text-[#7AB8A4]' : 'text-[#4f6f64]'}`}>
+                                    R$ {cupomDados.finalValue.toFixed(2).replace('.', ',')}
+                                    <span className={`ml-1 text-[12px] font-medium ${isDark ? 'text-[#B8AEA4]' : 'text-[#5a4a42]/65'}`}>
+                                      /mês
+                                    </span>
+                                  </span>
+                                </div>
+                                <div
+                                  className={`mt-4 px-3 py-2 rounded-xl text-[12px] flex items-start gap-2 ${
+                                    cupomDados.applicationType === 'RECURRING'
+                                      ? isDark ? 'bg-[#4f6f64]/15 text-[#7AB8A4]' : 'bg-[#4f6f64]/8 text-[#4f6f64]'
+                                      : isDark ? 'bg-[#db6f57]/15 text-[#E07A62]' : 'bg-[#db6f57]/8 text-[#db6f57]'
+                                  }`}
+                                >
+                                  <CheckCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                                  <span className="leading-snug">
+                                    {cupomDados.applicationDescription
+                                      ? cupomDados.applicationDescription
+                                      : cupomDados.applicationType === 'RECURRING'
+                                        ? 'Desconto aplicado em todas as cobranças enquanto o cupom estiver vigente.'
+                                        : 'Desconto aplicado somente na primeira cobrança.'}
+                                  </span>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
 
-                      {/* Detalhes do plano selecionado */}
-                      {selectedPlan && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className={`${theme.cardBg} border ${theme.cardBorder} rounded-2xl p-6 transition-colors duration-300`}
-                        >
-                          <h4 className={`font-bold ${theme.textPrimary} mb-4 transition-colors duration-300`}>
-                            Recursos inclusos no plano {plano.find(p => p.id === selectedPlan)?.name}
-                          </h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {plano.find(p => p.id === selectedPlan)?.features.map((feature: any, i: number) => (
-                              <div key={i} className="flex items-start gap-2">
-                                {feature.included ? (
-                                  <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isDark ? 'text-[#6B8F82]' : 'text-[#4f6f64]'}`} />
-                                ) : (
-                                  <X className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isDark ? 'text-[#3D3630]' : 'text-gray-300'}`} />
-                                )}
-                                <span className={`text-sm transition-colors duration-300 ${feature.included ? theme.textPrimary : (isDark ? 'text-[#7A716A]' : 'text-gray-400') + ' line-through'}`}>
-                                  {feature.text}
+                      {/* ─── Bloco: Recursos do plano selecionado ─── */}
+                      <AnimatePresence initial={false}>
+                        {selectedPlan && (
+                          <motion.div
+                            key="plano-features"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
+                            className="overflow-hidden"
+                          >
+                            <div className="space-y-5 pt-2">
+                              <div className="flex items-center gap-2">
+                                <span aria-hidden className="h-px w-8 bg-[#db6f57] opacity-50" />
+                                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                                  Recursos do plano {plano.find(p => p.id === selectedPlan)?.name}
                                 </span>
                               </div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
 
-                      <div className={`text-center text-sm ${theme.textSecondary} mt-6 transition-colors duration-300`}>
-                        <p>Você pode começar gratuitamente e adicionar um método de pagamento depois.</p>
-                      </div>
+                              <div
+                                className="rounded-2xl border p-5 backdrop-blur"
+                                style={{
+                                  backgroundColor: isDark ? "rgba(26,23,21,0.6)" : "rgba(255,255,255,0.85)",
+                                  borderColor: isDark ? "#2D2925" : "#e6d9d4",
+                                }}
+                              >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  {plano.find(p => p.id === selectedPlan)?.features.map((feature: any, i: number) => (
+                                    <div key={i} className="flex items-start gap-2">
+                                      {feature.included ? (
+                                        <Check
+                                          className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isDark ? 'text-[#7AB8A4]' : 'text-[#4f6f64]'}`}
+                                          strokeWidth={2.5}
+                                        />
+                                      ) : (
+                                        <X
+                                          className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isDark ? 'text-[#3D3630]' : 'text-[#5a4a42]/30'}`}
+                                        />
+                                      )}
+                                      <span className={`text-[13px] leading-snug transition-colors duration-300 ${
+                                        feature.included
+                                          ? theme.textPrimary
+                                          : (isDark ? 'text-[#7A716A]' : 'text-[#5a4a42]/45') + ' line-through'
+                                      }`}>
+                                        {feature.text}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Helper text final */}
+                      <p className={`text-center text-[12px] ${isDark ? 'text-[#7A716A]' : 'text-[#5a4a42]/55'} transition-colors duration-300 italic`}>
+                        Você pode começar gratuitamente e adicionar um método de pagamento depois.
+                      </p>
                     </div>
                   )}
 
                   {/* Step 5: Confirmação */}
-                  {activeStep === 5 && (
-                    <div className="space-y-6">
-                      <div className={`flex items-center gap-3 mb-6 pb-4 border-b ${theme.cardBorder} transition-colors duration-300`}>
-                        <div className={`w-12 h-12 rounded-xl ${theme.sectionIconBg('#8b3d35')} flex items-center justify-center`}>
-                          <CheckCircle className={`w-6 h-6 ${isDark ? 'text-[#A8524A]' : 'text-[#8b3d35]'}`} />
-                        </div>
-                        <div>
-                          <h3 className={`text-xl font-bold ${theme.textPrimary} transition-colors duration-300`}>Confirmação de cadastro</h3>
-                          <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>Revise todas as informações antes de finalizar</p>
-                        </div>
-                      </div>
+                  {activeStep === 5 && (() => {
+                    // Helpers locais (puramente de leitura — não alteram estado)
+                    const cardBgStyle = {
+                      backgroundColor: isDark ? "rgba(26,23,21,0.6)" : "rgba(255,255,255,0.85)",
+                      borderColor: isDark ? "#2D2925" : "#e6d9d4",
+                    }
+                    const labelClass = `text-[10px] uppercase tracking-wider font-bold mb-1 block ${isDark ? 'text-[#7A716A]' : 'text-[#5a4a42]/55'}`
+                    const valueClass = `text-[14px] font-semibold ${theme.textPrimary} transition-colors duration-300 break-words`
 
-                      {/* Empresa */}
-                      <div className={`${theme.cardBg} border ${theme.cardBorder} rounded-2xl p-6 transition-colors duration-300`}>
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className={`w-10 h-10 rounded-lg ${theme.sectionIconBg('#db6f57')} flex items-center justify-center`}>
-                            <Building2 className={`w-5 h-5 ${isDark ? 'text-[#E07A62]' : 'text-[#db6f57]'}`} />
+                    const goToStep = (stepIndex: number) => () => setActiveStep(stepIndex)
+
+                    const SectionCard = ({
+                      icon: Icon,
+                      iconColor,
+                      iconBg,
+                      title,
+                      eyebrow,
+                      onEdit,
+                      children,
+                    }: {
+                      icon: any
+                      iconColor: string
+                      iconBg: string
+                      title: string
+                      eyebrow: string
+                      onEdit: () => void
+                      children: React.ReactNode
+                    }) => (
+                      <div
+                        className="relative rounded-2xl border p-6 backdrop-blur transition-colors duration-300"
+                        style={cardBgStyle}
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-5">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${iconBg}`}>
+                              <Icon className={`w-5 h-5 ${iconColor}`} />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <span aria-hidden className="h-px w-6 bg-[#db6f57] opacity-50" />
+                                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#db6f57]">
+                                  {eyebrow}
+                                </span>
+                              </div>
+                              <h4 className={`font-serif text-base md:text-lg font-bold leading-tight ${theme.textPrimary} transition-colors duration-300`}>
+                                {title}
+                              </h4>
+                            </div>
                           </div>
-                          <h4 className={`font-bold ${theme.textPrimary} transition-colors duration-300`}>Informações da Empresa</h4>
+                          <button
+                            type="button"
+                            onClick={onEdit}
+                            className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-wider transition-all hover:scale-105 ${
+                              isDark
+                                ? 'text-[#B8AEA4] bg-[#2D2925]/60 hover:text-[#E07A62] hover:bg-[#E07A62]/10'
+                                : 'text-[#5a4a42]/65 bg-[#faf8f6] hover:text-[#db6f57] hover:bg-[#db6f57]/8'
+                            }`}
+                            aria-label={`Editar ${title}`}
+                          >
+                            <Pencil className="w-3 h-3" />
+                            Editar
+                          </button>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>CNPJ</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("cnpj")}</p>
+                        {children}
+                      </div>
+                    )
+
+                    const responsavelEmail = sameEmailAsCompany ? getValues("email") : getValues("emailResponsavel")
+                    const responsavelTelefone = samePhoneAsCompany ? getValues("telefone") : getValues("telefoneResponsavel")
+                    const selectedTheme = themeArray.find(t => t.id === getValues("tema"))
+                    const sp = plano.find(p => p.id === selectedPlan)
+                    const SelectedPlanIcon = sp?.icon
+
+                    return (
+                      <div className="space-y-7">
+                        {/* ─── Section header ─── */}
+                        <div className="flex items-center gap-3 mb-2 transition-colors duration-300">
+                          <div className="w-12 h-12 rounded-xl bg-[#8b3d35]/10 flex items-center justify-center">
+                            <CheckCircle className={`w-6 h-6 ${isDark ? 'text-[#A8524A]' : 'text-[#8b3d35]'}`} />
                           </div>
                           <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Razão Social</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("razaoSocial")}</p>
-                          </div>
-                          <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Nome Fantasia</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("nomeFantasia")}</p>
-                          </div>
-                          <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Público Alvo</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>
-                              {publicoAlvoOptions.find(p => p.code === getValues("publicoAlvo"))?.name}
+                            <h3 className={`font-serif text-xl md:text-2xl font-bold ${theme.textPrimary} transition-colors duration-300 leading-tight`}>
+                              Última conferida
+                            </h3>
+                            <p className={`text-sm ${theme.textMuted} transition-colors duration-300 mt-0.5`}>
+                              Tudo certo? Toca em <strong className={isDark ? 'text-[#F5F0EB]' : 'text-[#2a2420]'}>Editar</strong> em qualquer bloco pra ajustar.
                             </p>
                           </div>
-                          <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Segmento</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>
-                              {segmentoOptions.find(s => s.code === getValues("segmento"))?.name}
-                            </p>
-                          </div>
-                          <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Email</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("email")}</p>
-                          </div>
-                          <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Telefone</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("telefone")}</p>
-                          </div>
                         </div>
-                      </div>
 
-                      {/* Responsável */}
-                      <div className={`${theme.cardBg} border ${theme.cardBorder} rounded-2xl p-6 transition-colors duration-300`}>
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className={`w-10 h-10 rounded-lg ${theme.sectionIconBg('#db6f57')} flex items-center justify-center`}>
-                            <User className={`w-5 h-5 ${isDark ? 'text-[#E07A62]' : 'text-[#db6f57]'}`} />
+                        {/* ─── Empresa ─── */}
+                        <SectionCard
+                          icon={Building2}
+                          iconColor={isDark ? 'text-[#E07A62]' : 'text-[#db6f57]'}
+                          iconBg="bg-[#db6f57]/10"
+                          eyebrow="Empresa"
+                          title="Informações do negócio"
+                          onEdit={goToStep(0)}
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <span className={labelClass}>CNPJ</span>
+                              <span className={`font-mono tabular-nums ${valueClass}`}>{getValues("cnpj")}</span>
+                            </div>
+                            <div>
+                              <span className={labelClass}>Razão social</span>
+                              <span className={valueClass}>{getValues("razaoSocial")}</span>
+                            </div>
+                            <div>
+                              <span className={labelClass}>Nome fantasia</span>
+                              <span className={valueClass}>{getValues("nomeFantasia")}</span>
+                            </div>
+                            <div>
+                              <span className={labelClass}>Público alvo</span>
+                              <span className={valueClass}>
+                                {publicoAlvoOptions.find(p => p.code === getValues("publicoAlvo"))?.name}
+                              </span>
+                            </div>
+                            <div>
+                              <span className={labelClass}>Segmento</span>
+                              <span className={valueClass}>
+                                {segmentoOptions.find(s => s.code === getValues("segmento"))?.name}
+                              </span>
+                            </div>
+                            <div>
+                              <span className={labelClass}>E-mail</span>
+                              <span className={valueClass}>{getValues("email")}</span>
+                            </div>
+                            <div>
+                              <span className={labelClass}>Telefone</span>
+                              <span className={`font-mono tabular-nums ${valueClass}`}>{getValues("telefone")}</span>
+                            </div>
                           </div>
-                          <h4 className={`font-bold ${theme.textPrimary} transition-colors duration-300`}>Responsável</h4>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                          <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Nome</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("nomeResponsavel")}</p>
-                          </div>
-                          <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Email</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("emailResponsavel")}</p>
-                          </div>
-                          <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Telefone</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("telefoneResponsavel")}</p>
-                          </div>
-                        </div>
-                      </div>
+                        </SectionCard>
 
-                      {/* Endereço */}
-                      <div className={`${theme.cardBg} border ${theme.cardBorder} rounded-2xl p-6 transition-colors duration-300`}>
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className={`w-10 h-10 rounded-lg ${theme.sectionIconBg('#4f6f64')} flex items-center justify-center`}>
-                            <MapPin className={`w-5 h-5 ${isDark ? 'text-[#6B8F82]' : 'text-[#4f6f64]'}`} />
+                        {/* ─── Responsável ─── */}
+                        <SectionCard
+                          icon={User}
+                          iconColor={isDark ? 'text-[#E07A62]' : 'text-[#db6f57]'}
+                          iconBg="bg-[#db6f57]/10"
+                          eyebrow="Pessoa responsável"
+                          title="Quem gerencia"
+                          onEdit={goToStep(0)}
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                              <span className={labelClass}>Nome</span>
+                              <span className={valueClass}>{getValues("nomeResponsavel")}</span>
+                            </div>
+                            <div>
+                              <span className={labelClass}>
+                                E-mail
+                                {sameEmailAsCompany && (
+                                  <span className={`ml-1.5 normal-case tracking-normal text-[9px] font-semibold ${isDark ? 'text-[#7AB8A4]' : 'text-[#4f6f64]'}`}>
+                                    (mesmo da empresa)
+                                  </span>
+                                )}
+                              </span>
+                              <span className={valueClass}>{responsavelEmail}</span>
+                            </div>
+                            <div>
+                              <span className={labelClass}>
+                                Telefone
+                                {samePhoneAsCompany && (
+                                  <span className={`ml-1.5 normal-case tracking-normal text-[9px] font-semibold ${isDark ? 'text-[#7AB8A4]' : 'text-[#4f6f64]'}`}>
+                                    (mesmo da empresa)
+                                  </span>
+                                )}
+                              </span>
+                              <span className={`font-mono tabular-nums ${valueClass}`}>{responsavelTelefone}</span>
+                            </div>
                           </div>
-                          <h4 className={`font-bold ${theme.textPrimary} transition-colors duration-300`}>Endereço</h4>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                          <div className="md:col-span-2">
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Logradouro</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>
-                              {getValues("rua")}, {getValues("numero")} {getValues("complemento") && `- ${getValues("complemento")}`}
-                            </p>
-                          </div>
-                          <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Bairro</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("bairro")}</p>
-                          </div>
-                          <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Cidade/Estado</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("cidade")} - {getValues("estado")}</p>
-                          </div>
-                          <div>
-                            <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>CEP</p>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("cep")}</p>
-                          </div>
-                        </div>
-                      </div>
+                        </SectionCard>
 
-                      {/* Acesso */}
-                      <div className={`${theme.cardBg} border ${theme.cardBorder} rounded-2xl p-6 transition-colors duration-300`}>
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className={`w-10 h-10 rounded-lg ${theme.sectionIconBg('#8b3d35')} flex items-center justify-center`}>
-                            <KeyRound className={`w-5 h-5 ${isDark ? 'text-[#A8524A]' : 'text-[#8b3d35]'}`} />
-                          </div>
-                          <h4 className={`font-bold ${theme.textPrimary} transition-colors duration-300`}>Acesso</h4>
-                        </div>
-                        <div className="text-sm">
-                          <p className={`${theme.textSecondary} mb-1 transition-colors duration-300`}>Login/Usuário</p>
-                          <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>{getValues("login")}</p>
-                        </div>
-                      </div>
-
-                      {/* Tema */}
-                      <div className={`${theme.cardBg} border ${theme.cardBorder} rounded-2xl p-6 transition-colors duration-300`}>
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className={`w-10 h-10 rounded-lg ${theme.sectionIconBg('#db6f57')} flex items-center justify-center`}>
-                            <Palette className={`w-5 h-5 ${isDark ? 'text-[#E07A62]' : 'text-[#db6f57]'}`} />
-                          </div>
-                          <h4 className={`font-bold ${theme.textPrimary} transition-colors duration-300`}>Tema Selecionado</h4>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="flex gap-2">
-                            {themeArray.find(t => t.id === getValues("tema")) && (
-                              <>
-                                <div
-                                  className="w-10 h-10 rounded-lg shadow-md"
-                                  style={{ backgroundColor: themeArray.find(t => t.id === getValues("tema"))?.colors.primary }}
-                                />
-                                <div
-                                  className="w-10 h-10 rounded-lg shadow-md"
-                                  style={{ backgroundColor: themeArray.find(t => t.id === getValues("tema"))?.colors.secondary }}
-                                />
-                                <div
-                                  className="w-10 h-10 rounded-lg shadow-md"
-                                  style={{ backgroundColor: themeArray.find(t => t.id === getValues("tema"))?.colors.accent }}
-                                />
-                              </>
+                        {/* ─── Endereço ─── */}
+                        <SectionCard
+                          icon={MapPin}
+                          iconColor={isDark ? 'text-[#6B8F82]' : 'text-[#4f6f64]'}
+                          iconBg="bg-[#4f6f64]/10"
+                          eyebrow="Localização"
+                          title="Onde fica"
+                          onEdit={goToStep(1)}
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="md:col-span-2">
+                              <span className={labelClass}>Logradouro</span>
+                              <span className={valueClass}>
+                                {getValues("rua")}, {getValues("numero")}
+                                {getValues("complemento") && (
+                                  <span className={isDark ? 'text-[#B8AEA4]' : 'text-[#5a4a42]/65'}>
+                                    {' · '}{getValues("complemento")}
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+                            <div>
+                              <span className={labelClass}>Bairro</span>
+                              <span className={valueClass}>{getValues("bairro")}</span>
+                            </div>
+                            <div>
+                              <span className={labelClass}>Cidade / Estado</span>
+                              <span className={valueClass}>{getValues("cidade")} · {getValues("estado")}</span>
+                            </div>
+                            <div>
+                              <span className={labelClass}>CEP</span>
+                              <span className={`font-mono tabular-nums ${valueClass}`}>{getValues("cep")}</span>
+                            </div>
+                            {getValues("latitude") && getValues("longitude") && (
+                              <div>
+                                <span className={labelClass}>Coordenadas</span>
+                                <span className={`font-mono tabular-nums ${valueClass} text-[12px]`}>
+                                  {Number(getValues("latitude")).toFixed(6)}, {Number(getValues("longitude")).toFixed(6)}
+                                </span>
+                              </div>
                             )}
                           </div>
-                          <div>
-                            <p className={`${theme.textPrimary} font-semibold transition-colors duration-300`}>
-                              {themeArray.find(t => t.id === getValues("tema"))?.name}
-                            </p>
-                            <p className={`text-sm ${theme.textSecondary} capitalize transition-colors duration-300`}>
-                              {themeArray.find(t => t.id === getValues("tema"))?.type}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                        </SectionCard>
 
-                      {/* Plano */}
-                      <div className={`${theme.cardBg} border ${theme.cardBorder} rounded-2xl p-6 transition-colors duration-300`}>
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className={`w-10 h-10 rounded-lg ${theme.sectionIconBg('#4f6f64')} flex items-center justify-center`}>
-                            <CreditCard className={`w-5 h-5 ${isDark ? 'text-[#6B8F82]' : 'text-[#4f6f64]'}`} />
-                          </div>
-                          <h4 className={`font-bold ${theme.textPrimary} transition-colors duration-300`}>Plano Selecionado</h4>
-                        </div>
-                        {selectedPlan && (
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              {plano.find(p => p.id === selectedPlan) && (
-                                <>
-                                  <div 
-                                    className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                                    style={{ 
-                                      background: `linear-gradient(135deg, ${plano.find(p => p.id === selectedPlan)?.color}20, ${plano.find(p => p.id === selectedPlan)?.color}40)`
-                                    }}
-                                  >
-                                    {(() => {
-                                      const SelectedIcon = plano.find(p => p.id === selectedPlan)?.icon;
-                                      return SelectedIcon ? (
-                                        <SelectedIcon
-                                          className="w-6 h-6"
-                                          style={{ color: plano.find(p => p.id === selectedPlan)?.color }}
-                                        />
-                                      ) : null;
-                                    })()}
-                                  </div>
-                                  <div>
-                                    <p className={`${theme.textPrimary} font-bold text-lg transition-colors duration-300`}>
-                                      {plano.find(p => p.id === selectedPlan)?.name}
-                                    </p>
-                                    <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>
-                                      {isAnnual ? "Plano Anual" : "Plano Mensal"}
-                                    </p>
-                                  </div>
-                                </>
-                              )}
+                        {/* ─── Acesso ─── */}
+                        <SectionCard
+                          icon={KeyRound}
+                          iconColor={isDark ? 'text-[#A8524A]' : 'text-[#8b3d35]'}
+                          iconBg="bg-[#8b3d35]/10"
+                          eyebrow="Acesso ao sistema"
+                          title="Suas credenciais"
+                          onEdit={goToStep(2)}
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <span className={labelClass}>Login / usuário</span>
+                              <span className={`font-mono ${valueClass}`}>{getValues("login")}</span>
                             </div>
-                            <div className="text-right">
-                              {cupomValid && cupomDados ? (
-                                <>
-                                  <p className={`text-sm line-through ${theme.textMuted} transition-colors duration-300`}>
-                                    R$ {cupomDados.originalValue.toFixed(2).replace('.', ',')}
+                            <div>
+                              <span className={labelClass}>Senha</span>
+                              <span className={`font-mono tabular-nums ${valueClass}`}>••••••••</span>
+                            </div>
+                          </div>
+                        </SectionCard>
+
+                        {/* ─── Tema ─── */}
+                        <SectionCard
+                          icon={Palette}
+                          iconColor={isDark ? 'text-[#E07A62]' : 'text-[#db6f57]'}
+                          iconBg="bg-[#db6f57]/10"
+                          eyebrow="Identidade visual"
+                          title="Tema selecionado"
+                          onEdit={goToStep(3)}
+                        >
+                          {selectedTheme && (
+                            <div className="flex flex-wrap items-center gap-5">
+                              <div className="flex items-center gap-2">
+                                {[
+                                  selectedTheme.colors.primary,
+                                  selectedTheme.colors.secondary,
+                                  selectedTheme.colors.accent,
+                                ].map((color, i) => (
+                                  <div
+                                    key={i}
+                                    className="w-9 h-9 rounded-lg"
+                                    style={{
+                                      backgroundColor: color,
+                                      boxShadow: `0 0 0 1.5px ${
+                                        isDark ? 'rgba(245,240,235,0.15)' : 'rgba(255,255,255,0.95)'
+                                      }, 0 4px 12px rgba(0,0,0,0.10)`,
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                              <div className="min-w-0">
+                                <p className={`font-serif text-[15px] font-bold ${theme.textPrimary} transition-colors duration-300 leading-tight`}>
+                                  {selectedTheme.name}
+                                </p>
+                                <p className={`text-[10px] uppercase tracking-[0.18em] font-bold mt-0.5 ${isDark ? 'text-[#B8AEA4]' : 'text-[#5a4a42]/65'}`}>
+                                  Tema {selectedTheme.type}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </SectionCard>
+
+                        {/* ─── Plano ─── */}
+                        <SectionCard
+                          icon={CreditCard}
+                          iconColor={isDark ? 'text-[#6B8F82]' : 'text-[#4f6f64]'}
+                          iconBg="bg-[#4f6f64]/10"
+                          eyebrow="Assinatura"
+                          title="Plano escolhido"
+                          onEdit={goToStep(4)}
+                        >
+                          {sp && (
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                              <div className="flex items-center gap-4 min-w-0">
+                                <div
+                                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                                  style={{
+                                    background: `linear-gradient(135deg, ${sp.color}20, ${sp.color}40)`,
+                                  }}
+                                >
+                                  {SelectedPlanIcon && (
+                                    <SelectedPlanIcon className="w-6 h-6" style={{ color: sp.color }} />
+                                  )}
+                                </div>
+                                <div className="min-w-0">
+                                  <p className={`font-serif text-[17px] font-bold ${theme.textPrimary} transition-colors duration-300 leading-tight`}>
+                                    {sp.name}
                                   </p>
-                                  <p className={`text-2xl font-bold ${isDark ? 'text-[#5a7a6e]' : 'text-[#4f6f64]'} transition-colors duration-300`}>
-                                    R$ {cupomDados.finalValue.toFixed(2).replace('.', ',')}
+                                  <p className={`text-[10px] uppercase tracking-[0.18em] font-bold mt-0.5 ${isDark ? 'text-[#B8AEA4]' : 'text-[#5a4a42]/65'}`}>
+                                    {isAnnual ? "Cobrança anual" : "Cobrança mensal"}
                                   </p>
-                                </>
-                              ) : (() => {
-                                const sp = plano.find(p => p.id === selectedPlan)
-                                const promoM = !isAnnual && sp?.promoMensalAtiva && sp?.promoMensalPreco > 0
-                                const promoA = isAnnual && sp?.promoAnualAtiva && sp?.promoAnualPreco > 0
-                                const valorOriginal = isAnnual ? sp?.yearlyPrice : sp?.price
-                                const valorFinal = promoM
-                                  ? sp?.promoMensalPreco
-                                  : promoA
-                                    ? sp?.promoAnualPreco / 12
-                                    : valorOriginal
-                                return (
+                                  {cupomValid && cupomDados && (
+                                    <p className={`text-[11px] mt-1.5 font-semibold ${isDark ? 'text-[#7AB8A4]' : 'text-[#4f6f64]'}`}>
+                                      Cupom aplicado
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-left sm:text-right">
+                                {cupomValid && cupomDados ? (
                                   <>
-                                    {(promoM || promoA) && (
-                                      <p className={`text-sm line-through ${theme.textMuted} transition-colors duration-300`}>
-                                        R$ {valorOriginal?.toFixed(2).replace('.', ',')}
-                                      </p>
-                                    )}
-                                    <p className={`text-2xl font-bold ${theme.textPrimary} transition-colors duration-300`}>
-                                      R$ {valorFinal?.toFixed(2).replace('.', ',')}
+                                    <p className={`text-[12px] line-through ${isDark ? 'text-[#7A716A]' : 'text-[#5a4a42]/45'}`}>
+                                      R$ {cupomDados.originalValue.toFixed(2).replace('.', ',')}
+                                    </p>
+                                    <p className={`text-2xl font-bold ${isDark ? 'text-[#7AB8A4]' : 'text-[#4f6f64]'} transition-colors duration-300 leading-none`}>
+                                      R$ {cupomDados.finalValue.toFixed(2).replace('.', ',')}
+                                      <span className={`ml-1 text-[12px] font-medium ${isDark ? 'text-[#B8AEA4]' : 'text-[#5a4a42]/65'}`}>
+                                        /mês
+                                      </span>
                                     </p>
                                   </>
-                                )
-                              })()}
-                              <p className={`text-sm ${theme.textSecondary} transition-colors duration-300`}>/mês</p>
+                                ) : (() => {
+                                  const promoM = !isAnnual && sp.promoMensalAtiva && sp.promoMensalPreco > 0
+                                  const promoA = isAnnual && sp.promoAnualAtiva && sp.promoAnualPreco > 0
+                                  const valorOriginal = isAnnual ? sp.yearlyPrice : sp.price
+                                  const valorFinal = promoM
+                                    ? sp.promoMensalPreco
+                                    : promoA
+                                      ? sp.promoAnualPreco / 12
+                                      : valorOriginal
+                                  return (
+                                    <>
+                                      {(promoM || promoA) && (
+                                        <p className={`text-[12px] line-through ${isDark ? 'text-[#7A716A]' : 'text-[#5a4a42]/45'}`}>
+                                          R$ {valorOriginal?.toFixed(2).replace('.', ',')}
+                                        </p>
+                                      )}
+                                      <p className={`text-2xl font-bold ${theme.textPrimary} transition-colors duration-300 leading-none`}>
+                                        R$ {valorFinal?.toFixed(2).replace('.', ',')}
+                                        <span className={`ml-1 text-[12px] font-medium ${isDark ? 'text-[#B8AEA4]' : 'text-[#5a4a42]/65'}`}>
+                                          /mês
+                                        </span>
+                                      </p>
+                                    </>
+                                  )
+                                })()}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </div>
+                          )}
+                        </SectionCard>
 
-                      <div className={`${theme.infoBg} rounded-2xl p-6 text-center transition-colors duration-300`}>
-                        <p className={`${theme.infoText} font-semibold transition-colors duration-300`}>
-                          ✅ Ao finalizar, você terá 14 dias grátis para testar todos os recursos!
-                        </p>
+                        {/* Banner final warm sage */}
+                        <div
+                          className="rounded-2xl border p-5 backdrop-blur"
+                          style={{
+                            backgroundColor: isDark ? "rgba(107,143,130,0.10)" : "rgba(79,111,100,0.06)",
+                            borderColor: isDark ? "rgba(107,143,130,0.25)" : "rgba(79,111,100,0.22)",
+                          }}
+                        >
+                          <p className={`text-[14px] leading-relaxed flex items-center justify-center gap-2.5 flex-wrap text-center font-medium ${isDark ? 'text-[#F5F0EB]' : 'text-[#2a2420]'}`}>
+                            <CheckCircle className={`w-5 h-5 flex-shrink-0 ${isDark ? 'text-[#7AB8A4]' : 'text-[#4f6f64]'}`} />
+                            <span>
+                              Ao finalizar, você terá <strong>14 dias grátis</strong> pra testar tudo. Sem cartão. Sem pegadinha.
+                            </span>
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )
+                  })()}
                 </motion.div>
               </AnimatePresence>
 
               {/* Footer com botões */}
-              <div className={`flex justify-between items-center pt-8 border-t ${theme.cardBorder} mt-8 transition-colors duration-300`}>
-                <Button
+              <div className="flex justify-between items-center pt-8 mt-8">
+                <FormButton
                   type="button"
                   onClick={handleBack}
                   disabled={activeStep === 0}
-                  icon={<ArrowLeft className="mr-2 w-5 h-5" />}
+                  icon={ArrowLeft}
+                  iconPosition="left"
                   label="Voltar"
-                  className={`${theme.btnSecondaryBg} ${theme.btnSecondaryText} border-2 ${theme.btnSecondaryBorder} ${theme.btnSecondaryHover} hover:scale-105 transition-all duration-300 px-5 py-2 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed`}
-                  outlined
+                  variant="secondary"
+                  isDark={isDark}
+                  showShimmer={false}
                 />
 
                 {activeStep === steps.length - 1 ? (
-                  <Button
+                  <FormButton
                     type="submit"
-                    icon={<Check className="mr-2"size={18} />}
-                    label="Finalizar Cadastro"
+                    icon={Check}
+                    iconPosition="left"
+                    label="Finalizar cadastro"
                     disabled={!isCurrentStepValid()}
-                    className="bg-gradient-to-r from-[#5a7a6e] to-[#4f6f64] text-white border-0 hover:scale-105 transition-all px-5 py-2 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    variant="success"
+                    isDark={isDark}
                   />
                 ) : (
-                  <Button
+                  <FormButton
                     type="button"
                     onClick={handleNext}
                     disabled={!isCurrentStepValid()}
-                    icon={<ArrowRight className="mr-2" size={18} />}
-                    iconPos="right"
+                    icon={ArrowRight}
+                    iconPosition="right"
                     label="Próximo"
-                    style={{ 
-                      background: `linear-gradient(135deg, ${steps[activeStep].color}, ${steps[activeStep].color}dd)` 
-                    }}
-                    className="text-white border-0 hover:scale-105 transition-all px-5 py-2 rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    variant="primary"
+                    isDark={isDark}
                   />
                 )}
               </div>
             </form>
-          </Card>
+            </div>
+          </div>
         </motion.div>
       </div>
     </main>

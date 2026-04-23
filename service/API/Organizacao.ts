@@ -41,6 +41,68 @@ export async function postOrganizacao(payload: any): Promise<Response> {
   }
 }
 
+export interface DadosCNPJEnriquecidos {
+  razaoSocial: string
+  nomeFantasia: string
+  email: string
+  telefone: string
+  cep: string
+  logradouro: string
+  numero: string
+  complemento: string
+  bairro: string
+  municipio: string
+  uf: string
+}
+
+/**
+ * Busca dados públicos do CNPJ na BrasilAPI (gratuita, sem auth).
+ * Usado para auto-preencher Razão Social, Nome Fantasia e endereço no cadastro.
+ * Retorna null em caso de erro/CNPJ não encontrado — chamador trata silenciosamente.
+ */
+export async function consultarCNPJBrasilAPI(
+  cnpj: string
+): Promise<DadosCNPJEnriquecidos | null> {
+  try {
+    const cnpjLimpo = cnpj.replace(/\D/g, "")
+    if (cnpjLimpo.length !== 14) return null
+
+    const response = await axios.get(
+      `https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`,
+      { timeout: 8000 }
+    )
+    const d: any = response.data
+
+    const ddd = d.ddd_telefone_1 ? String(d.ddd_telefone_1).replace(/\D/g, "") : ""
+    const telefoneFormatado =
+      ddd.length === 10
+        ? `(${ddd.slice(0, 2)}) ${ddd.slice(2, 6)}-${ddd.slice(6)}`
+        : ddd.length === 11
+        ? `(${ddd.slice(0, 2)}) ${ddd.slice(2, 7)}-${ddd.slice(7)}`
+        : ""
+
+    const cepLimpo = d.cep ? String(d.cep).replace(/\D/g, "") : ""
+    const cepFormatado =
+      cepLimpo.length === 8 ? `${cepLimpo.slice(0, 5)}-${cepLimpo.slice(5)}` : ""
+
+    return {
+      razaoSocial: d.razao_social || "",
+      nomeFantasia: d.nome_fantasia || "",
+      email: d.email || "",
+      telefone: telefoneFormatado,
+      cep: cepFormatado,
+      logradouro: d.logradouro || "",
+      numero: d.numero ? String(d.numero) : "",
+      complemento: d.complemento || "",
+      bairro: d.bairro || "",
+      municipio: d.municipio || "",
+      uf: d.uf || "",
+    }
+  } catch {
+    return null
+  }
+}
+
 export async function validaCNPJ(cnpj: string): Promise<Response> {
   try {
     
