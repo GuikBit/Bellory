@@ -1,18 +1,25 @@
+import dynamic from "next/dynamic"
 import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
 import { FeaturesInternal } from "@/components/features-internal"
-import { FeaturesInternalOld } from "@/components/features-internalOld"
-import { FeaturesExternal } from "@/components/features-external"
-import { DemoSection } from "@/components/demo-section"
-import { Benefits } from "@/components/benefits"
-import { Pricing } from "@/components/pricing"
-import { Contact } from "@/components/contact"
-import { Footer } from "@/components/footer"
 import { AIAgentSection } from "@/components/ai-agent-section"
-import { FinalCTA } from "@/components/floating-cta"
-import { ComparisonSection } from "@/components/comparison-section"
 import { SectionTransition } from "@/components/section-transitions"
-import { ProductFAQ } from "@/components/product-faq"
+
+// Below-the-fold: code-split os pesados pra reduzir o JS inicial.
+// Mantém SSR (default) — a marcação ainda vai no HTML pra SEO; só o chunk
+// de hidratação fica adiado.
+const Pricing = dynamic(() =>
+  import("@/components/pricing").then((m) => ({ default: m.Pricing })),
+)
+const ProductFAQ = dynamic(() =>
+  import("@/components/product-faq").then((m) => ({ default: m.ProductFAQ })),
+)
+const Contact = dynamic(() =>
+  import("@/components/contact").then((m) => ({ default: m.Contact })),
+)
+const Footer = dynamic(() =>
+  import("@/components/footer").then((m) => ({ default: m.Footer })),
+)
 
 
 export default function Home() {

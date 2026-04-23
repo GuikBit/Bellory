@@ -282,6 +282,7 @@ function FeatureCardSVG({
   index,
   pos,
   isHovered,
+  isInView,
   onHover,
   onLeave,
 }: {
@@ -289,6 +290,7 @@ function FeatureCardSVG({
   index: number
   pos: { cx: number; cy: number }
   isHovered: boolean
+  isInView: boolean
   onHover: () => void
   onLeave: () => void
 }) {
@@ -296,6 +298,8 @@ function FeatureCardSVG({
   const cardW = 210
   const cardH = 52
   const Icon = card.icon
+  // Quando off-screen, congela a flutuação infinita — economiza main thread.
+  const animateFloat = !prefersReduced && isInView
 
   return (
     <motion.foreignObject
@@ -308,26 +312,30 @@ function FeatureCardSVG({
       initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 40 }}
       animate={{
         opacity: 1,
-        y: prefersReduced ? 0 : [0, -12, 0],
-        x: prefersReduced ? 0 : [0, index % 2 === 0 ? 4 : -4, 0],
+        y: animateFloat ? [0, -12, 0] : 0,
+        x: animateFloat ? [0, index % 2 === 0 ? 4 : -4, 0] : 0,
       }}
       transition={
         prefersReduced
           ? { duration: 0.4 }
           : {
               opacity: { duration: 0.6, delay: 0.6 + index * 0.12 },
-              y: {
-                duration: 3.5 + (index % 4) * 0.6,
-                delay: index * 0.4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              },
-              x: {
-                duration: 4.5 + (index % 3) * 0.7,
-                delay: index * 0.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              },
+              y: animateFloat
+                ? {
+                    duration: 3.5 + (index % 4) * 0.6,
+                    delay: index * 0.4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }
+                : { duration: 0 },
+              x: animateFloat
+                ? {
+                    duration: 4.5 + (index % 3) * 0.7,
+                    delay: index * 0.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }
+                : { duration: 0 },
             }
       }
       onMouseEnter={onHover}
@@ -436,12 +444,15 @@ export function Hero() {
       }
     }
 
-    measure()
+    // Difere a primeira leitura pro próximo frame — evita reflow forçado
+    // sincronizado ao paint do React (Lighthouse: "Reflow forçado").
+    const rafId = requestAnimationFrame(measure)
     const ro = new ResizeObserver(measure)
     if (containerRef.current) ro.observe(containerRef.current)
     if (centerPhoneEl) ro.observe(centerPhoneEl)
     window.addEventListener("resize", measure)
     return () => {
+      cancelAnimationFrame(rafId)
       ro.disconnect()
       window.removeEventListener("resize", measure)
     }
@@ -488,26 +499,29 @@ export function Hero() {
         aria-hidden
         className={`absolute top-140 md:top-20 right-10 w-96 h-96 rounded-full blur-3xl ${HERO_COLORS.blob1}`}
         animate={
-          prefersReduced
-            ? {}
+          prefersReduced || !isInView
+            ? { scale: 1, opacity: 0.4 }
             : { scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }
         }
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        transition={
+          prefersReduced || !isInView
+            ? { duration: 0 }
+            : { duration: 8, repeat: Infinity, ease: "easeInOut" }
+        }
       />
       <motion.div
         aria-hidden
         className={`absolute bottom-40 left-10 w-80 h-80 rounded-full blur-3xl ${HERO_COLORS.blob2}`}
         animate={
-          prefersReduced
-            ? {}
+          prefersReduced || !isInView
+            ? { scale: 1, opacity: 0.4 }
             : { scale: [1, 1.3, 1], opacity: [0.3, 0.5, 0.3] }
         }
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1,
-        }}
+        transition={
+          prefersReduced || !isInView
+            ? { duration: 0 }
+            : { duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }
+        }
       />
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-36 lg:pt-40">
@@ -544,7 +558,9 @@ export function Hero() {
             <span className="block text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mt-1 pb-3">
               <span className="text-[#2a2420]">em um </span>
               <span
-                className={`bg-gradient-to-r ${HERO_COLORS.titleGradient} bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]`}
+                className={`bg-gradient-to-r ${HERO_COLORS.titleGradient} bg-clip-text text-transparent bg-[length:200%_auto] ${
+                  isInView && !prefersReduced ? "animate-gradient" : ""
+                }`}
               >
                 império digital
               </span>
@@ -705,6 +721,7 @@ export function Hero() {
                     index={i}
                     pos={layout.cards[i]}
                     isHovered={hoveredCard === card.id}
+                    isInView={isInView}
                     onHover={() => setHoveredCard(card.id)}
                     onLeave={() => setHoveredCard(null)}
                   />

@@ -104,7 +104,7 @@ export function Footer() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Seu melhor e-mail"
-                className="flex-1 px-4 py-3 bg-white rounded-xl border border-[#e6d9d4]/50 text-sm text-[#2a2420] placeholder-[#5a4a42]/40 focus:outline-none focus:border-[#db6f57]/40 focus:ring-2 focus:ring-[#db6f57]/10 transition-all"
+                className="flex-1 px-4 py-3 bg-white rounded-xl border border-[#e6d9d4]/50 text-sm text-[#2a2420] placeholder-[#5a4a42]/60 focus:outline-none focus:border-[#db6f57]/40 focus:ring-2 focus:ring-[#db6f57]/10 transition-all"
                 required
               />
               <motion.button
@@ -231,7 +231,7 @@ export function Footer() {
                   <div className="text-xs font-bold text-[#2a2420]">
                     {badge.title}
                   </div>
-                  <div className="text-[10px] text-[#5a4a42]/50">
+                  <div className="text-[10px] text-[#5a4a42]/70">
                     {badge.sub}
                   </div>
                 </div>
@@ -242,7 +242,7 @@ export function Footer() {
 
         {/* Bottom: copyright + socials */}
         <div className="py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2 text-xs text-[#5a4a42]/50">
+          <div className="flex items-center gap-2 text-xs text-[#5a4a42]/70">
             <span>&copy; 2026 Bellory. Todos os direitos reservados.</span>
             <span className="hidden md:inline">&middot;</span>
             <span className="flex items-center gap-1">
