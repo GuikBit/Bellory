@@ -42,9 +42,9 @@ const nextConfig = {
       'date-fns',
       'recharts',
     ],
-    // Inline critical CSS e adia o resto (via critters) — ataca o
-    // "Renderizar solicitações de bloqueio 1010ms" do Lighthouse.
-    optimizeCss: true,
+    // NÃO ligar optimizeCss — testado e o critters não reduziu o CSS blocking
+    // (continuou em 1090ms mobile); suspeita de regressão de TBT no desktop
+    // (passou de 200ms → 2980ms após ativar).
   },
   async headers() {
     return [
