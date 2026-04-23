@@ -533,11 +533,11 @@ export function Hero() {
           className="flex justify-center mb-6"
         >
           <div className="inline-flex items-center gap-3">
-            <span aria-hidden className="h-px w-8 md:w-10 bg-[#db6f57] opacity-60" />
+            <span aria-hidden className="h-px w-0 md:w-10 bg-[#db6f57] opacity-60" />
             <span className="text-[10px] md:text-[11px] uppercase tracking-[0.3em] font-semibold text-[#db6f57]">
-              Para salões, barbearias, clínicas e spas
+              Para salões, barbearias, clínicas e mais
             </span>
-            <span aria-hidden className="h-px w-8 md:w-10 bg-[#db6f57] opacity-60" />
+            <span aria-hidden className="h-px w-0 md:w-10 bg-[#db6f57] opacity-60" />
           </div>
         </motion.div>
 
@@ -589,7 +589,7 @@ export function Hero() {
           initial={initial(24)}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6"
+          className="flex flex-row items-center justify-center gap-3 mb-6"
         >
           <Link
             href="/cadastro"
@@ -677,56 +677,63 @@ export function Hero() {
 
         {/* Mockups + feature cards + connection lines */}
         <div className="relative pointer-events-none" ref={containerRef}>
-          <svg
-            className="absolute inset-0 w-full h-full hidden md:block pointer-events-none"
-            viewBox={layout.viewBox}
-            preserveAspectRatio="xMidYMid meet"
-            style={{ overflow: "visible" }}
-            role="img"
-            aria-label="Ilustração do ecossistema Bellory: funcionalidades conectadas ao aplicativo central"
-          >
-            <motion.g style={{ translateY: cardsTranslateY }}>
-              {paths.map((p, i) => (
-                <ConnectionLine
-                  key={p.id}
-                  pathD={p.d}
-                  pathId={p.id}
-                  color={p.color}
-                  icon={FEATURE_CARDS[i].icon}
-                  index={i}
-                  isHovered={hoveredCard === FEATURE_CARDS[i].id}
-                  globalHover={mockupHovered}
-                  prefersReduced={!!prefersReduced}
-                  isInView={isInView}
-                  reversed={FEATURE_CARDS[i].flow === "out"}
-                />
-              ))}
-
-              {/* Arrival ripple on the phone target */}
-              <ArrivalRipple
-                cx={layout.center.x}
-                cy={layout.center.y}
-                prefersReduced={!!prefersReduced}
-                isInView={isInView}
-                intensify={mockupHovered}
-              />
-
-              <g className="pointer-events-auto">
-                {FEATURE_CARDS.map((card, i) => (
-                  <FeatureCardSVG
-                    key={card.id}
-                    card={card}
+          {/* SVG decorativo (cards animados + linhas + ripple) — apenas desktop.
+              No mobile ele fica `hidden md:block` via CSS, mas framer-motion
+              continuava rodando as animações mesmo com display:none, queimando
+              CPU. Não montar o SVG inteiro no mobile economiza ~500ms de TBT
+              no Moto G Power. */}
+          {!isMobile && (
+            <svg
+              className="absolute inset-0 w-full h-full hidden md:block pointer-events-none"
+              viewBox={layout.viewBox}
+              preserveAspectRatio="xMidYMid meet"
+              style={{ overflow: "visible" }}
+              role="img"
+              aria-label="Ilustração do ecossistema Bellory: funcionalidades conectadas ao aplicativo central"
+            >
+              <motion.g style={{ translateY: cardsTranslateY }}>
+                {paths.map((p, i) => (
+                  <ConnectionLine
+                    key={p.id}
+                    pathD={p.d}
+                    pathId={p.id}
+                    color={p.color}
+                    icon={FEATURE_CARDS[i].icon}
                     index={i}
-                    pos={layout.cards[i]}
-                    isHovered={hoveredCard === card.id}
+                    isHovered={hoveredCard === FEATURE_CARDS[i].id}
+                    globalHover={mockupHovered}
+                    prefersReduced={!!prefersReduced}
                     isInView={isInView}
-                    onHover={() => setHoveredCard(card.id)}
-                    onLeave={() => setHoveredCard(null)}
+                    reversed={FEATURE_CARDS[i].flow === "out"}
                   />
                 ))}
-              </g>
-            </motion.g>
-          </svg>
+
+                {/* Arrival ripple on the phone target */}
+                <ArrivalRipple
+                  cx={layout.center.x}
+                  cy={layout.center.y}
+                  prefersReduced={!!prefersReduced}
+                  isInView={isInView}
+                  intensify={mockupHovered}
+                />
+
+                <g className="pointer-events-auto">
+                  {FEATURE_CARDS.map((card, i) => (
+                    <FeatureCardSVG
+                      key={card.id}
+                      card={card}
+                      index={i}
+                      pos={layout.cards[i]}
+                      isHovered={hoveredCard === card.id}
+                      isInView={isInView}
+                      onHover={() => setHoveredCard(card.id)}
+                      onLeave={() => setHoveredCard(null)}
+                    />
+                  ))}
+                </g>
+              </motion.g>
+            </svg>
+          )}
 
           <PhoneMockups
             onHover={() => setMockupHovered(true)}

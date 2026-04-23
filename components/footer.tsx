@@ -189,7 +189,7 @@ export function Footer() {
 
         {/* Security badges */}
         <div
-          className="py-6 border-t border-b flex flex-wrap justify-center items-center gap-8"
+          className="py-6 border-t border-b flex flex-wrap justify-center items-center md:gap-8 gap-3"
           style={{ borderColor: "#8b3d3512" }}
         >
           {[
@@ -242,14 +242,18 @@ export function Footer() {
 
         {/* Bottom: copyright + socials */}
         <div className="py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2 text-xs text-[#5a4a42]/70">
-            <span>&copy; 2026 Bellory. Todos os direitos reservados.</span>
-            <span className="hidden md:inline">&middot;</span>
-            <span className="flex items-center gap-1">
-              Feito com{" "}
-              <Heart className="w-3 h-3 text-[#db6f57] fill-current" /> no
-              Brasil
-            </span>
+          <div className="md:flex items-center gap-2 space-y-3 md:space-y-0 text-xs text-[#5a4a42]/70">
+            <div>
+              <span>&copy; 2026 Bellory. Todos os direitos reservados.</span>
+              <span className="hidden md:inline">&middot;</span>
+            </div>
+            <div>
+              <span className="flex items-center justify-center gap-1">
+                Feito com{" "}
+                <Heart className="w-3 h-3 text-[#db6f57] fill-current" /> 
+                no Brasil
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
