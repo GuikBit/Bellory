@@ -9,7 +9,10 @@
       "Bash(tasklist *)",
       "Bash(node scripts/optimize-images.mjs)",
       "Bash(npx next *)",
-      "Bash(git -C \"C:/Users/Pluri Sistemas/Desktop/Guikbit/GitHubRepository/Bellory\" diff HEAD -- app/cadastro/page.tsx)"
+      "Bash(git -C \"C:/Users/Pluri Sistemas/Desktop/Guikbit/GitHubRepository/Bellory\" diff HEAD -- app/cadastro/page.tsx)",
+      "WebFetch(domain:www.googleapis.com)",
+      "WebFetch(domain:pagespeed.web.dev)",
+      "WebFetch(domain:bellory.com.br)"
     ]
   }
 }

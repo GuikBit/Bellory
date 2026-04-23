@@ -341,7 +341,7 @@ function ChapterCard({
             </h3>
 
             {/* Label tagline under heading */}
-            <p className="text-[11px] uppercase tracking-wider font-semibold text-[#5a4a42]/50 mb-5">
+            <p className="text-[11px] uppercase tracking-wider font-semibold text-[#5a4a42]/70 mb-5">
               {chapter.label}
             </p>
 
@@ -688,7 +688,7 @@ function AllFeaturesCard({
               </Link>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] md:text-[12px] text-[#e6d9d4]/55 font-medium">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] md:text-[12px] text-[#e6d9d4]/75 font-medium">
               <span className="flex items-center gap-1.5">
                 <span className="w-1 h-1 rounded-full bg-[#db6f57]" />
                 Mockups reais
@@ -707,8 +707,8 @@ function AllFeaturesCard({
           {/* Right: mini TOC of 6 chapters */}
           <div className="lg:col-span-5">
             <div className="flex items-center gap-2.5 mb-4 lg:justify-end">
-              <LayoutGrid className="w-3.5 h-3.5 text-[#e6d9d4]/50" />
-              <span className="text-[10px] uppercase tracking-[0.28em] font-bold text-[#e6d9d4]/50">
+              <LayoutGrid className="w-3.5 h-3.5 text-[#e6d9d4]/75" />
+              <span className="text-[10px] uppercase tracking-[0.28em] font-bold text-[#e6d9d4]/75">
                 Índice · pule direto
               </span>
             </div>
@@ -770,7 +770,7 @@ function AllFeaturesCard({
                         <div className="text-[11px] md:text-[12px] font-bold text-white leading-tight mb-0.5">
                           {t.label}
                         </div>
-                        <div className="flex items-center gap-1 text-[9px] md:text-[10px] font-semibold text-[#e6d9d4]/50 group-hover/tile:text-[#e6d9d4]/80 transition-colors">
+                        <div className="flex items-center gap-1 text-[9px] md:text-[10px] font-semibold text-[#e6d9d4]/70 group-hover/tile:text-[#e6d9d4]/90 transition-colors">
                           <span>ler</span>
                           <ArrowRight className="w-2.5 h-2.5 transition-transform duration-300 group-hover/tile:translate-x-0.5" />
                         </div>

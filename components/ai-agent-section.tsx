@@ -253,7 +253,7 @@ function ChatBubble({
           {msg.message}
         </p>
         <div className="flex items-center justify-end gap-1 mt-0.5">
-          <span className="text-[10px] text-[#5a4a42]/50">{msg.time}</span>
+          <span className="text-[10px] text-[#5a4a42]/70">{msg.time}</span>
           {isCustomer && (
             <CheckCircle2 className="w-3 h-3 text-[#4fc3f7]" />
           )}

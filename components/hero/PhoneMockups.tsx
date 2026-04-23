@@ -36,8 +36,9 @@ export function PhoneMockups({
           <Image
             src={left.src}
             alt={left.alt}
-            fill
-            className="object-cover"
+            width={240}
+            height={507}
+            className="w-full h-full object-cover"
             sizes="(max-width: 1024px) 140px, (max-width: 1280px) 200px, 240px"
           />
         </div>
@@ -55,9 +56,11 @@ export function PhoneMockups({
           <Image
             src={center.src}
             alt={center.alt}
-            fill
-            className="object-cover"
+            width={320}
+            height={676}
+            className="w-full h-full object-cover"
             priority
+            fetchPriority="high"
             sizes="(max-width: 768px) 200px, (max-width: 1024px) 220px, (max-width: 1280px) 280px, 320px"
           />
         </div>
@@ -74,8 +77,9 @@ export function PhoneMockups({
           <Image
             src={right.src}
             alt={right.alt}
-            fill
-            className="object-cover"
+            width={240}
+            height={507}
+            className="w-full h-full object-cover"
             sizes="(max-width: 1024px) 140px, (max-width: 1280px) 200px, 240px"
           />
         </div>

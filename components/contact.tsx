@@ -316,14 +316,14 @@ export function Contact() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <h4
+                          <h3
                             className="font-serif text-lg font-bold leading-tight"
                             style={{
                               color: method.featured ? "#ffffff" : "#2a2420",
                             }}
                           >
                             {method.title}
-                          </h4>
+                          </h3>
                           {method.id === "whatsapp" && (
                             <span className="flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold text-[#4f6f64] bg-[#4f6f64]/15 px-1.5 py-0.5 rounded-full">
                               <span
@@ -560,7 +560,7 @@ export function Contact() {
                           onChange={(e) =>
                             setFormData({ ...formData, name: e.target.value })
                           }
-                          className="w-full px-4 py-3 bg-[#faf8f6] rounded-xl border border-[#e6d9d4] text-[14px] text-[#2a2420] placeholder:text-[#5a4a42]/35 focus:outline-none focus:border-[#db6f57]/50 focus:ring-4 focus:ring-[#db6f57]/10 focus:bg-white transition-all"
+                          className="w-full px-4 py-3 bg-[#faf8f6] rounded-xl border border-[#e6d9d4] text-[14px] text-[#2a2420] placeholder:text-[#5a4a42]/60 focus:outline-none focus:border-[#db6f57]/50 focus:ring-4 focus:ring-[#db6f57]/10 focus:bg-white transition-all"
                           required
                         />
                       </div>
@@ -582,7 +582,7 @@ export function Contact() {
                             onChange={(e) =>
                               setFormData({ ...formData, email: e.target.value })
                             }
-                            className="w-full px-4 py-3 bg-[#faf8f6] rounded-xl border border-[#e6d9d4] text-[14px] text-[#2a2420] placeholder:text-[#5a4a42]/35 focus:outline-none focus:border-[#db6f57]/50 focus:ring-4 focus:ring-[#db6f57]/10 focus:bg-white transition-all"
+                            className="w-full px-4 py-3 bg-[#faf8f6] rounded-xl border border-[#e6d9d4] text-[14px] text-[#2a2420] placeholder:text-[#5a4a42]/60 focus:outline-none focus:border-[#db6f57]/50 focus:ring-4 focus:ring-[#db6f57]/10 focus:bg-white transition-all"
                             required
                           />
                         </div>
@@ -601,7 +601,7 @@ export function Contact() {
                             onChange={(e) =>
                               setFormData({ ...formData, phone: e.target.value })
                             }
-                            className="w-full px-4 py-3 bg-[#faf8f6] rounded-xl border border-[#e6d9d4] text-[14px] text-[#2a2420] placeholder:text-[#5a4a42]/35 focus:outline-none focus:border-[#db6f57]/50 focus:ring-4 focus:ring-[#db6f57]/10 focus:bg-white transition-all"
+                            className="w-full px-4 py-3 bg-[#faf8f6] rounded-xl border border-[#e6d9d4] text-[14px] text-[#2a2420] placeholder:text-[#5a4a42]/60 focus:outline-none focus:border-[#db6f57]/50 focus:ring-4 focus:ring-[#db6f57]/10 focus:bg-white transition-all"
                             required
                           />
                         </div>
@@ -667,7 +667,7 @@ export function Contact() {
                           onChange={(e) =>
                             setFormData({ ...formData, message: e.target.value })
                           }
-                          className="w-full px-4 py-3 bg-[#faf8f6] rounded-xl border border-[#e6d9d4] text-[14px] text-[#2a2420] placeholder:text-[#5a4a42]/35 focus:outline-none focus:border-[#db6f57]/50 focus:ring-4 focus:ring-[#db6f57]/10 focus:bg-white transition-all resize-none"
+                          className="w-full px-4 py-3 bg-[#faf8f6] rounded-xl border border-[#e6d9d4] text-[14px] text-[#2a2420] placeholder:text-[#5a4a42]/60 focus:outline-none focus:border-[#db6f57]/50 focus:ring-4 focus:ring-[#db6f57]/10 focus:bg-white transition-all resize-none"
                           rows={4}
                           required
                         />
@@ -730,7 +730,7 @@ export function Contact() {
                             }}
                           />
                         </motion.button>
-                        <p className="text-[11px] text-[#5a4a42]/55 leading-snug max-w-xs">
+                        <p className="text-[11px] text-[#5a4a42]/70 leading-snug max-w-xs">
                           Ao enviar, você concorda com a nossa{" "}
                           <a
                             href="#"

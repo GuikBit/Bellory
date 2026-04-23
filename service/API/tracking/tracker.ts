@@ -363,94 +363,29 @@ class BelloryTracker {
   // --- Geolocalizacao (anonimizada, via API) ---
 
   private async collectGeoInfo(): Promise<void> {
+    // Geo via IP em HTTPS (ipwho.is é gratuito, sem API key, sem prompt de permissão).
+    // Não usamos navigator.geolocation pra não disparar prompt de GPS no carregamento.
     try {
-      // 1. Tenta Browser Geolocation API (mais precisa - GPS/WiFi/antenas)
-      const browserGeo = await this.getBrowserGeolocation()
-      if (browserGeo) {
-        // Faz reverse geocoding com as coordenadas para obter cidade/estado/pais
-        const geoDetails = await this.reverseGeocode(browserGeo.latitude, browserGeo.longitude)
-        this.geo = {
-          ...geoDetails,
-          latitude: browserGeo.latitude,
-          longitude: browserGeo.longitude,
-          source: 'browser',
-        }
-        this.log('Geo coletada via browser', this.geo)
-        return
-      }
-    } catch {
-      this.log('Browser geolocation indisponivel, usando fallback por IP')
-    }
-
-    try {
-      // 2. Fallback: geolocation por IP (ip-api.com tem base mais refinada)
-      const response = await fetch('http://ip-api.com/json/?fields=country,regionName,city,lat,lon', {
+      const response = await fetch('https://ipwho.is/?fields=success,country,region,city,latitude,longitude', {
         signal: AbortSignal.timeout(5000),
       })
       if (response.ok) {
         const data = await response.json()
-        this.geo = {
-          country: data.country,
-          state: data.regionName,
-          city: data.city,
-          latitude: data.lat,
-          longitude: data.lon,
-          source: 'ip',
+        if (data?.success) {
+          this.geo = {
+            country: data.country,
+            state: data.region,
+            city: data.city,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            source: 'ip',
+          }
+          this.log('Geo coletada via IP', this.geo)
         }
-        this.log('Geo coletada via IP', this.geo)
       }
     } catch {
       this.log('Falha ao coletar geo (nao critico)')
     }
-  }
-
-  private getBrowserGeolocation(): Promise<{ latitude: number; longitude: number } | null> {
-    return new Promise((resolve) => {
-      if (typeof navigator === 'undefined' || !navigator.geolocation) {
-        resolve(null)
-        return
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          })
-        },
-        () => {
-          // Usuario negou ou erro - resolve null para cair no fallback
-          resolve(null)
-        },
-        { timeout: 5000, maximumAge: 300000 },
-      )
-    })
-  }
-
-  private async reverseGeocode(
-    lat: number,
-    lon: number,
-  ): Promise<{ country?: string; state?: string; city?: string }> {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=pt-BR`,
-        {
-          signal: AbortSignal.timeout(5000),
-          headers: { 'User-Agent': 'BelloryTracker/1.0' },
-        },
-      )
-      if (response.ok) {
-        const data = await response.json()
-        return {
-          country: data.address?.country,
-          state: data.address?.state,
-          city: data.address?.city || data.address?.town || data.address?.municipality,
-        }
-      }
-    } catch {
-      this.log('Reverse geocoding falhou')
-    }
-    return {}
   }
 
   // --- Performance ---
