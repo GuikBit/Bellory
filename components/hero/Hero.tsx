@@ -558,9 +558,7 @@ export function Hero() {
             <span className="block text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mt-1 pb-3">
               <span className="text-[#2a2420]">em um </span>
               <span
-                className={`bg-gradient-to-r ${HERO_COLORS.titleGradient} bg-clip-text text-transparent bg-[length:200%_auto] ${
-                  isInView && !prefersReduced ? "animate-gradient" : ""
-                }`}
+                className={`bg-gradient-to-r ${HERO_COLORS.titleGradient} bg-clip-text text-transparent`}
               >
                 império digital
               </span>
@@ -747,20 +745,6 @@ export function Hero() {
         }}
       />
 
-      <style jsx>{`
-        @keyframes gradient {
-          0%,
-          100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-        .animate-gradient {
-          animation: gradient 8s ease infinite;
-        }
-      `}</style>
     </section>
   )
 }

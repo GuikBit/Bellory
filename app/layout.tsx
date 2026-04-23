@@ -20,6 +20,10 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-poppins",
   display: "swap",
+  // Os 5 pesos geravam 5 <link rel="preload"> e o browser reclamava de
+  // "preloaded but not used within a few seconds". Sem preload eles carregam
+  // via @font-face on-demand; display:swap mantém o texto visível com fallback.
+  preload: false,
 })
 
 export const metadata: Metadata = {

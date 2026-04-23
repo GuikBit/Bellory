@@ -420,12 +420,14 @@ export function Header({ isMenu, isCadastro }: { isMenu?: boolean; isCadastro?: 
                 <img
                   src="/bellory2sfundo.svg"
                   alt="Bellory"
+                  width={112}
+                  height={28}
                   className={`w-auto transition-[height] duration-300 ${
                     isScrolled ? "h-6" : "h-7"
                   }`}
                 />
                 <span
-                  className={`font-serif font-bold bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient-header transition-[font-size] duration-300 ${
+                  className={`font-serif font-bold bg-gradient-to-r from-[#db6f57] via-[#8b3d35] to-[#db6f57] bg-clip-text text-transparent transition-[font-size] duration-300 ${
                     isScrolled ? "text-xl" : "text-2xl"
                   }`}
                 >
@@ -929,21 +931,6 @@ export function Header({ isMenu, isCadastro }: { isMenu?: boolean; isCadastro?: 
         </AnimatePresence>
       )}
 
-      {/* Scoped keyframes */}
-      <style jsx global>{`
-        @keyframes gradient-header {
-          0%,
-          100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-        .animate-gradient-header {
-          animation: gradient-header 8s ease infinite;
-        }
-      `}</style>
     </>
   )
 }
